@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.python-version
+
+# Tests / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Docs
+docs/_build/
+docs/_autosummary/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Local scratch
+*.npz
+!data/*.npz
+*.pkl
+*.pt
+*.ckpt
+scratch/
+artifacts/

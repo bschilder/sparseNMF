@@ -1,0 +1,123 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sparse-nmf"
+version = "0.1.0"
+description = "GPU-accelerated sparse non-negative matrix factorization with PyTorch"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [{ name = "Brian Schilder", email = "brian@standardmodel.bio" }]
+keywords = [
+    "nmf",
+    "matrix-factorization",
+    "sparse",
+    "gpu",
+    "pytorch",
+    "phenome",
+    "embedding",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+dependencies = [
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "scipy>=1.10",
+    "torch>=2.0",
+    "tqdm>=4.65",
+]
+
+[project.optional-dependencies]
+viz = ["matplotlib>=3.7", "seaborn>=0.12"]
+docs = [
+    "sphinx>=7.2",
+    "sphinx-rtd-theme>=2.0",
+    "myst-parser>=2.0",
+    "sphinx-autodoc-typehints>=2.0",
+    "sphinx-copybutton>=0.5",
+]
+test = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "ruff>=0.5",
+    "mypy>=1.10",
+]
+dev = ["sparse-nmf[viz,docs,test]"]
+
+[project.urls]
+Homepage = "https://github.com/bschilder/sparseNMF"
+Documentation = "https://sparseNMF.readthedocs.io"
+Repository = "https://github.com/bschilder/sparseNMF"
+Issues = "https://github.com/bschilder/sparseNMF/issues"
+Changelog = "https://github.com/bschilder/sparseNMF/releases"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"sparse_nmf" = ["py.typed"]
+"sparse_nmf.data" = ["*.npz"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = [
+    "-q",
+    "--strict-markers",
+    "--strict-config",
+    "--cov=sparse_nmf",
+    "--cov-report=term-missing:skip-covered",
+    "--cov-report=xml",
+]
+testpaths = ["tests"]
+markers = [
+    "gpu: tests that need a CUDA device (skipped on CPU-only CI)",
+    "slow: tests > ~5s",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["sparse_nmf"]
+
+[tool.coverage.report]
+exclude_also = [
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # bugbear
+    "UP", # pyupgrade
+    "SIM", # simplify
+]
+ignore = [
+    "E501",  # line-too-long — formatter handles
+    "B008",  # function-call-in-default-argument — common idiom in scientific code
+]
+
+[tool.mypy]
+python_version = "3.10"
+strict = false
+ignore_missing_imports = true
+files = ["src/sparse_nmf"]
