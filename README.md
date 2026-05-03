@@ -65,7 +65,7 @@ than the W/H matrices directly.
 
 A deeper survey of prior NMF implementations and where this package
 sits among them lives in the docs:
-[**Prior works** →](https://sparseNMF.readthedocs.io/en/latest/prior_works.html)
+[**Prior works** →](https://sparsenmf.netlify.app/prior_works.html)
 
 ## Install
 
@@ -116,7 +116,7 @@ z, model = train_joint_model(
 ```
 
 See [`examples/`](examples/) for runnable end-to-end scripts and the
-[**API reference**](https://sparseNMF.readthedocs.io/en/latest/api.html)
+[**API reference**](https://sparsenmf.netlify.app/api.html)
 for every public function.
 
 ## Sample data
