@@ -106,3 +106,292 @@ def test_runs_on_cuda_when_available():
     nmf = SparseNMF(n_components=4, max_iter=10, device="cuda")
     W = nmf.fit_transform(X)
     assert W.shape == (80, 4)
+
+
+# ── Determinism + state attributes ──────────────────────────────────
+
+
+def test_random_state_makes_fits_reproducible(small_sparse, device):
+    """Two SparseNMF instances with the same ``random_state`` must
+    converge to bit-identical factor matrices. This is the contract
+    downstream consumers rely on for cache keys and reproducible
+    benchmarks."""
+    a = SparseNMF(n_components=4, max_iter=15, device=device, verbose=False, random_state=42)
+    a.fit_transform(small_sparse)
+    b = SparseNMF(n_components=4, max_iter=15, device=device, verbose=False, random_state=42)
+    b.fit_transform(small_sparse)
+    np.testing.assert_allclose(_to_numpy(a.H), _to_numpy(b.H), atol=1e-6)
+    np.testing.assert_allclose(_to_numpy(a.W), _to_numpy(b.W), atol=1e-6)
+
+
+def test_different_seeds_diverge(small_sparse, device):
+    """Sanity check on the determinism test above: different seeds must
+    actually produce different factorizations, otherwise the
+    determinism test would be vacuously true on a deterministic init."""
+    a = SparseNMF(n_components=4, max_iter=15, device=device, verbose=False, random_state=1)
+    a.fit_transform(small_sparse)
+    b = SparseNMF(n_components=4, max_iter=15, device=device, verbose=False, random_state=2)
+    b.fit_transform(small_sparse)
+    assert not np.allclose(_to_numpy(a.H), _to_numpy(b.H), atol=1e-3)
+
+
+def test_fit_populates_documented_attributes(small_sparse, device):
+    """The class docstring promises ``reconstruction_error_``,
+    ``r2_score_``, ``r2_score_nonzero_``, and ``n_iter_`` after fit.
+    Lock that contract in."""
+    nmf = SparseNMF(n_components=4, max_iter=10, device=device, verbose=False, random_state=0)
+    nmf.fit_transform(small_sparse)
+    assert nmf.reconstruction_error_ is not None and nmf.reconstruction_error_ >= 0
+    assert nmf.n_iter_ is not None and 0 < nmf.n_iter_ <= 10
+    assert nmf.r2_score_ is not None
+    assert nmf.r2_score_nonzero_ is not None
+    # R² ∈ [-∞, 1] but on a fit that ran for any iterations should be a
+    # finite float (not NaN/Inf).
+    assert np.isfinite(nmf.r2_score_)
+    assert np.isfinite(nmf.r2_score_nonzero_)
+
+
+def test_more_iterations_lowers_reconstruction_error(small_sparse, device):
+    """Multiplicative-update NMF guarantees the Frobenius reconstruction
+    error is non-increasing across iterations. With matched seeds, a
+    longer run must end at least as good as a shorter run."""
+    short = SparseNMF(
+        n_components=4, max_iter=2, device=device, verbose=False, random_state=0
+    )
+    short.fit_transform(small_sparse)
+    long_ = SparseNMF(
+        n_components=4, max_iter=30, device=device, verbose=False, random_state=0
+    )
+    long_.fit_transform(small_sparse)
+    # Allow a hair of float slack — these are rerun-from-scratch fits,
+    # not a continuation of the same run.
+    assert long_.reconstruction_error_ <= short.reconstruction_error_ + 1e-3
+
+
+# ── Input format flexibility ────────────────────────────────────────
+
+
+@pytest.mark.parametrize("fmt", ["csr", "csc", "coo"])
+def test_accepts_multiple_sparse_formats(small_sparse, device, fmt):
+    """The wrapper internally converts to COO. Ensure CSR/CSC inputs
+    aren't rejected and produce the same shape output."""
+    converters = {
+        "csr": lambda x: x.tocsr(),
+        "csc": lambda x: x.tocsc(),
+        "coo": lambda x: x.tocoo(),
+    }
+    X = converters[fmt](small_sparse)
+    nmf = SparseNMF(n_components=4, max_iter=5, device=device, verbose=False, random_state=0)
+    W = nmf.fit_transform(X)
+    assert W.shape == (X.shape[0], 4)
+    assert np.isfinite(W).all()
+
+
+# ── Alternate optimization paths ────────────────────────────────────
+
+
+def test_r2_weight_path_runs_and_preserves_non_negativity(small_sparse, device):
+    """When ``r2_weight > 0`` the optimizer switches from multiplicative
+    updates to Adam. Both factors must still be non-negative (the loss
+    is the only thing that changes — non-negativity is structural)."""
+    nmf = SparseNMF(
+        n_components=4,
+        max_iter=10,
+        device=device,
+        verbose=False,
+        random_state=0,
+        mse_weight=0.5,
+        r2_weight=0.5,
+        learning_rate=0.05,
+    )
+    W = nmf.fit_transform(small_sparse)
+    assert W.shape == (small_sparse.shape[0], 4)
+    assert (W >= -1e-5).all()
+    assert (_to_numpy(nmf.H) >= -1e-5).all()
+    assert np.isfinite(W).all()
+
+
+def test_nonzero_mse_path_runs(small_sparse, device):
+    """``nonzero_mse_weight > 0`` ignores zero positions in the loss —
+    different code path that also routes through the Adam optimizer.
+    Verify it just completes without producing NaNs."""
+    nmf = SparseNMF(
+        n_components=4,
+        max_iter=10,
+        device=device,
+        verbose=False,
+        random_state=0,
+        nonzero_mse_weight=1.0,
+        learning_rate=0.05,
+    )
+    W = nmf.fit_transform(small_sparse)
+    assert np.isfinite(W).all()
+    assert (W >= -1e-5).all()
+
+
+def test_patience_can_trigger_early_stop(small_sparse, device, capsys):
+    """With aggressive patience, training should stop well before
+    ``max_iter`` once reconstruction error plateaus.
+
+    Subtle: patience checking in the upstream code is gated by
+    ``if self.verbose:`` (see ``_core.py`` lines ~601/791), so
+    ``verbose=False`` silently disables this mechanism. This test
+    runs with ``verbose=True`` and discards stdout via ``capsys``.
+    """
+    nmf = SparseNMF(
+        n_components=4,
+        max_iter=300,
+        device=device,
+        verbose=True,
+        random_state=0,
+        patience=2,
+        tol=1e-2,
+    )
+    nmf.fit_transform(small_sparse)
+    capsys.readouterr()  # silence the progress output
+    assert nmf.n_iter_ < 300, f"expected early stop, ran {nmf.n_iter_}/300 iters"
+
+
+def test_cuda_string_falls_back_to_cpu_when_no_gpu():
+    """Asking for cuda on a CPU-only machine must transparently fall
+    back to CPU rather than raise — documented behavior in the
+    ``__init__`` docstring."""
+    import torch
+
+    if torch.cuda.is_available():
+        pytest.skip("CUDA available; can't test the no-GPU fallback")
+    nmf = SparseNMF(n_components=2, max_iter=2, device="cuda", verbose=False)
+    assert nmf.device.type == "cpu"
+
+
+# ── Convenience wrappers ────────────────────────────────────────────
+
+
+def test_sparse_nmf_function_matches_class(small_sparse, device):
+    """The ``sparse_nmf()`` convenience wrapper must produce the same
+    result as ``SparseNMF(...).fit_transform(...)`` given identical
+    args + seed. Otherwise users get silently inconsistent behavior
+    between the two entry points."""
+    from sparse_nmf import sparse_nmf
+
+    args = dict(n_components=4, max_iter=10, device=device, verbose=False, random_state=42)
+    W_func = sparse_nmf(small_sparse, **args)
+    W_class = SparseNMF(**args).fit_transform(small_sparse)
+    np.testing.assert_allclose(W_func, W_class, atol=1e-5)
+
+
+def test_train_sparse_nmf_returns_W_and_model(small_sparse, device):
+    """``train_sparse_nmf`` is the save-aware wrapper. Without save
+    paths it should behave like the convenience function but return a
+    ``(W, model)`` tuple."""
+    from sparse_nmf import train_sparse_nmf
+
+    W, model = train_sparse_nmf(
+        small_sparse,
+        n_components=4,
+        max_iter=10,
+        device=device,
+        verbose=False,
+        random_state=0,
+    )
+    assert W.shape == (small_sparse.shape[0], 4)
+    assert isinstance(model, SparseNMF)
+    assert model.W is not None and model.H is not None
+    assert model.reconstruction_error_ is not None
+
+
+def test_train_sparse_nmf_save_then_load(small_sparse, tmp_path, device):
+    """Save + reload roundtrip: the second call should NOT need
+    ``X_sparse`` and must return the same W — this is the path that
+    lets downstream code skip retraining when the cache is warm."""
+    from sparse_nmf import train_sparse_nmf
+
+    emb = tmp_path / "embeddings.npy"
+    mod = tmp_path / "model.pkl"
+
+    W1, _ = train_sparse_nmf(
+        small_sparse,
+        n_components=4,
+        max_iter=10,
+        device=device,
+        verbose=False,
+        random_state=0,
+        embeddings_save_path=str(emb),
+        model_save_path=str(mod),
+    )
+    assert emb.exists()
+    assert mod.exists()
+
+    W2, model2 = train_sparse_nmf(
+        n_components=4,
+        max_iter=10,
+        device=device,
+        verbose=False,
+        embeddings_save_path=str(emb),
+        model_save_path=str(mod),
+    )
+    np.testing.assert_array_equal(W1, W2)
+    assert model2.W is not None  # model loaded from disk
+
+
+def test_train_sparse_nmf_force_retrains(small_sparse, tmp_path, device):
+    """``force=True`` should retrain even when both save paths exist
+    (otherwise stale caches silently override new data)."""
+    from sparse_nmf import train_sparse_nmf
+
+    emb = tmp_path / "embeddings.npy"
+    mod = tmp_path / "model.pkl"
+
+    W1, _ = train_sparse_nmf(
+        small_sparse,
+        n_components=4,
+        max_iter=5,
+        device=device,
+        verbose=False,
+        random_state=0,
+        embeddings_save_path=str(emb),
+        model_save_path=str(mod),
+    )
+
+    # Retrain with force=True and a different seed — output must differ
+    # despite the cached files existing.
+    W2, _ = train_sparse_nmf(
+        small_sparse,
+        n_components=4,
+        max_iter=5,
+        device=device,
+        verbose=False,
+        random_state=999,
+        embeddings_save_path=str(emb),
+        model_save_path=str(mod),
+        force=True,
+    )
+    assert not np.allclose(W1, W2)
+
+
+@pytest.mark.skip(
+    reason=(
+        "Upstream _core.py imports AoU.utils.l2_normalize when "
+        "normalize_inputs/normalize_outputs are True (lines ~2094, "
+        "2178). Standalone sparseNMF doesn't ship that module — fix "
+        "tracked at https://github.com/bschilder/sparseNMF/issues "
+        "(needs an in-package l2_normalize shim or upstream patch)."
+    )
+)
+def test_train_sparse_nmf_normalize_outputs_changes_magnitudes(small_sparse, device):
+    """``normalize_outputs=True`` L2-normalizes each row of W to unit
+    length. Verify the rows really do come out unit-norm."""
+    from sparse_nmf import train_sparse_nmf
+
+    W, _ = train_sparse_nmf(
+        small_sparse,
+        n_components=4,
+        max_iter=10,
+        device=device,
+        verbose=False,
+        random_state=0,
+        normalize_outputs=True,
+    )
+    norms = np.linalg.norm(W, axis=1)
+    nonzero = norms > 1e-6
+    np.testing.assert_allclose(norms[nonzero], 1.0, atol=1e-4)
