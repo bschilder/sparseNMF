@@ -120,12 +120,27 @@ X = generate_synthetic_sparse(n_samples=10_000, n_features=5_000, n_components=1
 
 ## Container
 
-A pinned CUDA image is published to GHCR on every release:
+Two flavors are published to GHCR on every push to `main` and every
+`v*` tag — pick the one that matches your runtime:
+
+| Tag | Base | Best for |
+|---|---|---|
+| `ghcr.io/bschilder/sparsenmf:latest` (alias of `:gpu-latest`) | `pytorch/pytorch:2.4.1-cuda12.4-cudnn9-runtime` | GPU hosts (CUDA 12.4 / cuDNN 9 already inside) |
+| `ghcr.io/bschilder/sparsenmf:cpu-latest` | `python:3.11-slim` + CPU torch | CI / dev / hosts without a GPU |
 
 ```bash
+# GPU host (default)
 docker pull ghcr.io/bschilder/sparsenmf:latest
-docker run --gpus all --rm -it ghcr.io/bschilder/sparsenmf:latest python -c "from sparse_nmf import SparseNMF; print(SparseNMF.__doc__)"
+docker run --gpus all --rm -it ghcr.io/bschilder/sparsenmf:latest python
+
+# CPU-only host
+docker pull ghcr.io/bschilder/sparsenmf:cpu-latest
+docker run --rm -it ghcr.io/bschilder/sparsenmf:cpu-latest python
 ```
+
+Tagged variants follow `{gpu,cpu}-<version>` (e.g.
+`ghcr.io/bschilder/sparsenmf:gpu-v0.1.0`) and `{gpu,cpu}-<sha>` for
+exact reproducibility.
 
 ## Contributing
 

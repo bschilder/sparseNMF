@@ -6,26 +6,36 @@ on:
     tags: ["v*"]
   workflow_dispatch: {}
 
-concurrency:
-  group: docker-${{ github.ref }}
-  cancel-in-progress: false
-
 permissions:
   contents: read
   packages: write
 
 jobs:
   build-push:
-    name: Build + push to ghcr.io
+    name: Build + push (${{ matrix.variant }})
     runs-on: ubuntu-latest
+    # No ``concurrency:`` block — GitHub Actions doesn't allow
+    # ``matrix.*`` references in concurrency groups at the job
+    # level, so we accept that two pushes in quick succession
+    # produce two parallel builds. On a sleepy repo this is fine.
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - variant: gpu
+            dockerfile: Dockerfile.gpu
+            tag_prefix: gpu
+            is_default: true
+          - variant: cpu
+            dockerfile: Dockerfile.cpu
+            tag_prefix: cpu
+            is_default: false
     steps:
       - uses: actions/checkout@v4
 
-      # Free ~30 GB of preinstalled tooling we don't need so the
-      # docker build has room for the torch wheel + deps. Hosted
-      # runners ship with ~14 GB free out of the box; without this
-      # step the build runs out of disk halfway through the layer
-      # that installs torch.
+      # Reclaim ~30 GB of preinstalled tooling we don't need so the
+      # docker build has room for the CUDA layers (the GPU variant
+      # pulls a ~5 GB base image).
       - name: Free up disk space
         run: |
           set -euxo pipefail
@@ -43,22 +53,29 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
       - id: meta
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository_owner }}/sparsenmf
+          # Each variant gets its own prefix; the GPU variant also
+          # claims the unprefixed ``latest`` so ``docker pull
+          # ghcr.io/bschilder/sparsenmf`` defaults to the GPU build.
           tags: |
-            type=ref,event=branch
-            type=ref,event=tag
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=sha,format=short
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=ref,event=branch,prefix=${{ matrix.tag_prefix }}-
+            type=ref,event=tag,prefix=${{ matrix.tag_prefix }}-
+            type=semver,pattern={{version}},prefix=${{ matrix.tag_prefix }}-
+            type=semver,pattern={{major}}.{{minor}},prefix=${{ matrix.tag_prefix }}-
+            type=sha,format=short,prefix=${{ matrix.tag_prefix }}-
+            type=raw,value=${{ matrix.tag_prefix }}-latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' && matrix.is_default }}
+
       - uses: docker/build-push-action@v6
         with:
           context: .
+          file: ${{ matrix.dockerfile }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=${{ matrix.variant }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.variant }}

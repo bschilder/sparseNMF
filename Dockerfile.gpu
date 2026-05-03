@@ -1,0 +1,50 @@
+# GPU-enabled sparseNMF image.
+#
+# Uses the official PyTorch CUDA runtime image as a base so torch +
+# CUDA + cuDNN are already installed — we just layer the package on
+# top. No 2 GB pip install during our build, fits comfortably in the
+# default GitHub-hosted runner's disk budget.
+#
+# Run on a GPU host with::
+#
+#     docker run --gpus all --rm -it ghcr.io/bschilder/sparsenmf:gpu-latest python
+#
+# Falls back to CPU paths automatically if no GPU is visible — the
+# image is still usable on a CPU-only host, just without the
+# acceleration.
+
+FROM pytorch/pytorch:2.4.1-cuda12.4-cudnn9-runtime
+
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+# git is needed for ``pip install`` from a source checkout (setuptools
+# version detection); the rest of the runtime deps come from the base.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY pyproject.toml README.md LICENSE ./
+COPY src/ ./src/
+
+# ``[viz]`` brings matplotlib + seaborn for the plotting helpers.
+# ``--no-deps`` for torch isn't needed here — the dependency declared
+# in pyproject.toml is satisfied by the base image, so pip skips it.
+RUN pip install --upgrade pip \
+    && pip install ".[viz]"
+
+# Sanity check — fails the build if torch can't see the package.
+RUN python -c "import sparse_nmf, torch; \
+    print(f'sparse_nmf {sparse_nmf.__version__}  torch {torch.__version__}  cuda={torch.cuda.is_available()}')"
+
+WORKDIR /workspace
+
+LABEL org.opencontainers.image.source="https://github.com/bschilder/sparseNMF"
+LABEL org.opencontainers.image.description="GPU-accelerated sparse NMF (CUDA 12.4 + cuDNN 9 base)"
+LABEL org.opencontainers.image.licenses="MIT"
+
+CMD ["python", "-c", "import sparse_nmf, torch; print('sparse_nmf', sparse_nmf.__version__, '| torch', torch.__version__, '| cuda', torch.cuda.is_available())"]
