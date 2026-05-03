@@ -80,11 +80,20 @@ jobs:
       - name: Commit coverage badge if changed
         if: ${{ matrix.python == '3.11' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         env:
-          # ``[skip ci]`` in the commit message prevents the auto-commit
-          # from re-triggering this same workflow (infinite loop
-          # otherwise — every CI run produces a new SVG, every new SVG
-          # triggers a new run).
-          COMMIT_MSG: "chore(ci): update coverage.svg [skip ci]"
+          # ``[skip actions]`` (NOT ``[skip ci]``!) prevents the
+          # auto-commit from re-triggering this same workflow —
+          # avoiding the infinite loop where every CI run produces a
+          # new SVG → new commit → new run.
+          #
+          # ``[skip ci]`` would also work for GH Actions, but Netlify
+          # ALSO honors ``[skip ci]`` (see
+          # docs.netlify.com/configure-builds/ignore-builds/), so the
+          # auto-committed badge would never be picked up by a docs
+          # deploy and the public badge URL would stay stale.
+          # ``[skip actions]`` is recognized by GH Actions but not by
+          # Netlify — so we skip the rebuild loop here while still
+          # letting the docs site refresh.
+          COMMIT_MSG: "chore(ci): update coverage.svg [skip actions]"
         run: |
           set -euo pipefail
           git config user.email "github-actions[bot]@users.noreply.github.com"
