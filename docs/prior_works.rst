@@ -91,12 +91,3 @@ The implementation keeps the input on the device as a
 (so the working set stays in VRAM regardless of total dataset size),
 and adds an optional joint autoencoder head when a low-dimensional
 embedding is what you actually want at the end.
-
-Unpublished / internal references
----------------------------------
-
-Several of the design choices were informed by unpublished work
-inside Standard Model Bio's phenome stack (``AoU/phenome/``) and the
-companion ``protoforge`` proteomics foundation model. Those repos
-are not yet public; this package isolates the reusable NMF kernel
-from that lineage.
