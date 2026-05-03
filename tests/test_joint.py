@@ -412,6 +412,294 @@ def test_train_joint_model_different_seeds_diverge(small_sparse, device):
     assert not np.allclose(z_a, z_b, atol=1e-3)
 
 
+# ── train_joint_model flag variants ─────────────────────────────────
+
+
+@pytest.mark.slow
+def test_train_joint_model_with_feature_attention(small_sparse, device):
+    """``use_feature_attention=True`` builds the feature_attention_net
+    inside the model and passes attention-weighted W to the encoder.
+    Different code path through both the model __init__ and the
+    forward in train."""
+    from sparse_nmf import train_joint_model
+
+    z, model = train_joint_model(
+        small_sparse,
+        n_samples=small_sparse.shape[0],
+        n_features=small_sparse.shape[1],
+        nmf_components=4,
+        latent_dim=2,
+        device=device,
+        n_epochs=1,
+        batch_size=64,
+        verbose=False,
+        random_state=0,
+        use_feature_attention=True,
+    )
+    assert np.isfinite(np.asarray(z)).all()
+    assert hasattr(model, "feature_attention_net")
+
+
+@pytest.mark.slow
+def test_train_joint_model_with_contrastive_loss(small_sparse, device):
+    """``use_contrastive=True`` activates the InfoNCE-style loss
+    branch inside train (different gradient signal)."""
+    from sparse_nmf import train_joint_model
+
+    z, _ = train_joint_model(
+        small_sparse,
+        n_samples=small_sparse.shape[0],
+        n_features=small_sparse.shape[1],
+        nmf_components=4,
+        latent_dim=2,
+        device=device,
+        n_epochs=1,
+        batch_size=64,
+        verbose=False,
+        random_state=0,
+        use_contrastive=True,
+        contrastive_weight=0.5,
+    )
+    assert np.isfinite(np.asarray(z)).all()
+
+
+@pytest.mark.slow
+def test_train_joint_model_with_dimension_reg(small_sparse, device):
+    """``dimension_reg_weight > 0`` activates the dim-reg term inside
+    train. Penalizes uneven latent dimension usage."""
+    from sparse_nmf import train_joint_model
+
+    z, _ = train_joint_model(
+        small_sparse,
+        n_samples=small_sparse.shape[0],
+        n_features=small_sparse.shape[1],
+        nmf_components=4,
+        latent_dim=2,
+        device=device,
+        n_epochs=1,
+        batch_size=64,
+        verbose=False,
+        random_state=0,
+        dimension_reg_weight=0.1,
+    )
+    assert np.isfinite(np.asarray(z)).all()
+
+
+@pytest.mark.slow
+def test_train_joint_model_with_mse_ae_loss(small_sparse, device):
+    """``use_cosine_loss=False`` switches the AE loss from cosine to
+    MSE inside train — different gradient profile, exercises the
+    non-default branch."""
+    from sparse_nmf import train_joint_model
+
+    z, _ = train_joint_model(
+        small_sparse,
+        n_samples=small_sparse.shape[0],
+        n_features=small_sparse.shape[1],
+        nmf_components=4,
+        latent_dim=2,
+        device=device,
+        n_epochs=1,
+        batch_size=64,
+        verbose=False,
+        random_state=0,
+        use_cosine_loss=False,
+    )
+    assert np.isfinite(np.asarray(z)).all()
+
+
+@pytest.mark.slow
+def test_train_joint_model_save_then_load(small_sparse, tmp_path, device):
+    """``save_path`` writes the model + embeddings to disk. Calling
+    again without ``force=True`` should load from disk and return
+    identical embeddings without retraining."""
+    from sparse_nmf import train_joint_model
+
+    save_path = tmp_path / "joint_model.pkl"
+    args = dict(
+        n_samples=small_sparse.shape[0],
+        n_features=small_sparse.shape[1],
+        nmf_components=4,
+        latent_dim=2,
+        device=device,
+        n_epochs=1,
+        batch_size=64,
+        verbose=False,
+        random_state=0,
+        save_path=str(save_path),
+    )
+    z1, _ = train_joint_model(small_sparse, **args)
+    assert save_path.exists()
+    # Reload — should NOT retrain (force=False default).
+    z2, _ = train_joint_model(small_sparse, **args)
+    np.testing.assert_array_equal(np.asarray(z1), np.asarray(z2))
+
+
+@pytest.mark.slow
+def test_train_joint_model_force_retrains(small_sparse, tmp_path, device):
+    """``force=True`` retrains even when save_path exists. With a
+    different seed, output must differ from the cached version."""
+    from sparse_nmf import train_joint_model
+
+    save_path = tmp_path / "joint_model.pkl"
+    common = dict(
+        n_samples=small_sparse.shape[0],
+        n_features=small_sparse.shape[1],
+        nmf_components=4,
+        latent_dim=2,
+        device=device,
+        n_epochs=1,
+        batch_size=64,
+        verbose=False,
+        save_path=str(save_path),
+    )
+    z1, _ = train_joint_model(small_sparse, random_state=0, **common)
+    z2, _ = train_joint_model(small_sparse, random_state=999, force=True, **common)
+    assert not np.allclose(np.asarray(z1), np.asarray(z2), atol=1e-3)
+
+
+@pytest.mark.slow
+def test_train_joint_model_with_prebuilt_model(small_sparse, device):
+    """``model=...`` bypasses internal model construction, useful
+    when the caller wants to pre-configure a custom architecture."""
+    from sparse_nmf import SparseNMF_Autoencoder, train_joint_model
+
+    n, m = small_sparse.shape
+    pre_built = SparseNMF_Autoencoder(
+        n_samples=n,
+        n_features=m,
+        nmf_components=4,
+        latent_dim=2,
+        hidden_dims=(8,),
+        device=device,
+        random_state=0,
+    )
+    z, returned_model = train_joint_model(
+        small_sparse,
+        model=pre_built,
+        device=device,
+        n_epochs=1,
+        batch_size=64,
+        verbose=False,
+        random_state=0,
+    )
+    # Must be the same model instance the caller passed in.
+    assert returned_model is pre_built
+    assert np.isfinite(np.asarray(z)).all()
+
+
+# ── SparseNMF_Autoencoder activation + dropout variants ─────────────
+
+
+@pytest.mark.parametrize(
+    "activation", ["relu", "leaky_relu", "gelu", "silu", "swish", "tanh", "sigmoid"]
+)
+def test_autoencoder_activation_variants(small_sparse, device, activation):
+    """Each supported activation should produce a working forward
+    pass. Covers _core.py's activation dispatch (lines 1142-1153)."""
+    from sparse_nmf import SparseNMF_Autoencoder
+
+    n, m = small_sparse.shape
+    model = SparseNMF_Autoencoder(
+        n_samples=n,
+        n_features=m,
+        nmf_components=4,
+        latent_dim=2,
+        hidden_dims=(8,),
+        activation=activation,
+        device=device,
+        random_state=0,
+    )
+    X_torch = _make_sparse_torch(small_sparse, device)
+    out = model(X_torch)
+    assert torch.isfinite(out[0]).all()
+
+
+def test_autoencoder_invalid_activation_raises(small_sparse, device):
+    """Unsupported activation strings must raise ValueError loudly
+    rather than silently fall back to a default."""
+    from sparse_nmf import SparseNMF_Autoencoder
+
+    n, m = small_sparse.shape
+    with pytest.raises(ValueError, match="Unsupported activation"):
+        SparseNMF_Autoencoder(
+            n_samples=n,
+            n_features=m,
+            nmf_components=4,
+            latent_dim=2,
+            hidden_dims=(8,),
+            activation="not_a_real_activation",
+            device=device,
+        )
+
+
+def test_autoencoder_dropout_runs(small_sparse, device):
+    """``dropout > 0`` adds nn.Dropout layers to the encoder. Forward
+    pass in train mode applies it stochastically; in eval mode it's
+    a no-op. Covers line 1165."""
+    from sparse_nmf import SparseNMF_Autoencoder
+
+    n, m = small_sparse.shape
+    model = SparseNMF_Autoencoder(
+        n_samples=n,
+        n_features=m,
+        nmf_components=4,
+        latent_dim=2,
+        hidden_dims=(16, 8),
+        dropout=0.3,
+        device=device,
+        random_state=0,
+    )
+    X_torch = _make_sparse_torch(small_sparse, device)
+    z = model(X_torch)[0]
+    assert torch.isfinite(z).all()
+
+
+@pytest.mark.slow
+def test_train_joint_model_verbose_runs(small_sparse, device, capsys):
+    """``verbose=True`` exercises the per-epoch progress logging
+    (lines 1902-1907 in train_joint_model). 1 epoch is enough to
+    enter the verbose-postfix branch once."""
+    from sparse_nmf import train_joint_model
+
+    z, _ = train_joint_model(
+        small_sparse,
+        n_samples=small_sparse.shape[0],
+        n_features=small_sparse.shape[1],
+        nmf_components=4,
+        latent_dim=2,
+        device=device,
+        n_epochs=1,
+        batch_size=64,
+        verbose=True,
+        random_state=0,
+    )
+    capsys.readouterr()
+    assert np.asarray(z).shape == (small_sparse.shape[0], 2)
+
+
+@pytest.mark.slow
+def test_train_joint_model_two_epochs(small_sparse, device):
+    """Multi-epoch training exercises the per-epoch loop logic
+    (epoch counter, shuffling between epochs, cumulative loss
+    aggregation) that a 1-epoch test can't reach."""
+    from sparse_nmf import train_joint_model
+
+    z, _ = train_joint_model(
+        small_sparse,
+        n_samples=small_sparse.shape[0],
+        n_features=small_sparse.shape[1],
+        nmf_components=4,
+        latent_dim=2,
+        device=device,
+        n_epochs=2,
+        batch_size=64,
+        verbose=False,
+        random_state=0,
+    )
+    assert np.asarray(z).shape == (small_sparse.shape[0], 2)
+
+
 # ``import torch`` at module scope so the helper functions and tests
 # above can use it without each repeating the import.
 import torch  # noqa: E402  (intentional — used by helpers above)

@@ -246,3 +246,373 @@ def test_extract_attention_accepts_torch_input(small_sparse, device):
     A_np = extract_attention_weights(model, X_nmf_np, batch_size=64, verbose=False)
     A_torch = extract_attention_weights(model, X_nmf_torch, batch_size=64, verbose=False)
     np.testing.assert_allclose(A_np, A_torch, atol=1e-6)
+
+
+# ── extract_and_aggregate_attention ─────────────────────────────────
+
+
+@pytest.fixture
+def attention_setup(small_sparse, device):
+    """Build a feature-attention model + matched X_nmf + nmf_H once
+    per test. Saves per-test boilerplate for the 8+ aggregate tests
+    below."""
+    from sparse_nmf import SparseNMF_Autoencoder
+
+    n, m = small_sparse.shape
+    nmf_comp = 4
+    model = SparseNMF_Autoencoder(
+        n_samples=n,
+        n_features=m,
+        nmf_components=nmf_comp,
+        latent_dim=2,
+        hidden_dims=(8,),
+        use_feature_attention=True,
+        device=device,
+        random_state=0,
+    )
+    rng = np.random.RandomState(0)
+    X_nmf = rng.rand(n, nmf_comp).astype(np.float32)
+    nmf_H = rng.rand(nmf_comp, m).astype(np.float32)
+    return model, X_nmf, nmf_H, n, nmf_comp, m
+
+
+def test_aggregate_returns_two_dataframes(attention_setup):
+    """Default call returns (gene_df, nmf_df) DataFrames with the
+    documented columns. This is the primary API contract."""
+    from sparse_nmf import extract_and_aggregate_attention
+
+    model, X_nmf, nmf_H, n, k, m = attention_setup
+    gene_df, nmf_df = extract_and_aggregate_attention(
+        model, X_nmf, nmf_H, batch_size=64, verbose=False
+    )
+    expected = {
+        "feature_index",
+        "mean_attention",
+        "min_attention",
+        "max_attention",
+        "n_samples_nonzero",
+        "pct_samples_nonzero",
+    }
+    assert expected <= set(gene_df.columns), (
+        f"missing in gene_df: {expected - set(gene_df.columns)}"
+    )
+    assert expected <= set(nmf_df.columns), (
+        f"missing in nmf_df: {expected - set(nmf_df.columns)}"
+    )
+    # One row per feature.
+    assert len(gene_df) == m
+    assert len(nmf_df) == k
+
+
+def test_aggregate_with_feature_names(attention_setup):
+    """When ``gene_feature_names`` is provided, the gene DataFrame
+    has a ``feature_name`` column populated with those names."""
+    from sparse_nmf import extract_and_aggregate_attention
+
+    model, X_nmf, nmf_H, _, k, m = attention_setup
+    gene_names = [f"gene_{i:04d}" for i in range(m)]
+    nmf_names = [f"nmf_{i}" for i in range(k)]
+    gene_df, nmf_df = extract_and_aggregate_attention(
+        model,
+        X_nmf,
+        nmf_H,
+        batch_size=64,
+        verbose=False,
+        gene_feature_names=gene_names,
+        nmf_feature_names=nmf_names,
+    )
+    assert "feature_name" in gene_df.columns
+    assert "feature_name" in nmf_df.columns
+    assert set(gene_df["feature_name"]) == set(gene_names)
+    assert set(nmf_df["feature_name"]) == set(nmf_names)
+
+
+def test_aggregate_with_sample_names_records_max_attention_sample(attention_setup):
+    """``sample_names`` enables the ``max_attention_sample`` column —
+    each gene/factor gets the name of the sample that maximized
+    its attention. Verify both that the column is present and that
+    every entry is one of the supplied names."""
+    from sparse_nmf import extract_and_aggregate_attention
+
+    model, X_nmf, nmf_H, n, _, _ = attention_setup
+    sample_names = [f"sample_{i:04d}" for i in range(n)]
+    gene_df, nmf_df = extract_and_aggregate_attention(
+        model,
+        X_nmf,
+        nmf_H,
+        batch_size=64,
+        verbose=False,
+        sample_names=sample_names,
+    )
+    assert "max_attention_sample" in gene_df.columns
+    assert set(gene_df["max_attention_sample"]).issubset(set(sample_names))
+    assert "max_attention_sample" in nmf_df.columns
+    assert set(nmf_df["max_attention_sample"]).issubset(set(sample_names))
+
+
+def test_aggregate_returns_matrices_when_requested(attention_setup):
+    """``return_attention_matrices=True`` returns the pre-aggregated
+    attention matrices in addition to the DataFrames. Shape
+    contract: (n_samples, n_genes) and (n_samples, n_components)."""
+    from sparse_nmf import extract_and_aggregate_attention
+
+    model, X_nmf, nmf_H, n, k, m = attention_setup
+    out = extract_and_aggregate_attention(
+        model,
+        X_nmf,
+        nmf_H,
+        batch_size=64,
+        verbose=False,
+        return_attention_matrices=True,
+    )
+    assert len(out) == 4, f"expected 4-tuple, got {len(out)}"
+    gene_df, nmf_df, gene_attn, nmf_attn = out
+    assert gene_attn.shape == (n, m)
+    assert nmf_attn.shape == (n, k)
+    assert np.isfinite(gene_attn).all()
+    assert np.isfinite(nmf_attn).all()
+
+
+def test_aggregate_save_dir_writes_parquets(attention_setup, tmp_path):
+    """``save_dir`` should write both DataFrames as parquet files
+    with deterministic filenames so a follow-up load can find them."""
+    from sparse_nmf import extract_and_aggregate_attention
+
+    model, X_nmf, nmf_H, *_ = attention_setup
+    extract_and_aggregate_attention(
+        model,
+        X_nmf,
+        nmf_H,
+        batch_size=64,
+        verbose=False,
+        save_dir=str(tmp_path),
+    )
+    expected_files = {
+        "gene_attention_aggregated.parquet",
+        "nmf_attention_aggregated.parquet",
+    }
+    actual = {p.name for p in tmp_path.iterdir()}
+    assert expected_files <= actual, f"missing: {expected_files - actual}"
+
+
+def test_aggregate_save_dir_loads_existing_when_not_forced(attention_setup, tmp_path):
+    """When parquets already exist and ``force=False`` (default), the
+    function loads + returns them instead of recomputing. Verify by
+    pre-seeding the dir with a write call, then re-calling and
+    confirming the second result equals the first.
+
+    (Note: the docstring says it should *raise* in this case, but
+    the implementation actually short-circuits to load — see
+    ``_core.py`` ~line 2697 ``if not force and gene_file.exists()``.
+    Locking in actual behavior, not docstring intent.)"""
+    from sparse_nmf import extract_and_aggregate_attention
+
+    model, X_nmf, nmf_H, *_ = attention_setup
+    gene_a, nmf_a = extract_and_aggregate_attention(
+        model, X_nmf, nmf_H, batch_size=64, verbose=False, save_dir=str(tmp_path)
+    )
+    # Second call (without force) — loads from disk, must match.
+    gene_b, nmf_b = extract_and_aggregate_attention(
+        model, X_nmf, nmf_H, batch_size=64, verbose=False, save_dir=str(tmp_path)
+    )
+    np.testing.assert_array_equal(
+        gene_a["mean_attention"].to_numpy(), gene_b["mean_attention"].to_numpy()
+    )
+    np.testing.assert_array_equal(
+        nmf_a["mean_attention"].to_numpy(), nmf_b["mean_attention"].to_numpy()
+    )
+
+
+def test_aggregate_save_dir_force_recomputes(attention_setup, tmp_path):
+    """``force=True`` recomputes even when parquets exist. The on-disk
+    files should be overwritten — no exception."""
+    from sparse_nmf import extract_and_aggregate_attention
+
+    model, X_nmf, nmf_H, *_ = attention_setup
+    extract_and_aggregate_attention(
+        model, X_nmf, nmf_H, batch_size=64, verbose=False, save_dir=str(tmp_path)
+    )
+    # Second call with force — must succeed without error.
+    extract_and_aggregate_attention(
+        model,
+        X_nmf,
+        nmf_H,
+        batch_size=64,
+        verbose=False,
+        save_dir=str(tmp_path),
+        force=True,
+    )
+
+
+def test_aggregate_normalize_false_preserves_raw_attention(attention_setup):
+    """``normalize=False`` should skip the per-sample normalization
+    step in trace_attention_to_genes (mean attention values can
+    therefore exceed 1)."""
+    from sparse_nmf import extract_and_aggregate_attention
+
+    model, X_nmf, nmf_H, *_ = attention_setup
+    gene_df_raw, _ = extract_and_aggregate_attention(
+        model, X_nmf, nmf_H, batch_size=64, verbose=False, normalize=False,
+    )
+    gene_df_norm, _ = extract_and_aggregate_attention(
+        model, X_nmf, nmf_H, batch_size=64, verbose=False, normalize=True,
+    )
+    # Raw should differ from normalized — otherwise the flag is a
+    # silent no-op.
+    assert not np.allclose(
+        gene_df_raw["mean_attention"], gene_df_norm["mean_attention"], atol=1e-4
+    )
+
+
+def test_aggregate_custom_nonzero_threshold(attention_setup):
+    """``nonzero_threshold`` controls what counts as "active"
+    attention for n_samples_nonzero. A high threshold should produce
+    smaller counts than a low threshold."""
+    from sparse_nmf import extract_and_aggregate_attention
+
+    model, X_nmf, nmf_H, *_ = attention_setup
+    high_thresh, _ = extract_and_aggregate_attention(
+        model, X_nmf, nmf_H, batch_size=64, verbose=False,
+        nonzero_threshold=0.99,
+    )
+    low_thresh, _ = extract_and_aggregate_attention(
+        model, X_nmf, nmf_H, batch_size=64, verbose=False,
+        nonzero_threshold=0.0,
+    )
+    # Counts under the high threshold should be ≤ counts under low
+    # threshold (strictly less for at least one feature unless every
+    # value happens to be > 0.99 — extremely unlikely).
+    assert (
+        high_thresh["n_samples_nonzero"].sum()
+        <= low_thresh["n_samples_nonzero"].sum()
+    )
+
+
+# ── extra compute_attention_correlation paths ───────────────────────
+
+
+def test_correlation_obs_mask_can_be_dropped_when_X_already_subset():
+    """When obs_mask is None, the function uses X as-is. Combined
+    with the dense path (X is already an ndarray) hits a different
+    branch than the sparse-mask combination."""
+    rng = np.random.RandomState(7)
+    X = rng.rand(15, 4)
+    A = rng.rand(15, 4)
+    df = compute_attention_correlation(
+        A, X, obs_mask=None, stratify_by_unique_values=False, verbose=False
+    )
+    assert len(df) > 0
+    # No exception is the success criterion.
+
+
+def test_correlation_verbose_path_runs(capsys):
+    """``verbose=True`` exercises the print-summary branch. We don't
+    assert specific output — just that the path completes."""
+    rng = np.random.RandomState(8)
+    X = rng.rand(12, 5)
+    A = rng.rand(12, 5)
+    compute_attention_correlation(
+        A, X, stratify_by_unique_values=False, verbose=True
+    )
+    captured = capsys.readouterr()
+    # Some output expected — even just a header.
+    assert len(captured.out) > 0
+
+
+def test_aggregate_with_metadata_extracts_names(attention_setup):
+    """``metadata`` dict (anndata-like) should auto-derive
+    gene_feature_names from ``metadata['var'].index`` and
+    sample_names from ``metadata['obs']`` when those are not
+    explicitly provided. Covers lines 2674-2695."""
+    import pandas as pd
+
+    from sparse_nmf import extract_and_aggregate_attention
+
+    model, X_nmf, nmf_H, n, k, m = attention_setup
+    metadata = {
+        "var": pd.DataFrame(index=[f"gene_{i}" for i in range(m)]),
+        "obs": pd.DataFrame(
+            {"obs_id": [f"obs_{i}" for i in range(n)]},
+            index=[f"row_{i}" for i in range(n)],
+        ),
+    }
+    gene_df, _ = extract_and_aggregate_attention(
+        model, X_nmf, nmf_H, batch_size=64, verbose=False, metadata=metadata
+    )
+    assert "feature_name" in gene_df.columns
+    # All gene names should come from metadata['var'].index (the
+    # function may reorder rows by aggregate metrics, so don't
+    # assume position 0 is gene_0).
+    actual_names = set(gene_df["feature_name"])
+    expected_names = {f"gene_{i}" for i in range(m)}
+    assert actual_names == expected_names
+
+
+def test_aggregate_verbose_runs(attention_setup, capsys):
+    """``verbose=True`` exercises a long chain of progress prints
+    in the aggregate function — covers lines 2742-2747 and various
+    print branches deeper in the body."""
+    from sparse_nmf import extract_and_aggregate_attention
+
+    model, X_nmf, nmf_H, *_ = attention_setup
+    extract_and_aggregate_attention(
+        model, X_nmf, nmf_H, batch_size=64, verbose=True
+    )
+    captured = capsys.readouterr()
+    # Some verbose output expected — at least the "Extracting"
+    # header.
+    assert "Extracting" in captured.out or "Processing" in captured.out
+
+
+def test_aggregate_save_dir_reload_with_matrices(attention_setup, tmp_path):
+    """When save_dir contains both parquets AND .npy matrix files,
+    reload should return all four (DataFrames + matrices). Covers
+    the matrix-reload branch at lines 2719-2727."""
+    from sparse_nmf import extract_and_aggregate_attention
+
+    model, X_nmf, nmf_H, n, k, m = attention_setup
+    # First call writes parquets and matrices.
+    out1 = extract_and_aggregate_attention(
+        model,
+        X_nmf,
+        nmf_H,
+        batch_size=64,
+        verbose=False,
+        save_dir=str(tmp_path),
+        return_attention_matrices=True,
+    )
+    # Manually save the matrices alongside the parquets — the
+    # function returns them but doesn't save them by default in
+    # this path. Save them so the reload-with-matrices branch has
+    # something to load.
+    np.save(tmp_path / "gene_attention_matrix.npy", out1[2])
+    np.save(tmp_path / "nmf_attention_matrix.npy", out1[3])
+    # Second call — should load all four.
+    out2 = extract_and_aggregate_attention(
+        model,
+        X_nmf,
+        nmf_H,
+        batch_size=64,
+        verbose=False,
+        save_dir=str(tmp_path),
+        return_attention_matrices=True,
+    )
+    assert len(out2) == 4
+    np.testing.assert_array_equal(out1[2], out2[2])  # gene matrix
+    np.testing.assert_array_equal(out1[3], out2[3])  # nmf matrix
+
+
+def test_correlation_strata_with_only_continuous_data():
+    """When all rows have many unique values, only the
+    ``4+_unique`` stratum should be populated — the 2/3-unique
+    rows should be absent or have zero rows."""
+    rng = np.random.RandomState(9)
+    n, m = 25, 8
+    # Each row has all-unique values → 4+_unique stratum
+    X = np.tile(np.arange(m, dtype=np.float32), (n, 1))
+    for i in range(n):
+        X[i] = rng.permutation(X[i]) + rng.rand() * 0.001  # fully unique each row
+    A = X.copy()
+    df = compute_attention_correlation(A, X, stratify_by_unique_values=True, verbose=False)
+    strata = df["stratum"].unique()
+    assert "4+_unique" in strata

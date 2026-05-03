@@ -369,18 +369,70 @@ def test_train_sparse_nmf_force_retrains(small_sparse, tmp_path, device):
     assert not np.allclose(W1, W2)
 
 
-@pytest.mark.skip(
-    reason=(
-        "Upstream _core.py imports AoU.utils.l2_normalize when "
-        "normalize_inputs/normalize_outputs are True (lines ~2094, "
-        "2178). Standalone sparseNMF doesn't ship that module — fix "
-        "tracked at https://github.com/bschilder/sparseNMF/issues "
-        "(needs an in-package l2_normalize shim or upstream patch)."
+# ── verbose paths + edge-case inputs ────────────────────────────────
+
+
+def test_verbose_path_runs_and_prints(small_sparse, device, capsys):
+    """``verbose=True`` triggers a chunk of conditional prints during
+    init, fit, and convergence. Exercises lines 472-492 in
+    ``_core.py`` plus the per-iteration progress printing."""
+    nmf = SparseNMF(
+        n_components=4, max_iter=5, device=device, verbose=True, random_state=0
     )
-)
-def test_train_sparse_nmf_normalize_outputs_changes_magnitudes(small_sparse, device):
+    nmf.fit_transform(small_sparse)
+    captured = capsys.readouterr()
+    # Multiple verbose prints expected — at minimum the device + shape
+    # banner.
+    assert "Sparse NMF on" in captured.out
+    assert "Components:" in captured.out
+
+
+def test_verbose_with_r2_weight_runs(small_sparse, device, capsys):
+    """``r2_weight > 0`` + ``verbose=True`` exercises a different
+    print branch — gradient-descent banner + R²-specific messages
+    (lines 478-492)."""
+    nmf = SparseNMF(
+        n_components=4,
+        max_iter=5,
+        device=device,
+        verbose=True,
+        random_state=0,
+        mse_weight=0.5,
+        r2_weight=0.5,
+        learning_rate=0.05,
+    )
+    nmf.fit_transform(small_sparse)
+    captured = capsys.readouterr()
+    assert "gradient-based" in captured.out.lower() or "R²" in captured.out
+
+
+def test_negative_input_is_taken_absolute(small_sparse, device, capsys):
+    """NMF is non-negative by definition — when input contains
+    negatives, the wrapper takes ``abs()`` (with a warning when
+    verbose). Verifies fit_transform completes and a warning is
+    printed."""
+    from scipy.sparse import csr_matrix
+
+    X_dense = small_sparse.toarray()
+    X_dense[0, 0] = -1.0  # inject a negative
+    X_neg = csr_matrix(X_dense)
+    nmf = SparseNMF(
+        n_components=4, max_iter=5, device=device, verbose=True, random_state=0
+    )
+    W = nmf.fit_transform(X_neg)
+    captured = capsys.readouterr()
+    assert "negative" in captured.out.lower()
+    assert np.isfinite(W).all()
+
+
+def test_train_sparse_nmf_normalize_outputs_yields_unit_rows(small_sparse, device):
     """``normalize_outputs=True`` L2-normalizes each row of W to unit
-    length. Verify the rows really do come out unit-norm."""
+    length via the package's AoU.utils.l2_normalize shim (registered
+    in sparse_nmf/__init__.py since the verbatim-vendored _core.py
+    imports it from a namespace that doesn't exist standalone).
+
+    Non-zero rows should have L2 norm ≈ 1.0; zero rows pass through
+    unchanged (the shim guards div-by-zero)."""
     from sparse_nmf import train_sparse_nmf
 
     W, _ = train_sparse_nmf(
@@ -395,3 +447,228 @@ def test_train_sparse_nmf_normalize_outputs_changes_magnitudes(small_sparse, dev
     norms = np.linalg.norm(W, axis=1)
     nonzero = norms > 1e-6
     np.testing.assert_allclose(norms[nonzero], 1.0, atol=1e-4)
+
+
+def test_train_sparse_nmf_normalize_inputs_runs(small_sparse, device):
+    """``normalize_inputs=True`` L2-normalizes each row of X before
+    training (uses sklearn.preprocessing.normalize). Different
+    factorization should result vs no-normalize, since the input
+    distribution changes."""
+    from sparse_nmf import train_sparse_nmf
+
+    args = dict(
+        n_components=4,
+        max_iter=10,
+        device=device,
+        verbose=False,
+        random_state=0,
+    )
+    W_norm, _ = train_sparse_nmf(small_sparse, normalize_inputs=True, **args)
+    W_raw, _ = train_sparse_nmf(small_sparse, normalize_inputs=False, **args)
+    # Different W matrices — normalize_inputs is not a silent no-op.
+    assert not np.allclose(W_norm, W_raw, atol=1e-3)
+    assert np.isfinite(W_norm).all()
+
+
+def test_l2_normalize_shim_handles_zero_rows():
+    """Direct exercise of the AoU shim: zero-norm rows must be
+    returned unchanged (otherwise downstream code divides by zero
+    when caller forgot to filter)."""
+    from sparse_nmf import _l2_normalize
+
+    X = np.array([[0.0, 0.0, 0.0], [3.0, 4.0, 0.0]], dtype=np.float32)
+    out = _l2_normalize(X)
+    # Zero row: unchanged.
+    np.testing.assert_array_equal(out[0], X[0])
+    # Non-zero row: unit norm.
+    np.testing.assert_allclose(np.linalg.norm(out[1]), 1.0, atol=1e-6)
+
+
+# ── transform() out-of-sample method ────────────────────────────────
+
+
+def test_transform_returns_correct_shape(small_sparse, device):
+    """``transform()`` is the out-of-sample inference method:
+    fit_transform on training data, then transform on new data
+    produces a (n_new, n_components) embedding using the frozen H."""
+    nmf = SparseNMF(
+        n_components=4, max_iter=10, device=device, verbose=False, random_state=0
+    )
+    nmf.fit_transform(small_sparse)
+
+    # New data with the same number of features.
+    from sparse_nmf.data import generate_synthetic_sparse
+
+    X_new = generate_synthetic_sparse(
+        n_samples=50,
+        n_features=small_sparse.shape[1],
+        n_components=4,
+        density=0.05,
+        seed=99,
+    )
+    W_new = nmf.transform(X_new)
+    assert W_new.shape == (50, 4)
+    assert (W_new >= -1e-6).all()
+    assert np.isfinite(W_new).all()
+
+
+def test_transform_before_fit_raises(device):
+    """Calling ``transform()`` on an unfitted model must raise — we
+    don't want silent garbage results."""
+    from sparse_nmf.data import generate_synthetic_sparse
+
+    nmf = SparseNMF(
+        n_components=4, max_iter=10, device=device, verbose=False
+    )
+    X = generate_synthetic_sparse(n_samples=20, n_features=30, n_components=4, seed=0)
+    with pytest.raises(ValueError, match="fitted"):
+        nmf.transform(X)
+
+
+def test_transform_feature_mismatch_raises(small_sparse, device):
+    """``transform()`` must reject inputs with a different feature
+    count than what the model was fitted on (otherwise the W @ H
+    matmul would silently produce nonsense)."""
+    from sparse_nmf.data import generate_synthetic_sparse
+
+    nmf = SparseNMF(
+        n_components=4, max_iter=10, device=device, verbose=False, random_state=0
+    )
+    nmf.fit_transform(small_sparse)
+    # Wrong number of features — H is (k, n_features_orig).
+    X_wrong = generate_synthetic_sparse(
+        n_samples=10,
+        n_features=small_sparse.shape[1] + 1,
+        n_components=4,
+        seed=0,
+    )
+    with pytest.raises(ValueError, match="features"):
+        nmf.transform(X_wrong)
+
+
+# ── More gradient-descent path coverage ─────────────────────────────
+
+
+def test_gradient_descent_with_nonzero_r2_weight(small_sparse, device):
+    """``r2_weight > 0`` AND ``nonzero_r2_weight > 0`` together — both
+    flags route through gradient descent, but the nonzero R² branch
+    skips zero positions in the loss. Hits the
+    ``r2_weight + nonzero_r2_weight`` combined branch."""
+    nmf = SparseNMF(
+        n_components=4,
+        max_iter=8,
+        device=device,
+        verbose=False,
+        random_state=0,
+        r2_weight=0.3,
+        nonzero_r2_weight=0.7,
+        learning_rate=0.05,
+    )
+    W = nmf.fit_transform(small_sparse)
+    assert np.isfinite(W).all()
+    assert (W >= -1e-5).all()
+
+
+def test_gradient_descent_verbose_and_patience(small_sparse, device, capsys):
+    """Verbose r2_weight path with patience exercises the patience
+    counter inside gradient descent (lines 815-828)."""
+    nmf = SparseNMF(
+        n_components=4,
+        max_iter=200,
+        device=device,
+        verbose=True,
+        random_state=0,
+        r2_weight=0.5,
+        learning_rate=0.05,
+        patience=2,
+        tol=1e-1,  # loose tol → plateau triggers fast
+    )
+    nmf.fit_transform(small_sparse)
+    capsys.readouterr()  # silence verbose output
+    # Patience may or may not trigger depending on convergence —
+    # either way, the verbose+patience code path runs.
+    assert nmf.n_iter_ <= 200
+
+
+# ── Autoencoder _sparse_to_torch coverage ───────────────────────────
+
+
+def test_autoencoder_sparse_to_torch_converts_scipy(small_sparse, device):
+    """SparseNMF_Autoencoder has its own ``_sparse_to_torch`` (a
+    copy of the SparseNMF helper). It's not called from forward
+    (which expects a torch.sparse tensor already), but it's part
+    of the public-ish surface — direct test exercises lines
+    1198-1210."""
+    from sparse_nmf import SparseNMF_Autoencoder
+
+    n, m = small_sparse.shape
+    model = SparseNMF_Autoencoder(
+        n_samples=n,
+        n_features=m,
+        nmf_components=4,
+        latent_dim=2,
+        hidden_dims=(8,),
+        device=device,
+        random_state=0,
+    )
+    out = model._sparse_to_torch(small_sparse)
+    assert out.is_sparse
+    assert tuple(out.shape) == small_sparse.shape
+
+
+# ── _compute_recon_values_chunked direct coverage ───────────────────
+
+
+def test_compute_recon_values_chunked_path_with_small_chunk(device):
+    """The chunked branch (lines 130-168) only fires when
+    ``nnz > chunk_size``. Default chunk_size=50_000 and our
+    fixtures have nnz~4k, so the chunk path stays unreached unless
+    we call it directly with a small chunk_size."""
+    import torch
+
+    from sparse_nmf._core import _compute_recon_values_chunked
+
+    nnz = 200
+    n_components = 4
+    n_features = 30
+    rng = torch.Generator().manual_seed(0)
+    W_rows = torch.rand(nnz, n_components, generator=rng)
+    H = torch.rand(n_components, n_features, generator=rng)
+    col_idx = torch.randint(0, n_features, (nnz,), generator=rng)
+    # chunk_size=50 → forces multiple chunks (200/50 = 4 chunks).
+    out = _compute_recon_values_chunked(
+        W_rows, H, col_idx, chunk_size=50, device=torch.device("cpu")
+    )
+    assert out.shape == (nnz,)
+    # Verify against the unchunked (single-pass) reference.
+    ref = _compute_recon_values_chunked(
+        W_rows, H, col_idx, chunk_size=10_000, device=torch.device("cpu")
+    )
+    torch.testing.assert_close(out, ref, atol=1e-5, rtol=1e-5)
+
+
+def test_compute_recon_values_chunked_handles_large_n_components(device):
+    """For ``n_components > 512`` the helper does an additional
+    sub-chunking over the components dimension (lines 113-121).
+    Small-nnz path with a big component count exercises this."""
+    import torch
+
+    from sparse_nmf._core import _compute_recon_values_chunked
+
+    nnz = 50
+    n_components = 600  # > 512 → sub-chunking branch
+    n_features = 20
+    rng = torch.Generator().manual_seed(1)
+    W_rows = torch.rand(nnz, n_components, generator=rng)
+    H = torch.rand(n_components, n_features, generator=rng)
+    col_idx = torch.randint(0, n_features, (nnz,), generator=rng)
+    out = _compute_recon_values_chunked(
+        W_rows, H, col_idx, device=torch.device("cpu")
+    )
+    assert out.shape == (nnz,)
+    # Validate against a hand-rolled reference: row-wise dot product
+    # against H[:, col_idx[i]].
+    expected = torch.stack(
+        [W_rows[i] @ H[:, col_idx[i]] for i in range(nnz)]
+    )
+    torch.testing.assert_close(out, expected, atol=1e-4, rtol=1e-4)
