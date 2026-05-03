@@ -24,7 +24,6 @@ from sparse_nmf import (
     trace_attention_to_genes,
 )
 
-
 # ── trace_attention_to_genes ────────────────────────────────────────
 
 
@@ -98,9 +97,7 @@ def test_correlation_perfect_match_yields_correlation_one():
     rng = np.random.RandomState(1)
     X = rng.rand(40, 6)
     A = X.copy()
-    df = compute_attention_correlation(
-        A, X, stratify_by_unique_values=False, verbose=False
-    )
+    df = compute_attention_correlation(A, X, stratify_by_unique_values=False, verbose=False)
     # 'all' subset row — perfect correlation
     all_row = df[df["subset"] == "all"].iloc[0]
     assert all_row["pearson"] > 0.99
@@ -143,9 +140,7 @@ def test_correlation_with_sparse_input_works():
     X_dense = rng.rand(20, 4)
     A = X_dense.copy()
     X_sparse = csr_matrix(X_dense)
-    df = compute_attention_correlation(
-        A, X_sparse, stratify_by_unique_values=False, verbose=False
-    )
+    df = compute_attention_correlation(A, X_sparse, stratify_by_unique_values=False, verbose=False)
     all_row = df[df["subset"] == "all"].iloc[0]
     assert all_row["pearson"] > 0.99
 
@@ -296,9 +291,7 @@ def test_aggregate_returns_two_dataframes(attention_setup):
     assert expected <= set(gene_df.columns), (
         f"missing in gene_df: {expected - set(gene_df.columns)}"
     )
-    assert expected <= set(nmf_df.columns), (
-        f"missing in nmf_df: {expected - set(nmf_df.columns)}"
-    )
+    assert expected <= set(nmf_df.columns), f"missing in nmf_df: {expected - set(nmf_df.columns)}"
     # One row per feature.
     assert len(gene_df) == m
     assert len(nmf_df) == k
@@ -452,16 +445,24 @@ def test_aggregate_normalize_false_preserves_raw_attention(attention_setup):
 
     model, X_nmf, nmf_H, *_ = attention_setup
     gene_df_raw, _ = extract_and_aggregate_attention(
-        model, X_nmf, nmf_H, batch_size=64, verbose=False, normalize=False,
+        model,
+        X_nmf,
+        nmf_H,
+        batch_size=64,
+        verbose=False,
+        normalize=False,
     )
     gene_df_norm, _ = extract_and_aggregate_attention(
-        model, X_nmf, nmf_H, batch_size=64, verbose=False, normalize=True,
+        model,
+        X_nmf,
+        nmf_H,
+        batch_size=64,
+        verbose=False,
+        normalize=True,
     )
     # Raw should differ from normalized — otherwise the flag is a
     # silent no-op.
-    assert not np.allclose(
-        gene_df_raw["mean_attention"], gene_df_norm["mean_attention"], atol=1e-4
-    )
+    assert not np.allclose(gene_df_raw["mean_attention"], gene_df_norm["mean_attention"], atol=1e-4)
 
 
 def test_aggregate_custom_nonzero_threshold(attention_setup):
@@ -472,20 +473,25 @@ def test_aggregate_custom_nonzero_threshold(attention_setup):
 
     model, X_nmf, nmf_H, *_ = attention_setup
     high_thresh, _ = extract_and_aggregate_attention(
-        model, X_nmf, nmf_H, batch_size=64, verbose=False,
+        model,
+        X_nmf,
+        nmf_H,
+        batch_size=64,
+        verbose=False,
         nonzero_threshold=0.99,
     )
     low_thresh, _ = extract_and_aggregate_attention(
-        model, X_nmf, nmf_H, batch_size=64, verbose=False,
+        model,
+        X_nmf,
+        nmf_H,
+        batch_size=64,
+        verbose=False,
         nonzero_threshold=0.0,
     )
     # Counts under the high threshold should be ≤ counts under low
     # threshold (strictly less for at least one feature unless every
     # value happens to be > 0.99 — extremely unlikely).
-    assert (
-        high_thresh["n_samples_nonzero"].sum()
-        <= low_thresh["n_samples_nonzero"].sum()
-    )
+    assert high_thresh["n_samples_nonzero"].sum() <= low_thresh["n_samples_nonzero"].sum()
 
 
 # ── extra compute_attention_correlation paths ───────────────────────
@@ -516,9 +522,7 @@ def test_correlation_verbose_stratification_prints_summary(capsys):
     X[10:20] = np.tile([0, 1, 2], 2).astype(np.float32)  # 3-unique
     X[20:] = rng.rand(10, m)  # 4+_unique
     A = X.copy()
-    compute_attention_correlation(
-        A, X, stratify_by_unique_values=True, verbose=True
-    )
+    compute_attention_correlation(A, X, stratify_by_unique_values=True, verbose=True)
     captured = capsys.readouterr()
     assert "Stratifying" in captured.out
 
@@ -529,9 +533,7 @@ def test_correlation_verbose_path_runs(capsys):
     rng = np.random.RandomState(8)
     X = rng.rand(12, 5)
     A = rng.rand(12, 5)
-    compute_attention_correlation(
-        A, X, stratify_by_unique_values=False, verbose=True
-    )
+    compute_attention_correlation(A, X, stratify_by_unique_values=False, verbose=True)
     captured = capsys.readouterr()
     # Some output expected — even just a header.
     assert len(captured.out) > 0
@@ -826,9 +828,7 @@ def test_aggregate_verbose_runs(attention_setup, capsys):
     from sparse_nmf import extract_and_aggregate_attention
 
     model, X_nmf, nmf_H, *_ = attention_setup
-    extract_and_aggregate_attention(
-        model, X_nmf, nmf_H, batch_size=64, verbose=True
-    )
+    extract_and_aggregate_attention(model, X_nmf, nmf_H, batch_size=64, verbose=True)
     captured = capsys.readouterr()
     # Some verbose output expected — at least the "Extracting"
     # header.

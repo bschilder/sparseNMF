@@ -325,13 +325,27 @@ def test_compute_joint_loss_mse_ae_path(small_sparse, device):
 
     model, X_torch, (z, W_recon, _, W, H) = _prep_joint_loss_inputs(small_sparse, device)
     _, parts_cos = compute_joint_loss(
-        model=model, X_sparse_torch=X_torch, z=z, W_recon=W_recon,
-        X_recon=None, W=W, H=H, use_cosine_loss=True, use_contrastive=False,
+        model=model,
+        X_sparse_torch=X_torch,
+        z=z,
+        W_recon=W_recon,
+        X_recon=None,
+        W=W,
+        H=H,
+        use_cosine_loss=True,
+        use_contrastive=False,
         dimension_reg_weight=0.0,
     )
     _, parts_mse = compute_joint_loss(
-        model=model, X_sparse_torch=X_torch, z=z, W_recon=W_recon,
-        X_recon=None, W=W, H=H, use_cosine_loss=False, use_contrastive=False,
+        model=model,
+        X_sparse_torch=X_torch,
+        z=z,
+        W_recon=W_recon,
+        X_recon=None,
+        W=W,
+        H=H,
+        use_cosine_loss=False,
+        use_contrastive=False,
         dimension_reg_weight=0.0,
     )
     # Cosine in [0,2], MSE on tiny tensors typically << 1 — they should
@@ -347,8 +361,14 @@ def test_compute_joint_loss_dim_reg_zero_weight_skips_term(small_sparse, device)
 
     model, X_torch, (z, W_recon, _, W, H) = _prep_joint_loss_inputs(small_sparse, device)
     _, parts = compute_joint_loss(
-        model=model, X_sparse_torch=X_torch, z=z, W_recon=W_recon,
-        X_recon=None, W=W, H=H, dimension_reg_weight=0.0,
+        model=model,
+        X_sparse_torch=X_torch,
+        z=z,
+        W_recon=W_recon,
+        X_recon=None,
+        W=W,
+        H=H,
+        dimension_reg_weight=0.0,
         use_contrastive=False,
     )
     assert "dim_reg" not in parts

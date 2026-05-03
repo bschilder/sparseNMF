@@ -78,7 +78,13 @@ _sys.modules.setdefault("AoU.utils", _aou_utils)
 # closed over by ``_l2_normalize`` at call time. Pre-leading-
 # underscore makes them implicitly private to the package.
 
-from sparse_nmf._core import (
+# E402 (module-level import not at top of file) is intentional here:
+# the AoU shim above MUST register ``AoU.utils`` in sys.modules
+# BEFORE we trigger the import of ``_core`` (which imports
+# ``AoU.utils.l2_normalize`` at module level inside its
+# ``train_sparse_nmf``). Reordering would re-introduce the
+# ModuleNotFoundError this file was added to fix.
+from sparse_nmf._core import (  # noqa: E402
     SparseNMF,
     SparseNMF_Autoencoder,
     compute_attention_correlation,

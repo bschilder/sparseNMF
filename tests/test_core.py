@@ -155,13 +155,9 @@ def test_more_iterations_lowers_reconstruction_error(small_sparse, device):
     """Multiplicative-update NMF guarantees the Frobenius reconstruction
     error is non-increasing across iterations. With matched seeds, a
     longer run must end at least as good as a shorter run."""
-    short = SparseNMF(
-        n_components=4, max_iter=2, device=device, verbose=False, random_state=0
-    )
+    short = SparseNMF(n_components=4, max_iter=2, device=device, verbose=False, random_state=0)
     short.fit_transform(small_sparse)
-    long_ = SparseNMF(
-        n_components=4, max_iter=30, device=device, verbose=False, random_state=0
-    )
+    long_ = SparseNMF(n_components=4, max_iter=30, device=device, verbose=False, random_state=0)
     long_.fit_transform(small_sparse)
     # Allow a hair of float slack — these are rerun-from-scratch fits,
     # not a continuation of the same run.
@@ -389,9 +385,7 @@ def test_verbose_path_runs_and_prints(small_sparse, device, capsys):
     """``verbose=True`` triggers a chunk of conditional prints during
     init, fit, and convergence. Exercises lines 472-492 in
     ``_core.py`` plus the per-iteration progress printing."""
-    nmf = SparseNMF(
-        n_components=4, max_iter=5, device=device, verbose=True, random_state=0
-    )
+    nmf = SparseNMF(n_components=4, max_iter=5, device=device, verbose=True, random_state=0)
     nmf.fit_transform(small_sparse)
     captured = capsys.readouterr()
     # Multiple verbose prints expected — at minimum the device + shape
@@ -425,11 +419,8 @@ def test_compute_final_metrics_handles_empty_sample(small_sparse, device):
     nnz — sets all metrics to 0 instead of dividing by zero. Test
     by calling the helper directly with an all-zero sparse sample."""
     from scipy.sparse import csr_matrix
-    import torch
 
-    nmf = SparseNMF(
-        n_components=4, max_iter=5, device=device, verbose=False, random_state=0
-    )
+    nmf = SparseNMF(n_components=4, max_iter=5, device=device, verbose=False, random_state=0)
     # Run a normal fit so internal state is initialized.
     nmf.fit_transform(small_sparse)
 
@@ -453,9 +444,7 @@ def test_negative_input_is_taken_absolute(small_sparse, device, capsys):
     X_dense = small_sparse.toarray()
     X_dense[0, 0] = -1.0  # inject a negative
     X_neg = csr_matrix(X_dense)
-    nmf = SparseNMF(
-        n_components=4, max_iter=5, device=device, verbose=True, random_state=0
-    )
+    nmf = SparseNMF(n_components=4, max_iter=5, device=device, verbose=True, random_state=0)
     W = nmf.fit_transform(X_neg)
     captured = capsys.readouterr()
     assert "negative" in captured.out.lower()
@@ -620,9 +609,7 @@ def test_transform_returns_correct_shape(small_sparse, device):
     """``transform()`` is the out-of-sample inference method:
     fit_transform on training data, then transform on new data
     produces a (n_new, n_components) embedding using the frozen H."""
-    nmf = SparseNMF(
-        n_components=4, max_iter=10, device=device, verbose=False, random_state=0
-    )
+    nmf = SparseNMF(n_components=4, max_iter=10, device=device, verbose=False, random_state=0)
     nmf.fit_transform(small_sparse)
 
     # New data with the same number of features.
@@ -646,9 +633,7 @@ def test_transform_before_fit_raises(device):
     don't want silent garbage results."""
     from sparse_nmf.data import generate_synthetic_sparse
 
-    nmf = SparseNMF(
-        n_components=4, max_iter=10, device=device, verbose=False
-    )
+    nmf = SparseNMF(n_components=4, max_iter=10, device=device, verbose=False)
     X = generate_synthetic_sparse(n_samples=20, n_features=30, n_components=4, seed=0)
     with pytest.raises(ValueError, match="fitted"):
         nmf.transform(X)
@@ -660,9 +645,7 @@ def test_transform_feature_mismatch_raises(small_sparse, device):
     matmul would silently produce nonsense)."""
     from sparse_nmf.data import generate_synthetic_sparse
 
-    nmf = SparseNMF(
-        n_components=4, max_iter=10, device=device, verbose=False, random_state=0
-    )
+    nmf = SparseNMF(n_components=4, max_iter=10, device=device, verbose=False, random_state=0)
     nmf.fit_transform(small_sparse)
     # Wrong number of features — H is (k, n_features_orig).
     X_wrong = generate_synthetic_sparse(
@@ -799,9 +782,7 @@ def test_compute_recon_values_chunked_with_large_nnz_and_components(device):
     assert out.shape == (nnz,)
     # Hand-rolled reference for spot-check on first 100 rows
     # (full check is too slow with 600 components).
-    expected_subset = torch.stack(
-        [W_rows[i] @ H[:, col_idx[i]] for i in range(100)]
-    )
+    expected_subset = torch.stack([W_rows[i] @ H[:, col_idx[i]] for i in range(100)])
     torch.testing.assert_close(out[:100], expected_subset, atol=1e-3, rtol=1e-3)
 
 
@@ -820,13 +801,9 @@ def test_compute_recon_values_chunked_handles_large_n_components(device):
     W_rows = torch.rand(nnz, n_components, generator=rng)
     H = torch.rand(n_components, n_features, generator=rng)
     col_idx = torch.randint(0, n_features, (nnz,), generator=rng)
-    out = _compute_recon_values_chunked(
-        W_rows, H, col_idx, device=torch.device("cpu")
-    )
+    out = _compute_recon_values_chunked(W_rows, H, col_idx, device=torch.device("cpu"))
     assert out.shape == (nnz,)
     # Validate against a hand-rolled reference: row-wise dot product
     # against H[:, col_idx[i]].
-    expected = torch.stack(
-        [W_rows[i] @ H[:, col_idx[i]] for i in range(nnz)]
-    )
+    expected = torch.stack([W_rows[i] @ H[:, col_idx[i]] for i in range(nnz)])
     torch.testing.assert_close(out, expected, atol=1e-4, rtol=1e-4)
