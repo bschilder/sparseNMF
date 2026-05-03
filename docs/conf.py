@@ -57,18 +57,38 @@ intersphinx_mapping = {
 }
 
 # ── HTML output ─────────────────────────────────────────────────────
+# The canonical RTD look — same theme readthedocs.io uses, same fonts
+# (Lato body, Roboto Slab headings, Inconsolata code), same sidebar
+# layout. See ``docs.yml`` for the GH Pages build pipeline.
 html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
 html_logo = "_static/logo.svg"
 html_favicon = "_static/logo.svg"
 html_title = f"{project} {release}"
 html_show_sourcelink = False
+# Canonical URL so search engines + the RTD theme's "edit on GitHub"
+# button know where the published site lives. Update if the deploy
+# target changes.
+html_baseurl = "https://bschilder.github.io/sparseNMF/"
 html_theme_options = {
     "logo_only": False,
     "navigation_depth": 4,
     "collapse_navigation": False,
     "sticky_navigation": True,
     "prev_next_buttons_location": "bottom",
+    # RTD theme's canonical accent — blue, same as the hosted RTD
+    # default. Override here to make explicit (the theme picks it
+    # up from CSS variables otherwise).
+    "style_nav_header_background": "#2980b9",
+}
+# Wire the "Edit on GitHub" button in the top-right of every page —
+# this is RTD's ``html_context`` dance.
+html_context = {
+    "display_github": True,
+    "github_user": "bschilder",
+    "github_repo": "sparseNMF",
+    "github_version": "main",
+    "conf_py_path": "/docs/",
 }
 
 # ── MyST (Markdown) ─────────────────────────────────────────────────

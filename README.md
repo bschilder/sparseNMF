@@ -12,7 +12,7 @@
   <a href="https://github.com/bschilder/sparseNMF/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/bschilder/sparseNMF/actions/workflows/ci.yml/badge.svg"/></a>
   <a href="https://github.com/bschilder/sparseNMF/actions/workflows/docker.yml"><img alt="Docker" src="https://github.com/bschilder/sparseNMF/actions/workflows/docker.yml/badge.svg"/></a>
   <a href="https://github.com/bschilder/sparseNMF/blob/main/coverage.svg"><img alt="Coverage" src="https://raw.githubusercontent.com/bschilder/sparseNMF/main/coverage.svg"/></a>
-  <a href="https://github.com/bschilder/sparseNMF/tree/main/docs"><img alt="Docs" src="https://img.shields.io/badge/docs-in_source-blue?logo=readthedocs&logoColor=white"/></a>
+  <a href="https://bschilder.github.io/sparseNMF/"><img alt="Docs" src="https://github.com/bschilder/sparseNMF/actions/workflows/docs.yml/badge.svg"/></a>
   <a href="https://github.com/bschilder/sparseNMF/releases"><img alt="Releases" src="https://img.shields.io/badge/releases-on_GitHub-blue?logo=github&logoColor=white"/></a>
   <a href="https://github.com/bschilder/sparseNMF/pkgs/container/sparsenmf"><img alt="Container" src="https://img.shields.io/badge/ghcr.io-sparsenmf-2496ED?logo=docker&logoColor=white"/></a>
   <img alt="Python" src="https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue"/>
@@ -27,17 +27,17 @@
   - Other badges are static images so they work regardless of repo visibility.
   - When the repo goes public, swap the static "Releases" badge above for the
     dynamic ``img.shields.io/github/v/release/...`` shield that pulls actual version data.
-  - The "Docs" badge points at ``docs/`` on GitHub until the Read the Docs
-    project is imported. To activate the hosted site:
-      1. Sign in at https://readthedocs.org/ (connect your GitHub if you haven't).
-      2. Visit https://readthedocs.org/dashboard/import/ — RTD's GitHub App needs
-         read access to private repos (grant it via "Configure" on the install).
-      3. Find ``bschilder/sparseNMF`` in the list, set Project slug ``sparsenmf``,
-         click Import. ``.readthedocs.yaml`` in the repo handles the rest.
-      4. Swap the Docs badge above back to the dynamic shield:
-           <a href="https://sparsenmf.readthedocs.io/en/latest/">
-             <img alt="Docs" src="https://readthedocs.org/projects/sparsenmf/badge/?version=latest"/>
-           </a>
+  - The Docs site is built by ``.github/workflows/docs.yml`` and
+    published to GitHub Pages at https://bschilder.github.io/sparseNMF/
+    on every push to main. Uses sphinx_rtd_theme — byte-equivalent
+    to the look of readthedocs.io. To enable Pages on this repo if
+    not already on:
+      1. Repo → Settings → Pages.
+      2. Source: "GitHub Actions".
+      3. First build runs on the next push to main (or trigger
+         manually from the Actions tab → Docs → Run workflow).
+    ``.readthedocs.yaml`` is kept around in case you ever want to
+    move to RTD Business (required for hosted RTD on private repos).
 -->
 
 ---
