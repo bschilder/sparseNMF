@@ -2,16 +2,16 @@
 <!--
   sparseNMF logo.
 
-  Visual: a sparse 6×6 grid (the input matrix X) on the left, an "="
-  separator, then two narrower factor matrices (W and H) — the
-  decomposition X ≈ W·H. Filled cells use a teal→violet gradient that
-  echoes a viridis colormap; empty cells are translucent so the
-  "sparse" nature is immediate.
+  Visual: a sparse 6×6 grid (the input matrix) on the left, an "≈"
+  separator, then two narrower factor matrices — the decomposition
+  X ≈ W·H without the explicit X/W/H labels. Filled cells use a
+  teal→violet gradient that echoes a viridis colormap; empty cells
+  are translucent so the "sparse" nature is immediate.
 
   Designed to read at small sizes (favicon-friendly) — the matrix
   shapes stay legible down to ~24px.
 -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 200" role="img" aria-label="sparseNMF logo">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 250" role="img" aria-label="sparseNMF logo">
   <defs>
     <linearGradient id="cellGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%"   stop-color="#1abc9c"/>
@@ -21,12 +21,23 @@
       <stop offset="0%"   stop-color="#3498db"/>
       <stop offset="100%" stop-color="#7d3c98"/>
     </linearGradient>
+    <linearGradient id="wordGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"  stop-color="#2c3e50"/>
+      <stop offset="60%" stop-color="#2c3e50"/>
+      <stop offset="100%" stop-color="#7d3c98"/>
+    </linearGradient>
     <style>
       .cell { fill: url(#cellGrad); }
       .empty { fill: #2c3e50; opacity: 0.18; }
       .factor { fill: url(#factorGrad); opacity: 0.85; }
-      .label { font-family: 'Inter','Segoe UI',Helvetica,Arial,sans-serif; font-weight: 600; font-size: 22px; fill: #2c3e50; }
-      .small { font-family: 'JetBrains Mono', 'Menlo', monospace; font-size: 14px; fill: #5d6d7e; }
+      .op { font-family: 'Geist','Manrope','Inter',ui-sans-serif,system-ui,sans-serif; font-weight: 600; font-size: 22px; fill: #2c3e50; }
+      .wordmark {
+        font-family: 'Geist','Manrope','Inter',ui-sans-serif,system-ui,sans-serif;
+        font-weight: 700;
+        font-size: 56px;
+        letter-spacing: -0.025em;
+        fill: url(#wordGrad);
+      }
     </style>
   </defs>
 
@@ -67,31 +78,28 @@
       <rect x="66" y="110" width="20" height="20" opacity="0.6"/>
       <rect x="110" y="110" width="20" height="20" opacity="0.5"/>
     </g>
-    <text x="65" y="160" text-anchor="middle" class="small">X (sparse)</text>
   </g>
 
   <!-- ≈ -->
-  <text x="180" y="100" class="label" text-anchor="middle">≈</text>
+  <text x="180" y="100" class="op" text-anchor="middle">≈</text>
 
   <!-- W (tall, narrow) -->
   <g transform="translate(210,30)">
     <rect class="factor" x="0"  y="0" width="20" height="130" rx="2"/>
     <rect class="factor" x="22" y="0" width="20" height="130" rx="2" opacity="0.7"/>
     <rect class="factor" x="44" y="0" width="20" height="130" rx="2" opacity="0.4"/>
-    <text x="32" y="160" text-anchor="middle" class="small">W</text>
   </g>
 
   <!-- · -->
-  <text x="298" y="100" class="label" text-anchor="middle">·</text>
+  <text x="298" y="100" class="op" text-anchor="middle">·</text>
 
   <!-- H (wide, short) -->
   <g transform="translate(320,55)">
     <rect class="factor" x="0"  y="0"  width="130" height="20" rx="2"/>
     <rect class="factor" x="0"  y="22" width="130" height="20" rx="2" opacity="0.7"/>
     <rect class="factor" x="0"  y="44" width="130" height="20" rx="2" opacity="0.4"/>
-    <text x="65" y="105" text-anchor="middle" class="small">H</text>
   </g>
 
   <!-- wordmark -->
-  <text x="240" y="190" text-anchor="middle" class="label">sparse<tspan fill="#7d3c98">NMF</tspan></text>
+  <text x="260" y="225" text-anchor="middle" class="wordmark">sparseNMF</text>
 </svg>
