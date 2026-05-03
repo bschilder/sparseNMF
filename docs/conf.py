@@ -76,10 +76,10 @@ html_theme_options = {
     "collapse_navigation": False,
     "sticky_navigation": True,
     "prev_next_buttons_location": "bottom",
-    # RTD theme's canonical accent — blue, same as the hosted RTD
-    # default. Override here to make explicit (the theme picks it
-    # up from CSS variables otherwise).
-    "style_nav_header_background": "#2980b9",
+    # Top-left header (the strip behind the logo + project name) —
+    # black gives the wordmark gradient room to breathe and matches
+    # the logo's dark-slate-to-violet palette.
+    "style_nav_header_background": "#0d1117",
 }
 # Wire the "Edit on GitHub" button in the top-right of every page —
 # this is RTD's ``html_context`` dance.
