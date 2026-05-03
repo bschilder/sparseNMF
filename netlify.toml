@@ -58,6 +58,18 @@
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
 
+# coverage.svg has a stable filename but its content changes every
+# CI run, so it CANNOT be served with the immutable/year-long cache
+# the rest of /_static/ uses. 5-minute cache is short enough that a
+# fresh CI commit shows up promptly on the README badge, long enough
+# to absorb a pile of repeat README views without thrashing origin.
+# This block must come BEFORE the wildcard /_static/* rule below so
+# Netlify picks the more specific match.
+[[headers]]
+  for = "/_static/coverage.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=300, must-revalidate"
+
 [[headers]]
   for = "/_static/*"
   [headers.values]
