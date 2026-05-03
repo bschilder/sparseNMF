@@ -2411,8 +2411,15 @@ def extract_attention_weights(model, X_nmf, batch_size=256, device=None, verbose
                 batch_attention = torch.sigmoid(attention_logits / temperature)
                 # Shape: (batch_size, n_components)
                 
-            elif has_transformer:
-                # Transformer attention: extract from last transformer block
+            elif has_transformer:  # pragma: no cover
+                # Transformer attention: extract from last transformer
+                # block. ``SparseNMF_Autoencoder`` in this package
+                # never sets ``use_transformer=True`` (no transformer
+                # architecture is shipped here — that lives in the
+                # parent AoU codebase). The branch is preserved for
+                # API parity with upstream extract_attention_weights;
+                # coverage-excluded since it can't be reached without
+                # an external transformer-capable model class.
                 # Reshape to transformer format: (batch_size, n_components, 1)
                 batch_expanded = batch_tensor.unsqueeze(-1)  # (batch_size, n_components, 1)
                 
@@ -2820,8 +2827,14 @@ def extract_and_aggregate_attention(
         except:
             pass
     
-    # Convert to torch tensors for GPU processing if beneficial
-    if use_gpu_for_aggregation:
+    # Convert to torch tensors for GPU processing if beneficial.
+    # NB: ``use_gpu_for_aggregation`` is True only when CUDA is
+    # available — the entire block below is unreachable on the
+    # CPU-only CI runners that build the coverage badge. Marking with
+    # ``# pragma: no cover`` so the badge reflects the code we
+    # actually exercise; the CPU path that handles the same logic
+    # starts at the matching ``else`` on line ~3195.
+    if use_gpu_for_aggregation:  # pragma: no cover
         if verbose:
             print(f"  ✓ Using GPU for aggregation (device: {device})")
         # Convert to torch tensors on GPU
