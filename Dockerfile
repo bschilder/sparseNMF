@@ -4,10 +4,17 @@
 #    image so the published artifact stays small
 #
 # Built and pushed by ``.github/workflows/docker.yml`` to
-# ``ghcr.io/bschilder/sparsenmf`` on every main push and tag. CUDA
-# wheels are pulled from PyTorch's index — the published image
-# supports CUDA 12.x out of the box; on a CPU-only host ``torch``
-# silently falls back to CPU paths.
+# ``ghcr.io/bschilder/sparsenmf`` on every main push and tag.
+#
+# CPU torch wheel by default — keeps the published image under 1 GB
+# so it pulls / scans / scans-on-PR fast. GPU users who want CUDA
+# layer on top:
+#
+#     FROM ghcr.io/bschilder/sparsenmf:latest
+#     RUN pip install --index-url https://download.pytorch.org/whl/cu124 --upgrade torch
+#
+# (Or they can build their own CUDA image from this repo by changing
+# ``--index-url`` below.)
 
 # ─── Stage 1: build ─────────────────────────────────────────────────
 FROM python:3.11-slim AS builder
@@ -24,10 +31,11 @@ WORKDIR /build
 COPY pyproject.toml README.md LICENSE ./
 COPY src/ ./src/
 
-# CUDA 12.4 wheel of torch first so the resolver picks it up; the
-# package's own ``torch`` dep then sees a satisfying install.
+# CPU torch wheel first so the resolver doesn't pull the ~2 GB CUDA
+# wheel from PyPI. ``[viz]`` adds matplotlib / seaborn for the
+# plotting helpers.
 RUN pip install --upgrade pip \
-    && pip install --index-url https://download.pytorch.org/whl/cu124 torch \
+    && pip install --index-url https://download.pytorch.org/whl/cpu torch \
     && pip install ".[viz]"
 
 # ─── Stage 2: runtime ───────────────────────────────────────────────

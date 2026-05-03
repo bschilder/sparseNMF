@@ -119,6 +119,14 @@ ignore = [
     "B008",  # function-call-in-default-argument — common idiom in scientific code
 ]
 
+# ``_core.py`` is the verbatim-vendored module from bschilder/AoU.
+# Its style isn't in scope for this package — fixing 400+ pre-existing
+# whitespace / f-string warnings in a 4k-line file would invite merge
+# conflicts every time AoU updates upstream. Linting is enforced on
+# the wrapper / tests / docs we own.
+[tool.ruff.lint.per-file-ignores]
+"src/sparse_nmf/_core.py" = ["E", "W", "F", "I", "B", "UP", "SIM"]
+
 [tool.mypy]
 python_version = "3.10"
 strict = false

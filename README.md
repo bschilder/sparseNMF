@@ -10,14 +10,24 @@
 
 <p align="center">
   <a href="https://github.com/bschilder/sparseNMF/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/bschilder/sparseNMF/actions/workflows/ci.yml/badge.svg"/></a>
+  <a href="https://github.com/bschilder/sparseNMF/actions/workflows/docker.yml"><img alt="Docker" src="https://github.com/bschilder/sparseNMF/actions/workflows/docker.yml/badge.svg"/></a>
   <a href="https://github.com/bschilder/sparseNMF/blob/main/coverage.svg"><img alt="Coverage" src="https://raw.githubusercontent.com/bschilder/sparseNMF/main/coverage.svg"/></a>
   <a href="https://sparseNMF.readthedocs.io/en/latest/"><img alt="Docs" src="https://readthedocs.org/projects/sparsenmf/badge/?version=latest"/></a>
+  <a href="https://github.com/bschilder/sparseNMF/releases"><img alt="Releases" src="https://img.shields.io/badge/releases-on_GitHub-blue?logo=github&logoColor=white"/></a>
   <a href="https://github.com/bschilder/sparseNMF/pkgs/container/sparsenmf"><img alt="Container" src="https://img.shields.io/badge/ghcr.io-sparsenmf-2496ED?logo=docker&logoColor=white"/></a>
-  <a href="https://github.com/bschilder/sparseNMF/releases"><img alt="Release" src="https://img.shields.io/github/v/release/bschilder/sparseNMF?include_prereleases&sort=semver"/></a>
   <img alt="Python" src="https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue"/>
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MIT-green"/></a>
   <a href="https://github.com/astral-sh/ruff"><img alt="Ruff" src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json"/></a>
 </p>
+
+<!--
+  Note on badges while the repo is still private:
+  - CI / Docker badges are GitHub-native and work for authenticated viewers.
+  - Coverage badge is committed in-tree as ``coverage.svg`` (auto-updated by CI on push to main).
+  - Other badges are static images so they work regardless of repo visibility.
+  - When the repo goes public, swap the static "Releases" badge above for the
+    dynamic ``img.shields.io/github/v/release/...`` shield that pulls actual version data.
+-->
 
 ---
 
