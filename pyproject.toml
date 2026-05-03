@@ -55,6 +55,7 @@ test = [
     "pytest-cov>=5.0",
     "ruff>=0.5",
     "mypy>=1.10",
+    "coverage-badge>=1.1",
 ]
 dev = ["sparse-nmf[viz,docs,test]"]
 
@@ -103,6 +104,11 @@ exclude_also = [
 line-length = 100
 target-version = "py310"
 src = ["src", "tests"]
+extend-exclude = [
+    # Notebook outputs are rendered + committed; their per-cell
+    # imports trip E402, but they're not maintained code we lint.
+    "docs/notebooks/*.ipynb",
+]
 
 [tool.ruff.lint]
 select = [

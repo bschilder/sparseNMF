@@ -19,12 +19,8 @@ Public helpers:
 from __future__ import annotations
 
 from importlib import resources
-from typing import TYPE_CHECKING
 
 import numpy as np
-
-if TYPE_CHECKING:
-    from scipy.sparse import csr_matrix
 
 
 def generate_synthetic_sparse(

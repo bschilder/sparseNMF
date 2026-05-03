@@ -60,25 +60,19 @@ jobs:
           pip install -e ".[test]"
       - run: pytest --cov=sparse_nmf --cov-report=xml --cov-report=term
 
+      # Self-hosted coverage badge (no third-party service): generate
+      # ``coverage.svg`` from the .coverage file produced by pytest-cov,
+      # commit it back to ``main`` only if it actually changed. The
+      # ``coverage-badge`` package is pure-Python and works on every
+      # Python version (the previous tj-actions/coverage-badge-py
+      # action depended on ``pkg_resources`` which is removed in
+      # py3.12+).
       - name: Generate coverage badge
         if: ${{ matrix.python == '3.11' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        uses: tj-actions/coverage-badge-py@v2
-        with:
-          output: coverage.svg
+        run: coverage-badge -f -o coverage.svg
 
-      - name: Verify coverage badge changed
+      - name: Commit coverage badge if changed
         if: ${{ matrix.python == '3.11' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        uses: tj-actions/verify-changed-files@v20
-        id: verify-changed-files
-        with:
-          files: coverage.svg
-
-      - name: Commit & push updated coverage badge
-        if: |
-          matrix.python == '3.11' &&
-          github.event_name == 'push' &&
-          github.ref == 'refs/heads/main' &&
-          steps.verify-changed-files.outputs.files_changed == 'true'
         env:
           # ``[skip ci]`` in the commit message prevents the auto-commit
           # from re-triggering this same workflow (infinite loop
@@ -86,8 +80,17 @@ jobs:
           # triggers a new run).
           COMMIT_MSG: "chore(ci): update coverage.svg [skip ci]"
         run: |
+          set -euo pipefail
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
+          if git diff --quiet coverage.svg 2>/dev/null && git ls-files --error-unmatch coverage.svg >/dev/null 2>&1; then
+            echo "coverage.svg unchanged — skipping commit"
+            exit 0
+          fi
           git add coverage.svg
+          if git diff --cached --quiet; then
+            echo "no diff to commit"
+            exit 0
+          fi
           git commit -m "$COMMIT_MSG"
           git push
