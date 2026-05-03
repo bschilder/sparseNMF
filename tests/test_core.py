@@ -419,6 +419,30 @@ def test_verbose_with_r2_weight_runs(small_sparse, device, capsys):
     assert "gradient-based" in captured.out.lower() or "R²" in captured.out
 
 
+def test_compute_final_metrics_handles_empty_sample(small_sparse, device):
+    """The ``_compute_final_metrics`` helper has a fallback (lines
+    945-947) for when the sampled rows happen to contain zero
+    nnz — sets all metrics to 0 instead of dividing by zero. Test
+    by calling the helper directly with an all-zero sparse sample."""
+    from scipy.sparse import csr_matrix
+    import torch
+
+    nmf = SparseNMF(
+        n_components=4, max_iter=5, device=device, verbose=False, random_state=0
+    )
+    # Run a normal fit so internal state is initialized.
+    nmf.fit_transform(small_sparse)
+
+    # Now call _compute_final_metrics with an all-zero CSR matrix
+    # — forces the empty-sample fallback branch.
+    X_empty = csr_matrix((nmf.W.shape[0], nmf.H.shape[1]), dtype=np.float32)
+    nmf._compute_final_metrics(X_empty, nmf.W, nmf.H, X_empty.shape[0])
+    # Fallback sets all metrics to 0.0.
+    assert nmf.reconstruction_error_ == 0.0
+    assert nmf.r2_score_ == 0.0
+    assert nmf.r2_score_nonzero_ == 0.0
+
+
 def test_negative_input_is_taken_absolute(small_sparse, device, capsys):
     """NMF is non-negative by definition — when input contains
     negatives, the wrapper takes ``abs()`` (with a warning when

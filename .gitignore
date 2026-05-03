@@ -38,3 +38,6 @@ docs/_autosummary/
 *.ckpt
 scratch/
 artifacts/
+
+# coverage.py annotate output (stray artifacts when devs use --cov-report=annotate)
+*,cover

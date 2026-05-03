@@ -519,6 +519,41 @@ def test_correlation_verbose_path_runs(capsys):
     assert len(captured.out) > 0
 
 
+def test_aggregate_with_metadata_and_explicit_names(attention_setup):
+    """When ``metadata`` AND explicit ``gene_feature_names`` /
+    ``sample_names`` are both provided, the explicit names win
+    (the ``if X is None:`` branches at lines 2676/2685 skip the
+    metadata extraction). Covers the partial branches there."""
+    import pandas as pd
+
+    from sparse_nmf import extract_and_aggregate_attention
+
+    model, X_nmf, nmf_H, n, k, m = attention_setup
+    metadata = {
+        "var": pd.DataFrame(index=[f"meta_gene_{i}" for i in range(m)]),
+        "obs": pd.DataFrame(
+            {"obs_id": [f"meta_obs_{i}" for i in range(n)]},
+            index=[f"row_{i}" for i in range(n)],
+        ),
+    }
+    explicit_genes = [f"explicit_gene_{i}" for i in range(m)]
+    explicit_samples = [f"explicit_sample_{i}" for i in range(n)]
+    gene_df, _ = extract_and_aggregate_attention(
+        model,
+        X_nmf,
+        nmf_H,
+        batch_size=64,
+        verbose=False,
+        metadata=metadata,
+        gene_feature_names=explicit_genes,
+        sample_names=explicit_samples,
+    )
+    # Explicit names should appear, not the metadata-derived ones.
+    actual = set(gene_df["feature_name"])
+    assert actual == set(explicit_genes)
+    assert "meta_gene_0" not in actual
+
+
 def test_aggregate_with_metadata_label_column(attention_setup):
     """When ``metadata['obs']`` has a ``label`` column AND
     ``max_attention_sample`` is populated (sample_names provided),
@@ -554,6 +589,44 @@ def test_aggregate_with_metadata_label_column(attention_setup):
     assert "label" in nmf_df.columns
     # Each label should be one of the configured class names.
     assert set(gene_df["label"].dropna()) <= {"class_0", "class_1", "class_2"}
+
+
+def test_extract_attention_with_vanilla_nn_module():
+    """When the model is a vanilla ``nn.Module`` without a custom
+    ``.device`` attribute, the device-detection code falls back to
+    ``next(model.parameters()).device`` (the elif branch at line
+    2786). Mock a feature-attention model with just enough surface
+    to satisfy the function."""
+    from torch import nn
+
+    from sparse_nmf import extract_attention_weights
+
+    class FakeModel(nn.Module):
+        """Looks like SparseNMF_Autoencoder for extract_attention_weights
+        purposes, but inherits no ``.device`` attribute — so the
+        device detection has to use ``next(parameters()).device``."""
+
+        def __init__(self, nmf_components, hidden):
+            super().__init__()
+            # The function reads these flags + the network.
+            self.use_feature_attention = True
+            self.feature_attention_temperature = 1.0
+            self.feature_attention_net = nn.Sequential(
+                nn.Linear(nmf_components, hidden),
+                nn.ReLU(),
+                nn.Linear(hidden, nmf_components),
+            )
+
+    nmf_comp = 4
+    n = 30
+    fake = FakeModel(nmf_comp, 8)
+    # Confirm our setup actually triggers the elif branch.
+    assert not hasattr(fake, "device") or not isinstance(
+        getattr(fake, "device", None), torch.device
+    )
+    X_nmf = np.random.RandomState(0).rand(n, nmf_comp).astype(np.float32)
+    A = extract_attention_weights(fake, X_nmf, batch_size=64, verbose=False)
+    assert A.shape == (n, nmf_comp)
 
 
 def test_aggregate_with_explicit_device_cpu(attention_setup):
@@ -643,6 +716,60 @@ def test_aggregate_with_malformed_metadata_obs(attention_setup, capsys):
     )
     captured = capsys.readouterr()
     assert "Could not extract sample_names" in captured.out
+
+
+def test_aggregate_with_obs_index_fallback(attention_setup):
+    """When ``metadata['obs']`` has no ``obs_id`` column, sample
+    names fall back to ``obs.index.values`` (line 2691 else branch).
+    Distinct from the obs_id-present path tested above."""
+    import pandas as pd
+
+    from sparse_nmf import extract_and_aggregate_attention
+
+    model, X_nmf, nmf_H, n, k, m = attention_setup
+    obs_index_names = [f"index_sample_{i}" for i in range(n)]
+    metadata = {
+        "var": pd.DataFrame(index=[f"gene_{i}" for i in range(m)]),
+        # No obs_id column — forces the index.values fallback.
+        "obs": pd.DataFrame({"some_other_col": range(n)}, index=obs_index_names),
+    }
+    gene_df, _ = extract_and_aggregate_attention(
+        model, X_nmf, nmf_H, batch_size=64, verbose=False, metadata=metadata
+    )
+    if "max_attention_sample" in gene_df.columns:
+        # Sample names should come from the index, not obs_id.
+        actual_samples = set(gene_df["max_attention_sample"].dropna())
+        assert actual_samples.issubset(set(obs_index_names))
+
+
+def test_aggregate_save_dir_reload_no_matrices(attention_setup, tmp_path):
+    """When ``return_attention_matrices=True`` but no .npy matrix
+    files exist alongside the parquets, the function returns
+    None for the matrices (line 2729-2732 — fallback when matrix
+    files are missing)."""
+    from sparse_nmf import extract_and_aggregate_attention
+
+    model, X_nmf, nmf_H, *_ = attention_setup
+    # First call — writes parquets only (no matrices saved).
+    extract_and_aggregate_attention(
+        model, X_nmf, nmf_H, batch_size=64, verbose=False, save_dir=str(tmp_path)
+    )
+    # Confirm matrix .npy files don't exist.
+    assert not (tmp_path / "gene_attention_matrix.npy").exists()
+    # Reload requesting matrices — should return None for them.
+    out = extract_and_aggregate_attention(
+        model,
+        X_nmf,
+        nmf_H,
+        batch_size=64,
+        verbose=False,
+        save_dir=str(tmp_path),
+        return_attention_matrices=True,
+    )
+    assert len(out) == 4
+    # Matrices weren't saved → None.
+    assert out[2] is None
+    assert out[3] is None
 
 
 def test_aggregate_with_metadata_extracts_names(attention_setup):

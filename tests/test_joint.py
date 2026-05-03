@@ -913,6 +913,68 @@ def test_train_joint_model_with_normalize_nmf_components(small_sparse, device):
     assert np.isfinite(np.asarray(z)).all()
 
 
+def test_train_joint_model_wrong_n_samples_raises(small_sparse, device):
+    """Passing a mismatched ``n_samples`` value must raise ValueError
+    so the user catches dimension mistakes early (line 1624)."""
+    from sparse_nmf import train_joint_model
+
+    with pytest.raises(ValueError, match="n_samples"):
+        train_joint_model(
+            small_sparse,
+            n_samples=small_sparse.shape[0] + 1,  # wrong!
+            n_features=small_sparse.shape[1],
+            nmf_components=4,
+            latent_dim=2,
+            device=device,
+            n_epochs=1,
+            verbose=False,
+        )
+
+
+def test_train_joint_model_wrong_n_features_raises(small_sparse, device):
+    """Mismatched ``n_features`` must raise ValueError (line 1631)."""
+    from sparse_nmf import train_joint_model
+
+    with pytest.raises(ValueError, match="n_features"):
+        train_joint_model(
+            small_sparse,
+            n_samples=small_sparse.shape[0],
+            n_features=small_sparse.shape[1] + 1,  # wrong!
+            nmf_components=4,
+            latent_dim=2,
+            device=device,
+            n_epochs=1,
+            verbose=False,
+        )
+
+
+@pytest.mark.slow
+def test_train_joint_model_save_then_load_verbose(small_sparse, tmp_path, device, capsys):
+    """``verbose=True`` save+reload exercises print branches at
+    1640, 1667, 1934, 1951."""
+    from sparse_nmf import train_joint_model
+
+    save_path = tmp_path / "verbose_model.pt"
+    args = dict(
+        n_samples=small_sparse.shape[0],
+        n_features=small_sparse.shape[1],
+        nmf_components=4,
+        latent_dim=2,
+        device=device,
+        n_epochs=1,
+        batch_size=64,
+        verbose=True,
+        random_state=0,
+        save_path=str(save_path),
+    )
+    # Train + save with verbose.
+    train_joint_model(small_sparse, **args)
+    # Reload with verbose — covers the load-with-verbose prints.
+    train_joint_model(small_sparse, **args)
+    captured = capsys.readouterr()
+    assert "Saving model" in captured.out or "Loading saved model" in captured.out
+
+
 @pytest.mark.slow
 def test_train_joint_model_default_batch_size(small_sparse, device):
     """``batch_size=None`` (default) triggers the auto-default branch
@@ -962,6 +1024,29 @@ def test_train_joint_model_load_existing_via_npy(small_sparse, tmp_path, device)
     # Force the .npy load branch by re-calling without force.
     z2, _ = train_joint_model(small_sparse, **args)
     np.testing.assert_array_equal(np.asarray(z1), np.asarray(z2))
+
+
+@pytest.mark.slow
+def test_train_joint_model_ten_epochs_hits_gradient_logging(small_sparse, device, capsys):
+    """The per-epoch verbose path has an extra ``if (epoch+1) % 10
+    == 0:`` block (lines 1911-1920) that logs gradient norms. 10
+    epochs is the minimum to enter it once."""
+    from sparse_nmf import train_joint_model
+
+    z, _ = train_joint_model(
+        small_sparse,
+        n_samples=small_sparse.shape[0],
+        n_features=small_sparse.shape[1],
+        nmf_components=4,
+        latent_dim=2,
+        device=device,
+        n_epochs=10,
+        batch_size=64,
+        verbose=True,
+        random_state=0,
+    )
+    capsys.readouterr()
+    assert np.isfinite(np.asarray(z)).all()
 
 
 @pytest.mark.slow
