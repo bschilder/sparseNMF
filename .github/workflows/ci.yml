@@ -1,9 +1,15 @@
 name: CI
 
 # Lint + multi-version pytest + self-hosted coverage badge.
-# Coverage badge is generated in-tree as ``coverage.svg`` and committed
-# back to ``main`` on push events; no third-party service or token
-# required. Pattern mirrors standardmodelbio/protoforge and ADNI.
+# Coverage badge is generated as ``docs/_static/coverage.svg`` and
+# committed back to ``main`` on push events. Living under
+# ``docs/_static/`` means Netlify publishes it at
+# ``https://sparsenmf.netlify.app/_static/coverage.svg`` — a public
+# URL that works even though the source repo is still private (raw
+# GitHub blob URLs require auth on private repos and would 404 in
+# the README badge for anonymous viewers). Pattern mirrors
+# standardmodelbio/protoforge and ADNI; the Netlify hosting trick is
+# what makes it work pre-public.
 
 on:
   push:
@@ -69,7 +75,7 @@ jobs:
       # py3.12+).
       - name: Generate coverage badge
         if: ${{ matrix.python == '3.11' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        run: coverage-badge -f -o coverage.svg
+        run: coverage-badge -f -o docs/_static/coverage.svg
 
       - name: Commit coverage badge if changed
         if: ${{ matrix.python == '3.11' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
@@ -83,11 +89,12 @@ jobs:
           set -euo pipefail
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
-          if git diff --quiet coverage.svg 2>/dev/null && git ls-files --error-unmatch coverage.svg >/dev/null 2>&1; then
-            echo "coverage.svg unchanged — skipping commit"
+          BADGE=docs/_static/coverage.svg
+          if git diff --quiet "$BADGE" 2>/dev/null && git ls-files --error-unmatch "$BADGE" >/dev/null 2>&1; then
+            echo "$BADGE unchanged — skipping commit"
             exit 0
           fi
-          git add coverage.svg
+          git add "$BADGE"
           if git diff --cached --quiet; then
             echo "no diff to commit"
             exit 0
