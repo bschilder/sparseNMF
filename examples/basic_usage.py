@@ -28,13 +28,13 @@ def main() -> int:
         density=0.05,
         seed=42,
     )
-    print(f"  shape={X.shape}  nnz={X.nnz:,}  density={X.nnz / (X.shape[0]*X.shape[1]):.3%}")
+    print(f"  shape={X.shape}  nnz={X.nnz:,}  density={X.nnz / (X.shape[0] * X.shape[1]):.3%}")
 
     print("Fitting SparseNMF (n_components=16, max_iter=200)...")
     t0 = time.time()
     nmf = SparseNMF(n_components=16, max_iter=200, device="cpu", verbose=True)
     W = nmf.fit_transform(X)
-    H = nmf.components_
+    H = nmf.H.detach().cpu().numpy()
     elapsed = time.time() - t0
     print(f"  done in {elapsed:.1f}s  W.shape={W.shape}  H.shape={H.shape}")
 

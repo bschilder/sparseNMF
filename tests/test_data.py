@@ -42,14 +42,18 @@ def test_load_synthetic_sparse_returns_csr():
 def test_rank_parameter_controls_underlying_structure(rank):
     """SVD of the dense form should have ~``rank`` significant
     singular values when noise is moderate."""
-    X = generate_synthetic_sparse(
-        n_samples=120,
-        n_features=180,
-        n_components=rank,
-        noise=0.05,
-        density=0.4,  # higher density → cleaner SVD signal
-        seed=0,
-    ).toarray().astype(np.float32)
+    X = (
+        generate_synthetic_sparse(
+            n_samples=120,
+            n_features=180,
+            n_components=rank,
+            noise=0.05,
+            density=0.4,  # higher density → cleaner SVD signal
+            seed=0,
+        )
+        .toarray()
+        .astype(np.float32)
+    )
     s = np.linalg.svd(X, compute_uv=False)
     # The top ``rank`` singular values should each be larger than the
     # average of the rest by a clear margin. Loose check — just

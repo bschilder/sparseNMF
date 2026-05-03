@@ -108,6 +108,10 @@ extend-exclude = [
     # Notebook outputs are rendered + committed; their per-cell
     # imports trip E402, but they're not maintained code we lint.
     "docs/notebooks/*.ipynb",
+    # ``_core.py`` is the verbatim-vendored module from
+    # bschilder/AoU. Reformatting it would diverge from upstream
+    # and fight every sync.
+    "src/sparse_nmf/_core.py",
 ]
 
 [tool.ruff.lint]
