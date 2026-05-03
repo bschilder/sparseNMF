@@ -2,8 +2,6 @@
   <img src="docs/_static/logo.svg" alt="sparseNMF logo" width="480"/>
 </p>
 
-<h1 align="center">sparseNMF</h1>
-
 <p align="center">
   <em>GPU-accelerated sparse non-negative matrix factorization with PyTorch.</em>
 </p>
