@@ -541,6 +541,43 @@ def test_train_sparse_nmf_normalize_outputs_reload(small_sparse, tmp_path, devic
     np.testing.assert_allclose(norms[nonzero], 1.0, atol=1e-4)
 
 
+def test_train_sparse_nmf_verbose_with_normalize_inputs(small_sparse, device, capsys):
+    """``normalize_inputs=True`` + ``verbose=True`` covers the
+    print branches at 2155-2157."""
+    from sparse_nmf import train_sparse_nmf
+
+    train_sparse_nmf(
+        small_sparse,
+        n_components=4,
+        max_iter=5,
+        device=device,
+        verbose=True,
+        random_state=0,
+        normalize_inputs=True,
+    )
+    captured = capsys.readouterr()
+    assert "L2 normalized input" in captured.out
+
+
+def test_train_sparse_nmf_verbose_with_save_path(small_sparse, tmp_path, device, capsys):
+    """``embeddings_save_path`` + ``verbose=True`` covers line 2188
+    ("Saved embeddings to ...")."""
+    from sparse_nmf import train_sparse_nmf
+
+    emb = tmp_path / "emb.npy"
+    train_sparse_nmf(
+        small_sparse,
+        n_components=4,
+        max_iter=5,
+        device=device,
+        verbose=True,
+        random_state=0,
+        embeddings_save_path=str(emb),
+    )
+    captured = capsys.readouterr()
+    assert "Saved embeddings" in captured.out
+
+
 def test_train_sparse_nmf_normalize_inputs_runs(small_sparse, device):
     """``normalize_inputs=True`` L2-normalizes each row of X before
     training (uses sklearn.preprocessing.normalize). Different

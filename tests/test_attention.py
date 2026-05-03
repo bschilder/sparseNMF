@@ -505,6 +505,24 @@ def test_correlation_obs_mask_can_be_dropped_when_X_already_subset():
     # No exception is the success criterion.
 
 
+def test_correlation_verbose_stratification_prints_summary(capsys):
+    """``stratify_by_unique_values=True`` + ``verbose=True``
+    exercises the per-stratum print loop (lines 3962-3965 in
+    compute_attention_correlation)."""
+    rng = np.random.RandomState(11)
+    n, m = 30, 6
+    X = np.zeros((n, m), dtype=np.float32)
+    X[:10] = np.array([0, 1] * 3, dtype=np.float32)  # 2-unique stratum
+    X[10:20] = np.tile([0, 1, 2], 2).astype(np.float32)  # 3-unique
+    X[20:] = rng.rand(10, m)  # 4+_unique
+    A = X.copy()
+    compute_attention_correlation(
+        A, X, stratify_by_unique_values=True, verbose=True
+    )
+    captured = capsys.readouterr()
+    assert "Stratifying" in captured.out
+
+
 def test_correlation_verbose_path_runs(capsys):
     """``verbose=True`` exercises the print-summary branch. We don't
     assert specific output — just that the path completes."""
