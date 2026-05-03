@@ -588,6 +588,192 @@ def test_train_joint_model_with_prebuilt_model(small_sparse, device):
     assert np.isfinite(np.asarray(z)).all()
 
 
+# ── SparseNMF_Autoencoder encode() branches ─────────────────────────
+
+
+def test_autoencoder_encode_with_normalize_nmf_components(small_sparse, device):
+    """``encode()`` has its own ``if self.normalize_nmf_components:``
+    branch (line 1287) — separate from the same logic in forward.
+    Verify it produces a valid z when enabled."""
+    from sparse_nmf import SparseNMF_Autoencoder
+
+    n, m = small_sparse.shape
+    model = SparseNMF_Autoencoder(
+        n_samples=n,
+        n_features=m,
+        nmf_components=4,
+        latent_dim=2,
+        hidden_dims=(8,),
+        normalize_nmf_components=True,
+        device=device,
+        random_state=0,
+    )
+    model.train(False)
+    z = model.encode()
+    assert z.shape == (n, 2)
+    assert torch.isfinite(z).all()
+
+
+def test_autoencoder_vae_encode_in_train_mode_is_stochastic(small_sparse, device):
+    """In train mode VAE.encode() does reparameterization sampling
+    (line 1304: ``if self.training: z = self.reparameterize(...)``).
+    Two consecutive calls in train mode should produce different z."""
+    from sparse_nmf import SparseNMF_Autoencoder
+
+    n, m = small_sparse.shape
+    model = SparseNMF_Autoencoder(
+        n_samples=n,
+        n_features=m,
+        nmf_components=4,
+        latent_dim=2,
+        hidden_dims=(8,),
+        use_vae=True,
+        device=device,
+        random_state=0,
+    )
+    model.train(True)
+    z1 = model.encode()
+    z2 = model.encode()
+    # Reparameterization injects N(0,1) noise — successive calls
+    # should differ.
+    assert not torch.equal(z1, z2)
+
+
+# ── compute_joint_loss edge-case branches ───────────────────────────
+
+
+def test_compute_joint_loss_contrastive_with_one_sample(small_sparse, device):
+    """The contrastive loss branch has a guard for ``n_samples < 2``
+    (line 1424) that returns 0 to avoid an empty pairwise matmul.
+    Build a 1-sample W directly — running the model with n=1 is
+    blocked by BatchNorm1d, which rejects single-sample batches in
+    training mode. compute_joint_loss accepts hand-rolled tensors,
+    so we sidestep BatchNorm entirely."""
+    from sparse_nmf import SparseNMF_Autoencoder, compute_joint_loss
+
+    # Build a small but-not-1-sample model just so .use_vae and
+    # device are populated for the loss helper.
+    model = SparseNMF_Autoencoder(
+        n_samples=4,
+        n_features=10,
+        nmf_components=3,
+        latent_dim=2,
+        hidden_dims=(4,),
+        device=device,
+        random_state=0,
+    )
+    # Single-sample tensors fed straight to the loss function.
+    nmf_comp, latent_dim, n_features = 3, 2, 10
+    W = torch.rand(1, nmf_comp, device=device, requires_grad=True)
+    H = torch.rand(nmf_comp, n_features, device=device)
+    z = torch.rand(1, latent_dim, device=device, requires_grad=True)
+    W_recon = torch.rand(1, nmf_comp, device=device, requires_grad=True)
+    X_torch = torch.sparse_coo_tensor(
+        torch.tensor([[0], [3]]),
+        torch.tensor([1.0]),
+        (1, n_features),
+        device=device,
+    )
+
+    _, parts = compute_joint_loss(
+        model=model,
+        X_sparse_torch=X_torch,
+        z=z,
+        W_recon=W_recon,
+        X_recon=None,
+        W=W,
+        H=H,
+        use_contrastive=True,
+        dimension_reg_weight=0.0,
+    )
+    # contrastive loss = 0.0 in this guard branch.
+    assert parts["contrastive"].item() == 0.0
+
+
+def test_compute_joint_loss_contrastive_subsamples_for_large_n(device):
+    """When ``n_samples > 1000`` the contrastive branch randomly
+    subsamples to keep the O(n²) similarity matrix bounded
+    (lines 1432-1434). Build a 1500-sample synthetic input and
+    verify the loss is finite + grad-flowing."""
+    from sparse_nmf import SparseNMF_Autoencoder, compute_joint_loss
+
+    n_samples = 1500
+    n_features = 50
+    nmf_comp = 4
+    model = SparseNMF_Autoencoder(
+        n_samples=n_samples,
+        n_features=n_features,
+        nmf_components=nmf_comp,
+        latent_dim=2,
+        hidden_dims=(8,),
+        device=device,
+        random_state=0,
+    )
+    # Tiny random sparse input (just enough nnz for the loss
+    # to compute on non-zero positions).
+    import numpy as np
+    from scipy.sparse import random as sparse_random
+
+    X = sparse_random(n_samples, n_features, density=0.05, format="csr", random_state=0)
+    X.data = np.abs(X.data).astype(np.float32)
+    coo = X.tocoo()
+    indices = torch.from_numpy(np.vstack([coo.row, coo.col])).long()
+    values = torch.from_numpy(coo.data).float()
+    X_torch = torch.sparse_coo_tensor(indices, values, coo.shape, device=device)
+
+    z, W_recon, _, W, H = model(X_torch)
+    loss, parts = compute_joint_loss(
+        model=model,
+        X_sparse_torch=X_torch,
+        z=z,
+        W_recon=W_recon,
+        X_recon=None,
+        W=W,
+        H=H,
+        use_contrastive=True,
+        dimension_reg_weight=0.0,
+    )
+    assert torch.isfinite(parts["contrastive"])
+    assert loss.requires_grad
+
+
+def test_compute_joint_loss_dim_reg_degenerate_z(small_sparse, device):
+    """The dim_reg branch has an else clause for when ``z_var.min()
+    == 0`` (line 1476) — heavy penalty for fully-collapsed
+    dimensions. Force this by replacing z with a constant tensor."""
+    from sparse_nmf import SparseNMF_Autoencoder, compute_joint_loss
+
+    n, m = small_sparse.shape
+    model = SparseNMF_Autoencoder(
+        n_samples=n,
+        n_features=m,
+        nmf_components=4,
+        latent_dim=2,
+        hidden_dims=(8,),
+        device=device,
+        random_state=0,
+    )
+    X_torch = _make_sparse_torch(small_sparse, device)
+    _, W_recon, _, W, H = model(X_torch)
+    # Constant z → z.var(dim=0) = 0 in every dim, triggers the
+    # degenerate-latent penalty branch.
+    z_constant = torch.ones(n, 2, device=device, requires_grad=True)
+    _, parts = compute_joint_loss(
+        model=model,
+        X_sparse_torch=X_torch,
+        z=z_constant,
+        W_recon=W_recon,
+        X_recon=None,
+        W=W,
+        H=H,
+        use_contrastive=False,
+        dimension_reg_weight=0.5,
+    )
+    assert "dim_reg" in parts
+    # The collapsed-z branch returns a hard penalty value of 1.0.
+    assert parts["dim_reg"].item() == 1.0
+
+
 # ── SparseNMF_Autoencoder activation + dropout variants ─────────────
 
 
@@ -633,6 +819,31 @@ def test_autoencoder_invalid_activation_raises(small_sparse, device):
         )
 
 
+def test_autoencoder_forward_with_feature_attention(small_sparse, device):
+    """The forward pass has its own ``if self.use_feature_attention:``
+    block (lines 1251-1254) that mixes attention-weighted W into the
+    encoder input. train_joint_model has its own copy of this logic
+    in its training loop, so direct ``model(X)`` exercises a
+    different code path."""
+    from sparse_nmf import SparseNMF_Autoencoder
+
+    n, m = small_sparse.shape
+    model = SparseNMF_Autoencoder(
+        n_samples=n,
+        n_features=m,
+        nmf_components=4,
+        latent_dim=2,
+        hidden_dims=(8,),
+        use_feature_attention=True,
+        feature_attention_weight=0.5,
+        device=device,
+        random_state=0,
+    )
+    X_torch = _make_sparse_torch(small_sparse, device)
+    z = model(X_torch)[0]
+    assert torch.isfinite(z).all()
+
+
 def test_autoencoder_dropout_runs(small_sparse, device):
     """``dropout > 0`` adds nn.Dropout layers to the encoder. Forward
     pass in train mode applies it stochastically; in eval mode it's
@@ -676,6 +887,81 @@ def test_train_joint_model_verbose_runs(small_sparse, device, capsys):
     )
     capsys.readouterr()
     assert np.asarray(z).shape == (small_sparse.shape[0], 2)
+
+
+@pytest.mark.slow
+def test_train_joint_model_with_normalize_nmf_components(small_sparse, device):
+    """``normalize_nmf_components=True`` is also a flag inside
+    train_joint_model's per-batch loop (line 1765, separate from
+    the model's own normalize_nmf_components which it just
+    forwards). Verify it runs end-to-end."""
+    from sparse_nmf import train_joint_model
+
+    z, _ = train_joint_model(
+        small_sparse,
+        n_samples=small_sparse.shape[0],
+        n_features=small_sparse.shape[1],
+        nmf_components=4,
+        latent_dim=2,
+        device=device,
+        n_epochs=1,
+        batch_size=64,
+        verbose=False,
+        random_state=0,
+        normalize_nmf_components=True,
+    )
+    assert np.isfinite(np.asarray(z)).all()
+
+
+@pytest.mark.slow
+def test_train_joint_model_default_batch_size(small_sparse, device):
+    """``batch_size=None`` (default) triggers the auto-default branch
+    at line 1711. Just verify the run completes — the implicit
+    default is 256 which still matches our 200-row fixture."""
+    from sparse_nmf import train_joint_model
+
+    z, _ = train_joint_model(
+        small_sparse,
+        n_samples=small_sparse.shape[0],
+        n_features=small_sparse.shape[1],
+        nmf_components=4,
+        latent_dim=2,
+        device=device,
+        n_epochs=1,
+        batch_size=None,  # exercises the auto-default
+        verbose=False,
+        random_state=0,
+    )
+    assert np.asarray(z).shape == (small_sparse.shape[0], 2)
+
+
+@pytest.mark.slow
+def test_train_joint_model_load_existing_via_npy(small_sparse, tmp_path, device):
+    """When ``save_path`` exists AND the .npy embeddings file exists
+    alongside, the function loads embeddings without retraining
+    (line 1664). Pre-seed the cache by training once, then re-run
+    with the same path — should be a fast no-op load."""
+    from sparse_nmf import train_joint_model
+
+    save_path = tmp_path / "model.pt"
+    args = dict(
+        n_samples=small_sparse.shape[0],
+        n_features=small_sparse.shape[1],
+        nmf_components=4,
+        latent_dim=2,
+        device=device,
+        n_epochs=1,
+        batch_size=64,
+        verbose=False,
+        random_state=0,
+        save_path=str(save_path),
+    )
+    z1, _ = train_joint_model(small_sparse, **args)
+    embeddings_path = save_path.with_suffix(".npy")
+    assert embeddings_path.exists()
+    # Force the .npy load branch by re-calling without force.
+    z2, _ = train_joint_model(small_sparse, **args)
+    np.testing.assert_array_equal(np.asarray(z1), np.asarray(z2))
 
 
 @pytest.mark.slow

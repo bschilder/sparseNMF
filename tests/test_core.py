@@ -264,6 +264,19 @@ def test_cuda_string_falls_back_to_cpu_when_no_gpu():
     assert nmf.device.type == "cpu"
 
 
+def test_cuda_fallback_verbose_prints_message(capsys):
+    """The ``verbose=True`` variant of the CUDA→CPU fallback prints
+    a "CUDA not available" warning so users notice the silent
+    downgrade. Covers the verbose branch of the fallback."""
+    import torch
+
+    if torch.cuda.is_available():
+        pytest.skip("CUDA available; can't test the no-GPU fallback")
+    SparseNMF(n_components=2, max_iter=2, device="cuda", verbose=True)
+    captured = capsys.readouterr()
+    assert "CUDA not available" in captured.out
+
+
 # ── Convenience wrappers ────────────────────────────────────────────
 
 
@@ -449,6 +462,61 @@ def test_train_sparse_nmf_normalize_outputs_yields_unit_rows(small_sparse, devic
     np.testing.assert_allclose(norms[nonzero], 1.0, atol=1e-4)
 
 
+def test_train_sparse_nmf_verbose_runs(small_sparse, device, capsys):
+    """``train_sparse_nmf(verbose=True)`` exercises a chain of
+    progress prints (lines ~2155-2188 in _core.py). Just verify
+    it runs and produces output."""
+    from sparse_nmf import train_sparse_nmf
+
+    train_sparse_nmf(
+        small_sparse,
+        n_components=4,
+        max_iter=5,
+        device=device,
+        verbose=True,
+        random_state=0,
+    )
+    captured = capsys.readouterr()
+    assert len(captured.out) > 0
+
+
+def test_train_sparse_nmf_normalize_outputs_reload(small_sparse, tmp_path, device):
+    """When loading from disk with ``normalize_outputs=True``, the
+    function checks if embeddings are already normalized and
+    re-normalizes if not (lines 2090-2099). Pre-seed unnormalized
+    embeddings by training without normalize_outputs, then reload
+    with normalize_outputs=True."""
+    from sparse_nmf import train_sparse_nmf
+
+    emb = tmp_path / "emb.npy"
+    mod = tmp_path / "mod.pkl"
+    # First run: save UN-normalized embeddings.
+    train_sparse_nmf(
+        small_sparse,
+        n_components=4,
+        max_iter=5,
+        device=device,
+        verbose=False,
+        random_state=0,
+        embeddings_save_path=str(emb),
+        model_save_path=str(mod),
+    )
+    # Second run with normalize_outputs=True — loads, detects
+    # un-normalized, re-normalizes via the AoU shim.
+    W, _ = train_sparse_nmf(
+        n_components=4,
+        max_iter=5,
+        device=device,
+        verbose=True,  # also covers the verbose post-load print
+        embeddings_save_path=str(emb),
+        model_save_path=str(mod),
+        normalize_outputs=True,
+    )
+    norms = np.linalg.norm(W, axis=1)
+    nonzero = norms > 1e-6
+    np.testing.assert_allclose(norms[nonzero], 1.0, atol=1e-4)
+
+
 def test_train_sparse_nmf_normalize_inputs_runs(small_sparse, device):
     """``normalize_inputs=True`` L2-normalizes each row of X before
     training (uses sklearn.preprocessing.normalize). Different
@@ -619,32 +687,61 @@ def test_autoencoder_sparse_to_torch_converts_scipy(small_sparse, device):
 # ── _compute_recon_values_chunked direct coverage ───────────────────
 
 
-def test_compute_recon_values_chunked_path_with_small_chunk(device):
-    """The chunked branch (lines 130-168) only fires when
-    ``nnz > chunk_size``. Default chunk_size=50_000 and our
-    fixtures have nnz~4k, so the chunk path stays unreached unless
-    we call it directly with a small chunk_size."""
+def test_compute_recon_values_chunked_path_with_large_nnz(device):
+    """The chunked branch (lines 130-168) fires when
+    ``nnz > adaptive_chunk_size``. The internal floor on
+    adaptive_chunk_size is 500, so a small explicit ``chunk_size``
+    isn't enough — we need ``nnz > 500``."""
     import torch
 
     from sparse_nmf._core import _compute_recon_values_chunked
 
-    nnz = 200
+    nnz = 1_500  # > 500 floor
     n_components = 4
     n_features = 30
     rng = torch.Generator().manual_seed(0)
     W_rows = torch.rand(nnz, n_components, generator=rng)
     H = torch.rand(n_components, n_features, generator=rng)
     col_idx = torch.randint(0, n_features, (nnz,), generator=rng)
-    # chunk_size=50 → forces multiple chunks (200/50 = 4 chunks).
     out = _compute_recon_values_chunked(
-        W_rows, H, col_idx, chunk_size=50, device=torch.device("cpu")
+        W_rows, H, col_idx, chunk_size=400, device=torch.device("cpu")
     )
     assert out.shape == (nnz,)
-    # Verify against the unchunked (single-pass) reference.
-    ref = _compute_recon_values_chunked(
-        W_rows, H, col_idx, chunk_size=10_000, device=torch.device("cpu")
+    # Validate against a hand-rolled per-row reference.
+    expected = torch.stack([W_rows[i] @ H[:, col_idx[i]] for i in range(nnz)])
+    torch.testing.assert_close(out, expected, atol=1e-4, rtol=1e-4)
+
+
+def test_compute_recon_values_chunked_with_large_nnz_and_components(device):
+    """The combined branch — chunked (nnz > adaptive_chunk_size)
+    AND ``n_components > 512`` — exercises the sub-chunking inside
+    chunks (lines 144-153). Need to pass an explicit chunk_size of
+    at most 500 to force chunking despite the high adaptive ceiling
+    that 600-component memory math computes."""
+    import torch
+
+    from sparse_nmf._core import _compute_recon_values_chunked
+
+    nnz = 700
+    n_components = 600  # > 512 → sub-chunking branch
+    n_features = 20
+    rng = torch.Generator().manual_seed(2)
+    W_rows = torch.rand(nnz, n_components, generator=rng)
+    H = torch.rand(n_components, n_features, generator=rng)
+    col_idx = torch.randint(0, n_features, (nnz,), generator=rng)
+    # chunk_size=400 → after the max(500, ...) floor → 500. nnz=700
+    # > 500 → chunked path. Inside each chunk, n_components > 512 →
+    # sub-chunked.
+    out = _compute_recon_values_chunked(
+        W_rows, H, col_idx, chunk_size=400, device=torch.device("cpu")
     )
-    torch.testing.assert_close(out, ref, atol=1e-5, rtol=1e-5)
+    assert out.shape == (nnz,)
+    # Hand-rolled reference for spot-check on first 100 rows
+    # (full check is too slow with 600 components).
+    expected_subset = torch.stack(
+        [W_rows[i] @ H[:, col_idx[i]] for i in range(100)]
+    )
+    torch.testing.assert_close(out[:100], expected_subset, atol=1e-3, rtol=1e-3)
 
 
 def test_compute_recon_values_chunked_handles_large_n_components(device):

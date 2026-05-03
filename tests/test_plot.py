@@ -173,3 +173,18 @@ def test_plot_handles_more_factors_than_default_cols(factor_matrix):
     fig = plot_nmf_factor_distributions(W_wide, return_fig=True)
     assert fig is not None
     assert len(fig.axes) >= 9
+
+
+def test_plot_handles_all_zero_factor():
+    """When a factor column is entirely below ``zero_threshold`` and
+    ``filter_zeros=True``, the function shows an "All zeros" text
+    annotation in that subplot instead of trying to plot an empty
+    histogram (lines 3727-3733)."""
+    n, k = 100, 4
+    W = np.abs(np.random.RandomState(2).randn(n, k).astype(np.float32)) + 0.1
+    # Force one factor to be all-zero.
+    W[:, 0] = 0.0
+    fig = plot_nmf_factor_distributions(
+        W, filter_zeros=True, zero_threshold=1e-3, return_fig=True
+    )
+    assert fig is not None

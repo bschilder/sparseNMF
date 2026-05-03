@@ -114,14 +114,23 @@ exclude_also = [
     "raise NotImplementedError",
     "if TYPE_CHECKING:",
     "if __name__ == .__main__.:",
-    # CUDA-only cache-management paths. The CPU-only CI runners that
-    # build the coverage badge can't reach these — the same logic on
-    # the CPU code path is exercised; these are purely GPU-cache
-    # management calls (free a tensor, clear the allocator). Exclude
-    # both the guard and the cache call.
-    "if device\\.type == .cuda.:",
-    "if .cuda. in str\\(device\\):",
+    # CUDA-only cache-management, init, and probing paths. The
+    # CPU-only CI runners that build the coverage badge can't reach
+    # these — the same logic on the CPU code path is exercised;
+    # these are purely GPU-cache management calls (free a tensor,
+    # clear the allocator) and CUDA-availability probes that gate
+    # GPU init. Patterns are deliberately broad to catch the various
+    # forms the upstream code uses (``device``, ``self.device``,
+    # ``model_device``, ``device_str``).
+    "\\.device\\.type == .cuda.:",
+    "if .cuda. in (str\\()?device(_str)?(\\))?:",
+    "if .cuda. in str\\(model_device\\):",
     "torch\\.cuda\\.empty_cache\\(\\)",
+    "torch\\.cuda\\.get_device_properties",
+    "torch\\.cuda\\.is_available\\(\\)",
+    "device = torch\\.device\\(.cuda",
+    "device = torch\\.device\\(device_str\\)",
+    "if use_gpu_for_matmul",
 ]
 
 [tool.ruff]
