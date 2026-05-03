@@ -12,7 +12,7 @@
   <a href="https://github.com/bschilder/sparseNMF/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/bschilder/sparseNMF/actions/workflows/ci.yml/badge.svg"/></a>
   <a href="https://github.com/bschilder/sparseNMF/actions/workflows/docker.yml"><img alt="Docker" src="https://github.com/bschilder/sparseNMF/actions/workflows/docker.yml/badge.svg"/></a>
   <a href="https://github.com/bschilder/sparseNMF/blob/main/coverage.svg"><img alt="Coverage" src="https://raw.githubusercontent.com/bschilder/sparseNMF/main/coverage.svg"/></a>
-  <a href="https://bschilder.github.io/sparseNMF/"><img alt="Docs" src="https://github.com/bschilder/sparseNMF/actions/workflows/docs.yml/badge.svg"/></a>
+  <a href="https://sparsenmf.netlify.app/"><img alt="Docs" src="https://api.netlify.com/api/v1/badges/REPLACE-WITH-NETLIFY-SITE-ID/deploy-status"/></a>
   <a href="https://github.com/bschilder/sparseNMF/releases"><img alt="Releases" src="https://img.shields.io/badge/releases-on_GitHub-blue?logo=github&logoColor=white"/></a>
   <a href="https://github.com/bschilder/sparseNMF/pkgs/container/sparsenmf"><img alt="Container" src="https://img.shields.io/badge/ghcr.io-sparsenmf-2496ED?logo=docker&logoColor=white"/></a>
   <img alt="Python" src="https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue"/>
