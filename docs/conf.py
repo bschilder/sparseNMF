@@ -92,5 +92,5 @@ html_context = {
 }
 
 # ── MyST (Markdown) ─────────────────────────────────────────────────
-myst_enable_extensions = ["colon_fence", "deflist", "linkify", "strikethrough"]
+myst_enable_extensions = ["colon_fence", "deflist", "strikethrough"]
 myst_heading_anchors = 3
