@@ -14,6 +14,14 @@ name: CI
 on:
   push:
     branches: [main]
+    # The badge auto-commit step below pushes a new
+    # ``docs/_static/coverage.svg`` after every CI run. If we let
+    # those re-trigger CI, we get an infinite loop. Skip via
+    # ``paths-ignore`` rather than a commit-message marker so the
+    # *Docs* workflow (which we DO want to fire on the auto-commit
+    # so the deployed badge refreshes) still runs.
+    paths-ignore:
+      - 'docs/_static/coverage.svg'
   pull_request:
     branches: [main]
 
@@ -80,20 +88,13 @@ jobs:
       - name: Commit coverage badge if changed
         if: ${{ matrix.python == '3.11' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         env:
-          # ``[skip actions]`` (NOT ``[skip ci]``!) prevents the
-          # auto-commit from re-triggering this same workflow —
-          # avoiding the infinite loop where every CI run produces a
-          # new SVG → new commit → new run.
-          #
-          # ``[skip ci]`` would also work for GH Actions, but Netlify
-          # ALSO honors ``[skip ci]`` (see
-          # docs.netlify.com/configure-builds/ignore-builds/), so the
-          # auto-committed badge would never be picked up by a docs
-          # deploy and the public badge URL would stay stale.
-          # ``[skip actions]`` is recognized by GH Actions but not by
-          # Netlify — so we skip the rebuild loop here while still
-          # letting the docs site refresh.
-          COMMIT_MSG: "chore(ci): update coverage.svg [skip actions]"
+          # No ``[skip ci]`` / ``[skip actions]`` marker — the
+          # workflow-level ``paths-ignore`` on docs/_static/coverage.svg
+          # already prevents this commit from re-triggering CI. The
+          # Docs workflow has no such ignore (and we WANT it to fire
+          # so the published badge URL refreshes), which a commit-
+          # message skip would also block.
+          COMMIT_MSG: "chore(ci): update coverage.svg"
         run: |
           set -euo pipefail
           git config user.email "github-actions[bot]@users.noreply.github.com"

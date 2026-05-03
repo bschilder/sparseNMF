@@ -77,7 +77,7 @@ dev = ["sparse-nmf[viz,docs,test]"]
 
 [project.urls]
 Homepage = "https://github.com/bschilder/sparseNMF"
-Documentation = "https://sparsenmf.netlify.app"
+Documentation = "https://bschilder.github.io/sparseNMF"
 Repository = "https://github.com/bschilder/sparseNMF"
 Issues = "https://github.com/bschilder/sparseNMF/issues"
 Changelog = "https://github.com/bschilder/sparseNMF/releases"

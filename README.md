@@ -9,9 +9,9 @@
 <p align="center">
   <a href="https://github.com/bschilder/sparseNMF/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/bschilder/sparseNMF/actions/workflows/ci.yml/badge.svg"/></a>
   <a href="https://github.com/bschilder/sparseNMF/actions/workflows/docker.yml"><img alt="Docker" src="https://github.com/bschilder/sparseNMF/actions/workflows/docker.yml/badge.svg"/></a>
-  <a href="https://sparsenmf.netlify.app/"><img alt="Coverage" src="https://sparsenmf.netlify.app/_static/coverage.svg"/></a>
-  <a href="https://sparsenmf.netlify.app/"><img alt="Docs" src="https://img.shields.io/website?url=https%3A%2F%2Fsparsenmf.netlify.app&label=docs&up_message=live&down_message=down&logo=readthedocs&logoColor=white"/></a>
-  <a href="https://github.com/bschilder/sparseNMF/releases"><img alt="Releases" src="https://img.shields.io/badge/releases-on_GitHub-blue?logo=github&logoColor=white"/></a>
+  <a href="https://bschilder.github.io/sparseNMF/"><img alt="Coverage" src="https://bschilder.github.io/sparseNMF/_static/coverage.svg"/></a>
+  <a href="https://bschilder.github.io/sparseNMF/"><img alt="Docs" src="https://img.shields.io/website?url=https%3A%2F%2Fbschilder.github.io%2FsparseNMF%2F&label=docs&up_message=live&down_message=down&logo=readthedocs&logoColor=white"/></a>
+  <a href="https://github.com/bschilder/sparseNMF/releases"><img alt="Release" src="https://img.shields.io/github/v/release/bschilder/sparseNMF?logo=github&logoColor=white&label=release"/></a>
   <a href="https://github.com/bschilder/sparseNMF/pkgs/container/sparsenmf"><img alt="Container" src="https://img.shields.io/badge/ghcr.io-sparsenmf-2496ED?logo=docker&logoColor=white"/></a>
   <img alt="Python" src="https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue"/>
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MIT-green"/></a>
@@ -19,28 +19,20 @@
 </p>
 
 <!--
-  Note on badges while the repo is still private:
-  - CI / Docker badges are GitHub-native and work for authenticated viewers.
-  - Coverage badge: CI writes ``docs/_static/coverage.svg``; Netlify serves
-    it publicly at ``sparsenmf.netlify.app/_static/coverage.svg`` so the
-    badge resolves for anyone (raw.githubusercontent.com would 404 for
-    anonymous viewers while the repo is private).
-  - Docs badge: shields.io website check that pings the live Netlify URL —
-    no Netlify site-ID required.
-  - Other badges are static images so they work regardless of repo visibility.
-  - When the repo goes public, swap the static "Releases" badge above for the
-    dynamic ``img.shields.io/github/v/release/...`` shield that pulls actual version data.
-  - The Docs site is built by ``.github/workflows/docs.yml`` and
-    published to GitHub Pages at https://bschilder.github.io/sparseNMF/
-    on every push to main. Uses sphinx_rtd_theme — byte-equivalent
-    to the look of readthedocs.io. To enable Pages on this repo if
-    not already on:
-      1. Repo → Settings → Pages.
-      2. Source: "GitHub Actions".
-      3. First build runs on the next push to main (or trigger
-         manually from the Actions tab → Docs → Run workflow).
-    ``.readthedocs.yaml`` is kept around in case you ever want to
-    move to RTD Business (required for hosted RTD on private repos).
+  Notes on badges:
+  - CI / Docker / Release badges are GitHub-native.
+  - Coverage badge: CI writes ``docs/_static/coverage.svg``; the
+    Docs workflow rebuilds the Sphinx site on the auto-commit and
+    publishes it to GitHub Pages, so the same file shows up at
+    ``bschilder.github.io/sparseNMF/_static/coverage.svg``.
+  - Docs badge: shields.io website check that pings the live
+    GH Pages URL.
+  - The docs site is built by ``.github/workflows/docs.yml`` and
+    deployed to GitHub Pages on every push to main. Uses
+    sphinx_rtd_theme — byte-equivalent to readthedocs.io.
+    Repo → Settings → Pages → Source must be set to "GitHub
+    Actions" (one-time setup; ``actions/deploy-pages@v4`` does
+    the rest).
 -->
 
 ---
@@ -65,7 +57,7 @@ than the W/H matrices directly.
 
 A deeper survey of prior NMF implementations and where this package
 sits among them lives in the docs:
-[**Prior works** →](https://sparsenmf.netlify.app/prior_works.html)
+[**Prior works** →](https://bschilder.github.io/sparseNMF/prior_works.html)
 
 ## Install
 
@@ -116,7 +108,7 @@ z, model = train_joint_model(
 ```
 
 See [`examples/`](examples/) for runnable end-to-end scripts and the
-[**API reference**](https://sparsenmf.netlify.app/api.html)
+[**API reference**](https://bschilder.github.io/sparseNMF/api.html)
 for every public function.
 
 ## Sample data
