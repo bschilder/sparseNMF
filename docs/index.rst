@@ -22,6 +22,7 @@ densely in VRAM*.
 
    install
    quickstart
+   tutorials
    examples
 
 .. toctree::

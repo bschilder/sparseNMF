@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="https://github.com/bschilder/sparseNMF/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/bschilder/sparseNMF/actions/workflows/ci.yml/badge.svg"/></a>
-  <a href="https://codecov.io/gh/bschilder/sparseNMF"><img alt="Coverage" src="https://codecov.io/gh/bschilder/sparseNMF/branch/main/graph/badge.svg"/></a>
+  <a href="https://github.com/bschilder/sparseNMF/blob/main/coverage.svg"><img alt="Coverage" src="https://raw.githubusercontent.com/bschilder/sparseNMF/main/coverage.svg"/></a>
   <a href="https://sparseNMF.readthedocs.io/en/latest/"><img alt="Docs" src="https://readthedocs.org/projects/sparsenmf/badge/?version=latest"/></a>
   <a href="https://github.com/bschilder/sparseNMF/pkgs/container/sparsenmf"><img alt="Container" src="https://img.shields.io/badge/ghcr.io-sparsenmf-2496ED?logo=docker&logoColor=white"/></a>
   <a href="https://github.com/bschilder/sparseNMF/releases"><img alt="Release" src="https://img.shields.io/github/v/release/bschilder/sparseNMF?include_prereleases&sort=semver"/></a>

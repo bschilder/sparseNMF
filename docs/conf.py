@@ -29,8 +29,13 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx_autodoc_typehints",
     "sphinx_copybutton",
-    "myst_parser",
+    "myst_nb",  # supersedes myst_parser; renders .ipynb with outputs
 ]
+
+# Notebooks ship with their outputs already baked in (we run them
+# locally before committing). Don't re-execute on RTD — saves build
+# time and avoids needing torch/CUDA in the docs environment.
+nb_execution_mode = "off"
 
 source_suffix = {".rst": "restructuredtext", ".md": "markdown"}
 master_doc = "index"
