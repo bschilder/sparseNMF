@@ -56,6 +56,22 @@ test = [
     "ruff>=0.5",
     "mypy>=1.10",
     "coverage-badge>=1.1",
+    # matplotlib + seaborn needed to test ``plot_nmf_factor_distributions``
+    # — otherwise that 230-line function stays uncovered. Cheap to
+    # install on CI (~50MB), and skipping the test instead would
+    # leave a chunk of public API unverified.
+    "matplotlib>=3.7",
+    "seaborn>=0.12",
+    # pyarrow is pandas's parquet engine — needed to test
+    # ``extract_and_aggregate_attention(save_dir=...)`` which writes
+    # the aggregated DataFrames as .parquet. Same logic as matplotlib:
+    # this is a real upstream dep that users with that flag set will
+    # also need; better to test the full code path on CI.
+    "pyarrow>=14.0",
+    # scikit-learn supplies ``normalize`` for the ``normalize_inputs=True``
+    # branch of train_sparse_nmf. Standalone sparseNMF doesn't need
+    # the rest of sklearn for runtime, but the test path does.
+    "scikit-learn>=1.3",
 ]
 dev = ["sparse-nmf[viz,docs,test]"]
 
@@ -98,6 +114,14 @@ exclude_also = [
     "raise NotImplementedError",
     "if TYPE_CHECKING:",
     "if __name__ == .__main__.:",
+    # CUDA-only cache-management paths. The CPU-only CI runners that
+    # build the coverage badge can't reach these — the same logic on
+    # the CPU code path is exercised; these are purely GPU-cache
+    # management calls (free a tensor, clear the allocator). Exclude
+    # both the guard and the cache call.
+    "if device\\.type == .cuda.:",
+    "if .cuda. in str\\(device\\):",
+    "torch\\.cuda\\.empty_cache\\(\\)",
 ]
 
 [tool.ruff]
