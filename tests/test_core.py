@@ -453,12 +453,10 @@ def test_negative_input_is_taken_absolute(small_sparse, device, capsys):
 
 def test_train_sparse_nmf_normalize_outputs_yields_unit_rows(small_sparse, device):
     """``normalize_outputs=True`` L2-normalizes each row of W to unit
-    length via the package's AoU.utils.l2_normalize shim (registered
-    in sparse_nmf/__init__.py since the verbatim-vendored _core.py
-    imports it from a namespace that doesn't exist standalone).
+    length via :func:`sparse_nmf.utils.l2_normalize`.
 
     Non-zero rows should have L2 norm ≈ 1.0; zero rows pass through
-    unchanged (the shim guards div-by-zero)."""
+    unchanged (the helper guards div-by-zero)."""
     from sparse_nmf import train_sparse_nmf
 
     W, _ = train_sparse_nmf(
@@ -515,7 +513,7 @@ def test_train_sparse_nmf_normalize_outputs_reload(small_sparse, tmp_path, devic
         model_save_path=str(mod),
     )
     # Second run with normalize_outputs=True — loads, detects
-    # un-normalized, re-normalizes via the AoU shim.
+    # un-normalized, re-normalizes via sparse_nmf.utils.l2_normalize.
     W, _ = train_sparse_nmf(
         n_components=4,
         max_iter=5,
@@ -588,14 +586,14 @@ def test_train_sparse_nmf_normalize_inputs_runs(small_sparse, device):
     assert np.isfinite(W_norm).all()
 
 
-def test_l2_normalize_shim_handles_zero_rows():
-    """Direct exercise of the AoU shim: zero-norm rows must be
-    returned unchanged (otherwise downstream code divides by zero
-    when caller forgot to filter)."""
-    from sparse_nmf import _l2_normalize
+def test_l2_normalize_handles_zero_rows():
+    """Direct exercise of :func:`sparse_nmf.utils.l2_normalize`:
+    zero-norm rows must be returned unchanged (otherwise downstream
+    code divides by zero when callers forget to filter)."""
+    from sparse_nmf.utils import l2_normalize
 
     X = np.array([[0.0, 0.0, 0.0], [3.0, 4.0, 0.0]], dtype=np.float32)
-    out = _l2_normalize(X)
+    out = l2_normalize(X)
     # Zero row: unchanged.
     np.testing.assert_array_equal(out[0], X[0])
     # Non-zero row: unit norm.

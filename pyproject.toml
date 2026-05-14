@@ -141,9 +141,11 @@ extend-exclude = [
     # Notebook outputs are rendered + committed; their per-cell
     # imports trip E402, but they're not maintained code we lint.
     "docs/notebooks/*.ipynb",
-    # ``_core.py`` is the verbatim-vendored module from
-    # bschilder/AoU. Reformatting it would diverge from upstream
-    # and fight every sync.
+    # ``_core.py`` is a 4k-line legacy module carried in as-is. A full
+    # ruff pass would churn ~400 pre-existing whitespace / f-string
+    # warnings for no behavioral win — excluded so style is enforced on
+    # the rest of the package without inflating diffs on every targeted
+    # edit here.
     "src/sparse_nmf/_core.py",
 ]
 
@@ -162,11 +164,9 @@ ignore = [
     "B008",  # function-call-in-default-argument — common idiom in scientific code
 ]
 
-# ``_core.py`` is the verbatim-vendored module from bschilder/AoU.
-# Its style isn't in scope for this package — fixing 400+ pre-existing
-# whitespace / f-string warnings in a 4k-line file would invite merge
-# conflicts every time AoU updates upstream. Linting is enforced on
-# the wrapper / tests / docs we own.
+# ``_core.py`` is excluded from lint enforcement — see the matching
+# comment above in ``[tool.ruff].extend-exclude``. Linting is enforced
+# on the rest of the package (utils, tests, docs).
 [tool.ruff.lint.per-file-ignores]
 "src/sparse_nmf/_core.py" = ["E", "W", "F", "I", "B", "UP", "SIM"]
 

@@ -15,7 +15,7 @@ Two modes are available:
 Examples:
 ---------
 Standalone NMF:
-    >>> from AoU.phenome.sparseNMF import SparseNMF
+    >>> from sparse_nmf import SparseNMF
     >>> from scipy.sparse import csr_matrix
     >>> 
     >>> # Create a sparse matrix (e.g., from gene associations)
@@ -28,7 +28,7 @@ Standalone NMF:
     >>> # X_reduced is now (n_samples, 256) dense array ready for autoencoder
 
 Joint Model (Recommended):
-    >>> from AoU.phenome.sparseNMF import train_joint_model
+    >>> from sparse_nmf import train_joint_model
     >>> 
     >>> # Train joint model end-to-end
     >>> z, model = train_joint_model(
@@ -242,7 +242,7 @@ class SparseNMF:
     
     Examples
     --------
-    >>> from AoU.phenome.sparseNMF import SparseNMF
+    >>> from sparse_nmf import SparseNMF
     >>> from scipy.sparse import random
     >>> 
     >>> # Create a sparse matrix
@@ -1062,7 +1062,7 @@ class SparseNMF_Autoencoder(nn.Module):
     
     Examples
     --------
-    >>> from AoU.phenome.sparseNMF import SparseNMF_Autoencoder
+    >>> from sparse_nmf import SparseNMF_Autoencoder
     >>> from scipy.sparse import csr_matrix
     >>> 
     >>> # Create and train model (dimensions inferred automatically)
@@ -2046,7 +2046,7 @@ def train_sparse_nmf(
         
     Examples
     --------
-    >>> from AoU.phenome.sparseNMF import train_sparse_nmf
+    >>> from sparse_nmf import train_sparse_nmf
     >>> 
     >>> # Train and save model
     >>> X_reduced, model = train_sparse_nmf(
@@ -2091,7 +2091,7 @@ def train_sparse_nmf(
             mean_norm = np.mean(row_norms)
             # If mean norm is close to 1.0 (within 0.01), assume already normalized
             if abs(mean_norm - 1.0) > 0.01:
-                from AoU.utils import l2_normalize
+                from sparse_nmf.utils import l2_normalize
                 X_reduced = l2_normalize(X_reduced)
                 if verbose:
                     print(f"  Normalized embeddings to unit length")
@@ -2175,7 +2175,7 @@ def train_sparse_nmf(
     
     # Normalize outputs if requested
     if normalize_outputs:
-        from AoU.utils import l2_normalize
+        from sparse_nmf.utils import l2_normalize
         X_reduced = l2_normalize(X_reduced)
         if verbose:
             print(f"Normalized output embeddings to unit length")
@@ -2265,7 +2265,7 @@ def sparse_nmf(
         
     Examples
     --------
-    >>> from AoU.phenome.sparseNMF import sparse_nmf
+    >>> from sparse_nmf import sparse_nmf
     >>> # MSE only (default, fast multiplicative updates)
     >>> X_reduced = sparse_nmf(X, n_components=256, device='cuda:0')
     >>> 
@@ -2323,7 +2323,7 @@ def extract_attention_weights(model, X_nmf, batch_size=256, device=None, verbose
     
     Examples
     --------
-    >>> from AoU.phenome.sparseNMF import extract_attention_weights
+    >>> from sparse_nmf import extract_attention_weights
     >>> # Works with feature attention
     >>> attention_weights = extract_attention_weights(model, X_nmf, batch_size=1024)
     >>> # Also works with transformer attention
@@ -2414,12 +2414,12 @@ def extract_attention_weights(model, X_nmf, batch_size=256, device=None, verbose
             elif has_transformer:  # pragma: no cover
                 # Transformer attention: extract from last transformer
                 # block. ``SparseNMF_Autoencoder`` in this package
-                # never sets ``use_transformer=True`` (no transformer
-                # architecture is shipped here — that lives in the
-                # parent AoU codebase). The branch is preserved for
-                # API parity with upstream extract_attention_weights;
+                # never sets ``use_transformer=True`` — no transformer
+                # architecture is shipped here. The branch is preserved
+                # so external callers that subclass the model with a
+                # transformer stack can reuse ``extract_attention_weights``;
                 # coverage-excluded since it can't be reached without
-                # an external transformer-capable model class.
+                # such a subclass.
                 # Reshape to transformer format: (batch_size, n_components, 1)
                 batch_expanded = batch_tensor.unsqueeze(-1)  # (batch_size, n_components, 1)
                 
@@ -2508,7 +2508,7 @@ def trace_attention_to_genes(attention_weights_nmf, nmf_H, normalize=True):
     
     Examples
     --------
-    >>> from AoU.phenome.sparseNMF import extract_attention_weights, trace_attention_to_genes
+    >>> from sparse_nmf import extract_attention_weights, trace_attention_to_genes
     >>> 
     >>> # Extract attention on NMF components
     >>> attention_nmf = extract_attention_weights(model, X_nmf)
@@ -2655,7 +2655,7 @@ def extract_and_aggregate_attention(
     
     Examples
     --------
-    >>> from AoU.phenome.sparseNMF import extract_and_aggregate_attention
+    >>> from sparse_nmf import extract_and_aggregate_attention
     >>> 
     >>> gene_df, nmf_df = extract_and_aggregate_attention(
     ...     model, X_nmf, nmf.H,
@@ -3606,7 +3606,7 @@ def plot_nmf_factor_distributions(
         
     Examples
     --------
-    >>> from AoU.phenome.sparseNMF import train_sparse_nmf, plot_nmf_factor_distributions
+    >>> from sparse_nmf import train_sparse_nmf, plot_nmf_factor_distributions
     >>> 
     >>> # Train NMF
     >>> X_nmf, nmf_model = train_sparse_nmf(X_sparse, n_components=256)
@@ -3907,7 +3907,7 @@ def compute_attention_correlation(
     
     Examples
     --------
-    >>> from AoU.phenome.sparseNMF import compute_attention_correlation
+    >>> from sparse_nmf import compute_attention_correlation
     >>> import numpy as np
     >>> 
     >>> # Compute correlations
