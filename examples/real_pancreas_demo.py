@@ -39,6 +39,19 @@ depth axis. The sparseNMF panel in row 3 has depth scattered
 uniformly within each cluster, no gradient — the magnitude axis has
 been dissolved.
 
+**Quantifying the smoking gun.** Each panel reports a *depth-R²*
+metric: the R² of predicting ``log10(depth)`` from the 2-D UMAP
+coordinates using a kNN regressor (k=30). High depth-R² means cells
+in the same embedding neighbourhood have similar depths — i.e., the
+embedding still encodes the depth axis. Low (or near-zero) depth-R²
+means depth has been scattered uniformly across the embedding —
+which is what we want when depth is technical. Together with the
+silhouette pair this triple-metric tells the full story:
+
+* high cell-type silhouette ↑   → clusters cleanly by biology
+* low tech silhouette ↓ (near 0) → batches are well-mixed
+* low depth-R² ↓ (near 0)         → depth signal is not encoded
+
 The dataset is fetched from figshare on first run (~301 MB, cached
 to ``~/.cache/sparse-nmf/``); a stratified subsample by
 (tech × cell-type) keeps the demo runtime under ~3 min on CPU.
@@ -187,6 +200,27 @@ def umap_project(X_high: np.ndarray, seed: int) -> np.ndarray:
     return umap.UMAP(n_components=2, random_state=seed, n_jobs=1).fit_transform(X_high)
 
 
+def depth_r2(z: np.ndarray, log_depth: np.ndarray, k: int = 30) -> float:
+    """Fraction of log-depth variance explained by the 2-D embedding.
+
+    Concretely: predict ``log_depth[i]`` from the average ``log_depth``
+    of the ``k`` nearest neighbours of cell ``i`` in the embedding, and
+    report the R² of that predictor. High R² means the embedding has
+    organized cells of similar depth together — i.e., the depth axis
+    is still encoded in the latent representation. Low R² means depth
+    is scattered uniformly across the embedding — i.e., the depth axis
+    has been dissolved (which is what we want when depth is technical).
+
+    Non-parametric kNN regression is used instead of linear regression
+    because UMAP coordinates are highly non-linear; a straight-line
+    correlation between an axis and depth would underestimate any
+    depth structure that curves through the 2-D plane.
+    """
+    from sklearn.neighbors import KNeighborsRegressor
+
+    return float(KNeighborsRegressor(n_neighbors=k).fit(z, log_depth).score(z, log_depth))
+
+
 def _palette(n: int) -> list[str]:
     """A reasonably distinct, color-blind-friendly palette of N colors."""
     base = [
@@ -214,7 +248,7 @@ def _palette(n: int) -> list[str]:
 
 def make_figure(
     embeddings: dict[str, np.ndarray],
-    metrics: dict[str, tuple[float, float]],
+    metrics: dict[str, tuple[float, float, float]],
     celltype: np.ndarray,
     tech: np.ndarray,
     log_depth: np.ndarray,
@@ -248,7 +282,7 @@ def make_figure(
     sc_depth = None
     for col, name in enumerate(methods):
         z = embeddings[name][perm]
-        sg, sb = metrics[name]
+        sg, sb, r2 = metrics[name]
 
         ax = axes[0, col]
         ax.scatter(
@@ -263,8 +297,10 @@ def make_figure(
             linewidth=0,
         )
         ax.set_title(
-            f"{name}\nsilhouette: cell-type={sg:+.2f}  tech={sb:+.2f}",
-            fontsize=10,
+            f"{name}\n"
+            f"silhouette: cell-type={sg:+.2f}  tech={sb:+.2f}\n"
+            f"depth R² (kNN, k=30) = {r2:+.2f}  (lower is better)",
+            fontsize=9,
         )
         if col == 0:
             ax.set_ylabel("colored by\npublished cell type", fontsize=11)
@@ -372,8 +408,10 @@ def main() -> int:
     k = int(np.clip(min(X.shape) // 8, 32, 1024))
     print(f"  shared latent dim k={k}")
 
+    log_depth = np.log10(n_counts + 1.0)
+
     embeddings: dict[str, np.ndarray] = {}
-    metrics: dict[str, tuple[float, float]] = {}
+    metrics: dict[str, tuple[float, float, float]] = {}
     try:
         from sklearn.metrics import silhouette_score
     except ImportError:
@@ -389,14 +427,15 @@ def main() -> int:
             sb = float(silhouette_score(z, tech))
         else:
             sg, sb = float("nan"), float("nan")
-        metrics[name] = (sg, sb)
+        r2 = depth_r2(z, log_depth)
+        metrics[name] = (sg, sb, r2)
         print(
             f"  {name:>10s}: {time.time() - t0:6.1f}s  "
-            f"silhouette(cell-type)={sg:+.3f}  silhouette(tech)={sb:+.3f}"
+            f"silhouette(cell-type)={sg:+.3f}  silhouette(tech)={sb:+.3f}  "
+            f"depth-R²={r2:+.3f}"
         )
 
     out = Path(__file__).resolve().parents[1] / "docs" / "_static" / "real_pancreas_demo.png"
-    log_depth = np.log10(n_counts + 1.0)
     make_figure(embeddings, metrics, celltype, tech, log_depth, out)
     print(f"  wrote {out.relative_to(out.parents[2])}")
     return 0
