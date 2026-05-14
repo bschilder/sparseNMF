@@ -26,6 +26,7 @@ docs/_autosummary/
 .vscode/
 .idea/
 .DS_Store
+.claude/settings.local.json
 
 # Jupyter checkpoints
 .ipynb_checkpoints/
@@ -36,6 +37,7 @@ docs/_autosummary/
 *.pkl
 *.pt
 *.ckpt
+*.h5ad
 scratch/
 artifacts/
 

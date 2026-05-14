@@ -116,6 +116,23 @@ python examples/sparsity_confound_demo.py
 # → writes docs/_static/sparsity_confound_demo.png
 ```
 
+A real-data companion runs the same comparison on the 10x Genomics
+PBMC 3k dataset (2,638 real PBMCs with 8 published cell types, fetched
+via `scanpy`):
+
+```bash
+python examples/real_pbmc3k_demo.py
+# → writes docs/_static/real_pbmc3k_demo.png
+```
+
+On this clean single-protocol dataset the picture is less dramatic but
+still informative: PCA does well on its own (cell-type silhouette
+≈ +0.44), vanilla NMF without preprocessing collapses cell types
+together at small sample sizes (+0.16), and sparseNMF — with
+`normalize_inputs=True` as the default — matches PCA's cell-type
+separation while preserving the parts-based interpretable factorization
+NMF gives you.
+
 ## Install
 
 ```bash
