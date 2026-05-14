@@ -82,6 +82,10 @@ Writes ``docs/_static/real_pancreas_demo.png``.
 
 from __future__ import annotations
 
+# Determinism setup must run before numpy / torch import so the
+# single-threaded BLAS / OMP env vars are read at thread-pool init.
+from _determinism import set_global_seed  # noqa: I001,E402,F401
+
 import time
 import urllib.request
 from pathlib import Path
@@ -392,6 +396,7 @@ def make_figure(
 
 def main() -> int:
     seed = 0
+    set_global_seed(seed)
     print("Loading scIB pancreas (cached to ~/.cache/sparse-nmf/)...")
     X, celltype, tech = load_pancreas()
     n_counts = np.asarray(X.sum(axis=1)).ravel()
