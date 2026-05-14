@@ -343,6 +343,44 @@ def test_train_sparse_nmf_save_then_load(small_sparse, tmp_path, device):
     assert model2.W is not None  # model loaded from disk
 
 
+def test_train_sparse_nmf_load_warns_on_normalize_inputs_mismatch(small_sparse, tmp_path, device):
+    """A cache trained with one ``normalize_inputs`` and reloaded with
+    the other must warn — silent reuse here returns the wrong W. Pins
+    the contract that protects callers from the default flip."""
+    import warnings
+
+    from sparse_nmf import train_sparse_nmf
+
+    emb = tmp_path / "embeddings.npy"
+    mod = tmp_path / "model.pkl"
+
+    train_sparse_nmf(
+        small_sparse,
+        n_components=4,
+        max_iter=5,
+        device=device,
+        verbose=False,
+        random_state=0,
+        normalize_inputs=False,
+        embeddings_save_path=str(emb),
+        model_save_path=str(mod),
+    )
+
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        train_sparse_nmf(
+            n_components=4,
+            max_iter=5,
+            device=device,
+            verbose=False,
+            normalize_inputs=True,  # mismatch with stored value
+            embeddings_save_path=str(emb),
+            model_save_path=str(mod),
+        )
+    msgs = [str(w.message) for w in caught]
+    assert any("normalize_inputs" in m and "False" in m and "True" in m for m in msgs), msgs
+
+
 def test_train_sparse_nmf_force_retrains(small_sparse, tmp_path, device):
     """``force=True`` should retrain even when both save paths exist
     (otherwise stale caches silently override new data)."""

@@ -2111,6 +2111,26 @@ def train_sparse_nmf(
         with open(model_save_path, 'rb') as f:
             model_dict = pickle.load(f)
         
+        # Guard against silent reuse of a model trained under a different
+        # preprocessing regime. The normalize_inputs default flipped from
+        # False → True; caches written before that may still be on disk.
+        # If the stored value is present and disagrees with what the
+        # caller requested, warn loudly — the returned W will not be what
+        # they think it is.
+        for _flag in ('normalize_inputs', 'normalize_outputs'):
+            _stored = model_dict.get(_flag)
+            _requested = locals()[_flag]
+            if _stored is not None and _stored != _requested:
+                import warnings as _warnings
+                _warnings.warn(
+                    f"Loaded model was trained with {_flag}={_stored} but the "
+                    f"current call requested {_flag}={_requested}. Returning "
+                    f"the stored embeddings as-is. Pass force=True to retrain "
+                    f"under the requested setting, or pass {_flag}={_stored} "
+                    f"to silence this warning.",
+                    stacklevel=2,
+                )
+
         # Reconstruct model object
         model = SparseNMF(
             n_components=model_dict['n_components'],
@@ -2221,6 +2241,14 @@ def train_sparse_nmf(
             'n_iter': model.n_iter_,
             'nonzero_mse_weight': model.nonzero_mse_weight,
             'nonzero_r2_weight': model.nonzero_r2_weight,
+            # Persist the preprocessing flags so a later load can verify
+            # the caller is asking for the same regime the model was
+            # trained under. Critical for the normalize_inputs default
+            # flip — old caches were trained with normalize_inputs=False
+            # but the new default is True, so silent reuse would return
+            # a model that doesn't match the caller's expectation.
+            'normalize_inputs': normalize_inputs,
+            'normalize_outputs': normalize_outputs,
         }
         with open(model_save_path, 'wb') as f:
             pickle.dump(model_dict, f)
