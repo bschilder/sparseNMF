@@ -1,16 +1,23 @@
-/* Give article images a soft hover cue so users notice they're
-   clickable. medium-zoom adds its own overlay styling at run time. */
+/* Hover affordance for zoomable images. Mirrors the selector in
+   zoom-init.js so the visual cue lines up with the actual zoomable
+   set across themes (sphinx-rtd-theme uses [role=main], other themes
+   use <main> or <article>). */
+[role="main"] img:not(.no-zoom):not(.logo),
+main img:not(.no-zoom):not(.logo),
 article img:not(.no-zoom):not(.logo) {
   cursor: zoom-in;
   transition: filter 0.15s ease;
 }
 
+[role="main"] img:not(.no-zoom):not(.logo):hover,
+main img:not(.no-zoom):not(.logo):hover,
 article img:not(.no-zoom):not(.logo):hover {
   filter: brightness(1.05);
 }
 
-/* The lightbox itself uses a dark background; ensure the close-on-Esc
-   and click-to-close hint colors stay readable. */
-.medium-zoom-overlay {
-  z-index: 9999;
+/* The lightbox uses a dark backdrop; keep it above the RTD theme's
+   sticky sidebar / breadcrumbs (default z-index ~500). */
+.medium-zoom-overlay,
+.medium-zoom-image--opened {
+  z-index: 9999 !important;
 }
