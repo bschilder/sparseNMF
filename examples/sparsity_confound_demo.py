@@ -116,36 +116,37 @@ def make_sparsity_confound_data(
     return X, np.asarray(groups), np.asarray(batches)
 
 
-def _two_d(emb: np.ndarray) -> np.ndarray:
-    """Coerce an (n, k>=2) embedding to (n, 2) by selecting the top-2
-    columns by variance — needed because sklearn NMF with ``n_components=2``
-    can be axis-aligned but we want consistent orientation."""
-    if emb.shape[1] == 2:
-        return emb
-    order = np.argsort(emb.var(axis=0))[::-1][:2]
-    return emb[:, order]
-
-
-def fit_pca(X: csr_matrix, seed: int) -> np.ndarray:
+def fit_pca(X: csr_matrix, seed: int, k: int) -> np.ndarray:
     from sklearn.decomposition import PCA
 
-    return PCA(n_components=2, random_state=seed).fit_transform(X.toarray())
+    return PCA(n_components=k, random_state=seed).fit_transform(X.toarray())
 
 
-def fit_nmf(X: csr_matrix, seed: int) -> np.ndarray:
+def fit_nmf(X: csr_matrix, seed: int, k: int) -> np.ndarray:
     from sklearn.decomposition import NMF
 
-    return NMF(n_components=2, init="nndsvd", max_iter=500, random_state=seed).fit_transform(X)
+    return NMF(n_components=k, init="nndsvd", max_iter=500, random_state=seed).fit_transform(X)
 
 
-def fit_sparse_nmf(X: csr_matrix, seed: int) -> np.ndarray:
-    # With smart defaults (``normalize_inputs=True``, ``patience=10``,
-    # ``n_components`` auto-sized from input shape), the call is now
-    # essentially zero-config. Production W is high-dimensional
-    # (auto-sized ~k=75 for this demo's 600 × 900 input); we project
-    # to 2-D with UMAP — the standard non-linear projector used in
-    # single-cell pipelines after a high-dim factorization, and the
-    # last step in real-world sparseNMF workflows.
+def fit_sparse_nmf(X: csr_matrix, seed: int, k: int) -> np.ndarray:
+    # With smart defaults (``normalize_inputs=True``, ``patience=10``),
+    # the call is essentially zero-config. We pass ``n_components=k``
+    # explicitly to match the baselines and keep the comparison fair.
+    W, _model = train_sparse_nmf(
+        X_sparse=X,
+        n_components=k,
+        device="cpu",
+        random_state=seed,
+        verbose=False,
+    )
+    return W
+
+
+def umap_project(X_high: np.ndarray, seed: int) -> np.ndarray:
+    """Shared 2-D projection step. The story we want to tell is about
+    the *latent representation* each method produces — UMAP is held
+    constant across PCA / NMF / sparseNMF so any cluster-quality
+    difference reflects the factorization, not the projector."""
     try:
         import umap
     except ImportError as e:
@@ -153,14 +154,7 @@ def fit_sparse_nmf(X: csr_matrix, seed: int) -> np.ndarray:
             "This demo requires umap-learn for the 2-D projection. "
             "Install with: pip install 'sparse-nmf[viz]'"
         ) from e
-
-    W, _model = train_sparse_nmf(
-        X_sparse=X,
-        device="cpu",
-        random_state=seed,
-        verbose=False,
-    )
-    return umap.UMAP(n_components=2, random_state=seed, n_jobs=1).fit_transform(W)
+    return umap.UMAP(n_components=2, random_state=seed, n_jobs=1).fit_transform(X_high)
 
 
 def make_figure(
@@ -280,8 +274,9 @@ def make_figure(
     axes[0, 0].legend(handles=handles, fontsize=8, loc="best", frameon=False)
 
     fig.suptitle(
-        "Biology is identical across batches — only sparsity differs.\n"
-        "PCA / NMF lock onto the nnz axis; sparseNMF recovers groups.",
+        "Same data, same latent dim k, same UMAP step.\n"
+        "PCA & NMF leak the per-cell nnz signal into the embedding; "
+        "sparseNMF removes it.",
         fontsize=12,
     )
     fig.tight_layout(rect=(0, 0, 1, 0.93))
@@ -300,6 +295,12 @@ def main() -> int:
         f"batch_high mean={nnz[batches == 1].mean():.0f}"
     )
 
+    # Same k for all three methods — matches sparseNMF's auto-sizing
+    # heuristic so the comparison is apples-to-apples: each method gets
+    # the same latent dimensionality before the shared UMAP step.
+    k = int(np.clip(min(X.shape) // 8, 32, 1024))
+    print(f"  shared latent dim k={k} (auto-sized from input shape)")
+
     embeddings: dict[str, np.ndarray] = {}
     metrics: dict[str, tuple[float, float]] = {}
     try:
@@ -309,7 +310,8 @@ def main() -> int:
 
     for name, fn in (("PCA", fit_pca), ("NMF", fit_nmf), ("sparseNMF", fit_sparse_nmf)):
         t0 = time.time()
-        z = _two_d(fn(X, seed))
+        high = fn(X, seed, k)
+        z = umap_project(high, seed)
         embeddings[name] = z
         if silhouette_score is not None:
             sg = float(silhouette_score(z, groups))
