@@ -678,6 +678,186 @@ When NOT to use ``sparseNMF``
 - You need a **likelihood-based generative model** (e.g. for
   imputation or counterfactual queries). Use scVI / scANVI.
 
+Beyond single-cell: factorization of gene-signature matrices
+------------------------------------------------------------
+
+The depth-confound framing above is written in single-cell terms
+because that's where this package was first stress-tested, but the
+input shape that ``sparseNMF`` is good at — a **sparse, non-negative
+matrix with magnitude-heterogeneous rows** — generalizes to a much
+wider class of biological data. Four common shapes where the same
+machinery works without modification:
+
+Pathway × gene membership matrices
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- **Rows**: pathways / gene sets (MSigDB, Reactome, KEGG, GO BP).
+- **Columns**: genes.
+- **Entries**: :math:`0/1` (membership) or continuous :math:`\in
+  [0, 1]` (weighted membership / topic-model-style soft assignment).
+- **"Row sum"** :math:`d_i` = pathway *size* (number of member
+  genes), which varies wildly — MSigDB pathways range from ~5 genes
+  to ~5000.
+
+Without normalization, factorization would weight large pathways
+much more heavily. With ``normalize_inputs=True``, every pathway
+contributes equally and ``sparseNMF`` discovers **pathway themes** —
+latent metafeatures grouping pathways that share gene-overlap
+structure ("metabolism", "immune", "cell cycle" emerge as their own
+factors). Useful for cross-database integration (KEGG ↔ Reactome)
+or for pruning a redundant gene-set collection down to a small
+non-overlapping basis (analogous to the hallmark approach of
+Liberzon et al. 2015).
+
+References:
+
+- GSEA / MSigDB:
+  Subramanian *et al.* 2005 *PNAS* 102(43):15545–15550,
+  `10.1073/pnas.0506580102 <https://doi.org/10.1073/pnas.0506580102>`__,
+  PMID 16199517.
+- MSigDB hallmark gene-set collection:
+  Liberzon *et al.* 2015 *Cell Systems* 1(6):417–425,
+  `10.1016/j.cels.2015.12.004 <https://doi.org/10.1016/j.cels.2015.12.004>`__,
+  PMID 26771021.
+- MSigDB: https://www.gsea-msigdb.org/gsea/msigdb/
+- Reactome: https://reactome.org/
+
+Differential-expression signature × gene matrices
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- **Rows**: signatures, one per study × contrast × threshold (sources:
+  GEO-curated signature collections, LINCS L1000 / CMap perturbation
+  signatures, published DGE supplementary tables).
+- **Columns**: genes.
+- **Entries**: :math:`0` (not significant), :math:`1` (significantly
+  up), :math:`-1` (significantly down) — or continuous log2 fold
+  change.
+- **"Row sum"** :math:`d_i` = number of significantly differentially
+  expressed genes, which is dominated by **study power** (sample
+  size, effect size, multiple-testing correction choice) far more
+  than by biology.
+
+NMF needs non-negativity, so signed signatures should be **split
+into "up" and "down" half-rows** before factorization (one signature
+becomes two rows: gene memberships at the positive tail, and at the
+negative tail, separately). With that split applied,
+``train_sparse_nmf(X)`` defaults find **shared transcriptional
+programs across heterogeneous DGE studies**, even when those studies
+used different platforms, thresholds, and statistical methods — the
+L2 row-norm puts a low-power 50-DEG study and a high-power
+500-DEG study on equal footing as long as the *direction* of
+expression is similar.
+
+This is genuinely hard to do with sctransform / DESeq2 / similar
+pipelines because they operate on raw counts, not on
+already-summarized signature matrices. ``sparseNMF`` operates at the
+summarized level.
+
+GWAS-derived gene lists
+~~~~~~~~~~~~~~~~~~~~~~~
+
+- **Rows**: traits / studies.
+- **Columns**: genes (mapped from significant SNPs via MAGMA / FUMA /
+  PoPS / nearest-gene).
+- **Entries**: :math:`0/1` (gene mapped from a significant locus) or
+  continuous (Z-score, posterior probability, PoPS score).
+- **"Row sum"** :math:`d_i` = number of gene-level hits, which depends
+  on the study's :math:`N`, the trait's heritability, its
+  polygenicity, the ancestry-matched LD reference used — almost all
+  technical / study-design factors rather than the trait's
+  biology.
+
+L2 row-norm makes a small high-effect-size autoimmune-disease GWAS
+comparable to a million-sample polygenic-trait GWAS for the purposes
+of finding **pleiotropic gene modules** — sets of genes that recur
+across phenotypically-distinct traits. Useful for drug repurposing,
+target prioritization, and trait-clustering studies. This is closely
+related to (but cheaper than) genetic-correlation methods like LDSC
+when the goal is gene-level rather than SNP-level pleiotropy.
+
+References:
+
+- GWAS Catalog (knowledgebase of published associations):
+  Sollis *et al.* 2023 *Nucleic Acids Res* 51(D1):D977–D985,
+  `10.1093/nar/gkac1010 <https://doi.org/10.1093/nar/gkac1010>`__,
+  PMID 36350656.
+- Catalog browser: https://www.ebi.ac.uk/gwas/
+- Open Targets Genetics (gene-mapping aggregation):
+  https://genetics.opentargets.org/
+
+Disease-gene association matrices
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- **Rows**: diseases (OMIM, DisGeNET, Open Targets, MONDO).
+- **Columns**: genes.
+- **Entries**: continuous association score (text-mining frequency,
+  curator confidence, integrated evidence score).
+- **"Row sum"** :math:`d_i` = study volume / curation depth per
+  disease, which differs by orders of magnitude (cancer has thousands
+  of associated genes in DisGeNET; rare diseases often have under
+  10).
+
+Same logic: L2 row-norm levels the playing field for finding
+cross-disease gene modules. Useful for nosology refinement and
+drug-target sharing across disease groups.
+
+References:
+
+- DisGeNET knowledge platform:
+  Piñero *et al.* 2020 *Nucleic Acids Res* 48(D1):D845–D855,
+  `10.1093/nar/gkz1021 <https://doi.org/10.1093/nar/gkz1021>`__,
+  PMID 31680165. Platform: https://www.disgenet.org/
+- Open Targets Platform: https://platform.opentargets.org/
+
+What changes about the choices
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Mapping the single-cell knobs to the signature-matrix setting:
+
+- **"Depth"** stops meaning "library depth" and just means
+  :math:`d_i = \sum_j X_{ij}` — the row sum. The semantic
+  interpretation differs by source (pathway size, DEG count,
+  GWAS-hit count, curation depth) but the mathematical role is
+  identical.
+- **``normalize_inputs=True``** is almost always the right default
+  for these matrices: it converts "compare row patterns" into the
+  factorization objective (akin to running on cosine similarities).
+  The exception is when *row size itself* is the biological signal
+  you want (e.g., "broadly pleiotropic trait" vs "narrowly pleiotropic
+  trait" might be a feature, not a confound — in that case use
+  ``normalize_inputs=False``).
+- **``nonzero_mse_weight``** behaves differently than in single-cell:
+  for binary or score-thresholded signature matrices, **zero
+  literally means "not in this set"** and is informative — leave
+  ``nonzero_mse_weight=0`` (the default). The "treat zeros as
+  missing" case only applies when low row sum is technical
+  (e.g., severely under-powered GWAS where a zero plausibly hides a
+  true association).
+- **No batch correction needed.** These matrices don't have the
+  per-batch protocol-shift problem that LIGER/iNMF/Harmony solve. If
+  you're integrating multiple databases (KEGG + Reactome + GO), the
+  union of their gene-set rows is still a single sparse matrix —
+  just stack them.
+
+Minimal example — pathway × gene factorization::
+
+   from sparse_nmf import train_sparse_nmf
+   from scipy.sparse import csr_matrix
+   import umap
+
+   # X[pathway_i, gene_j] = 1 if gene_j is a member of pathway_i.
+   # Build from GMT files (MSigDB), Reactome dumps, etc.
+   X = csr_matrix(...)  # shape (n_pathways, n_genes), binary or weighted
+
+   W, model = train_sparse_nmf(X)  # defaults: normalize_inputs=True,
+                                   # n_components auto-sized
+   # W[pathway_i, k] = how strongly pathway_i loads on metafeature k
+   # Cluster pathways by their W rows -> pathway "themes".
+   z = umap.UMAP(n_components=2, random_state=0).fit_transform(W)
+
+The same call works unchanged for the DGE / GWAS / disease shapes
+above — only the row semantics change.
+
 Adjacent: deep generative factorization
 ---------------------------------------
 
@@ -729,21 +909,29 @@ Where this package fits
 -----------------------
 
 ``sparseNMF`` is targeted at the specific pain point that's not
-covered cleanly by any of the above:
+covered cleanly by any of the above. The package was first
+stress-tested on **single-cell** count matrices, but the input shape
+it's built for — *sparse, non-negative, magnitude-heterogeneous
+rows* — is shared by a broader family of biological matrices
+(pathway × gene, DGE-signature × gene, GWAS-trait × gene,
+disease × gene; see "Beyond single-cell" above). The criteria
+where ``sparseNMF`` is the right tool:
 
 1. *Input is sparse and large enough that densification is
-   prohibitive* (≥ 50k × 20k @ < 5 % density, modern bio-cohort
-   sizes).
+   prohibitive* (≥ 50k × 20k @ < 5 % density — modern bio-cohort
+   sizes for single-cell, or wide signature-database integrations).
 2. *A GPU is available* — typical lab / cloud setup.
 3. *Interpretable parts-based factors are wanted* (i.e. NMF's
    non-negativity constraint, not a black-box VAE).
-4. *The dominant nuisance is per-row magnitude / library depth, not
-   batch identity per se.* If batch identity is the primary
-   confound, LIGER / iNMF's model-based correction is more
-   principled; if cells should keep their depth signal as
-   information, cNMF's "do not normalize" stance is more principled.
-   ``sparseNMF``'s default :math:`L_2` row-normalize sits between
-   these.
+4. *The dominant nuisance is per-row magnitude — library depth for
+   single-cell, study power / pathway size / curation depth for
+   signature matrices — not batch identity per se.* If batch
+   identity is the primary confound, LIGER / iNMF's model-based
+   correction is more principled (single-cell); if rows should keep
+   their magnitude signal as information, cNMF's "do not normalize"
+   stance is more principled. ``sparseNMF``'s default :math:`L_2`
+   row-normalize sits between these, and is the right default for
+   the signature-matrix shapes above as well.
 
 The implementation keeps the input on the device as a
 ``torch.sparse`` tensor, runs multiplicative updates in mini-batches
