@@ -78,9 +78,10 @@ so callers can write:
 
 ```python
 from sparse_nmf import train_sparse_nmf
+import umap
 
 W, model = train_sparse_nmf(X)        # X: scipy.sparse, no other args
-# (W is high-dimensional; project to 2-D with PCA/UMAP for plotting.)
+z = umap.UMAP(n_components=2).fit_transform(W)   # standard 2-D projection
 ```
 
 <p align="center">
@@ -92,11 +93,11 @@ group with 10× different nnz). Silhouette scores from the figure
 (higher = cleaner clusters; for batch, **closer to zero is better** —
 we want batches *mixed*):
 
-| method     | silhouette (group ↑) | silhouette (batch ↓) |
-|------------|---------------------:|---------------------:|
-| PCA        |                +0.32 |                +0.28 |
-| NMF        |            **+0.00** |            **+0.39** |
-| sparseNMF  |            **+0.73** |            **+0.17** |
+| method               | silhouette (group ↑) | silhouette (batch ↓) |
+|----------------------|---------------------:|---------------------:|
+| PCA (k=2)            |                +0.32 |                +0.28 |
+| NMF (k=2)            |            **+0.00** |            **+0.39** |
+| sparseNMF (k=auto) + UMAP |        **+0.92** |        **+0.00** |
 
 NMF collapses to a pure-sparsity embedding (group ≈ 0 ⇒ no biology
 captured). sparseNMF inverts the ratio: biology dominates, batch

@@ -142,10 +142,17 @@ def fit_sparse_nmf(X: csr_matrix, seed: int) -> np.ndarray:
     # With smart defaults (``normalize_inputs=True``, ``patience=10``,
     # ``n_components`` auto-sized from input shape), the call is now
     # essentially zero-config. Production W is high-dimensional
-    # (auto-sized ~k=75 for this demo's 600 × 900 input); we project to
-    # 2-D with PCA for visualization, which is the implicit final step
-    # in real sparseNMF pipelines.
-    from sklearn.decomposition import PCA
+    # (auto-sized ~k=75 for this demo's 600 × 900 input); we project
+    # to 2-D with UMAP — the standard non-linear projector used in
+    # single-cell pipelines after a high-dim factorization, and the
+    # last step in real-world sparseNMF workflows.
+    try:
+        import umap
+    except ImportError as e:
+        raise ImportError(
+            "This demo requires umap-learn for the 2-D projection. "
+            "Install with: pip install 'sparse-nmf[viz]'"
+        ) from e
 
     W, _model = train_sparse_nmf(
         X_sparse=X,
@@ -153,7 +160,7 @@ def fit_sparse_nmf(X: csr_matrix, seed: int) -> np.ndarray:
         random_state=seed,
         verbose=False,
     )
-    return PCA(n_components=2, random_state=seed).fit_transform(W)
+    return umap.UMAP(n_components=2, random_state=seed, n_jobs=1).fit_transform(W)
 
 
 def make_figure(
