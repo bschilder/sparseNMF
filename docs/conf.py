@@ -91,6 +91,22 @@ html_context = {
     "conf_py_path": "/docs/",
 }
 
+# ── Click-to-zoom on figures ────────────────────────────────────────
+# medium-zoom is a ~5 KB single-file lightbox: click any image to open
+# a centered, full-resolution overlay, click again (or press Esc) to
+# close. We pin the v1 CDN URL and run the initializer from a tiny
+# local script at ``_static/zoom-init.js``. Figures rendered by
+# myst-nb (notebook outputs) and by raw ``.. image::`` directives
+# both pick up the behavior automatically.
+html_js_files = [
+    (
+        "https://cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js",
+        {"defer": "defer"},
+    ),
+    "zoom-init.js",
+]
+html_css_files = ["zoom.css"]
+
 # ── MyST (Markdown) ─────────────────────────────────────────────────
 myst_enable_extensions = ["colon_fence", "deflist", "strikethrough"]
 myst_heading_anchors = 3
