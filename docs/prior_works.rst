@@ -393,6 +393,291 @@ DeBruine et al. 2021 — RcppML, bioRxiv preprint
    preprint).
    Code: https://github.com/zdebruine/RcppML
 
+Alternative strategies for removing the depth confound
+------------------------------------------------------
+
+Depth, sparsity, and how they relate
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Two related-but-distinct per-cell quantities show up throughout this
+discussion:
+
+- **Library depth** :math:`d_i = \sum_j X_{ij}` — the row sum.
+  *How many counts* were captured for cell :math:`i`.
+- **Per-cell sparsity** :math:`s_i = 1 - \mathrm{nnz}(X_{i,\cdot}) /
+  n_\mathrm{features}` — the fraction of zero entries in cell
+  :math:`i`'s row. *How many distinct features* are detected at all.
+
+In count data these are tightly but **non-linearly** coupled
+(rarefaction / species-accumulation behaviour): adding a single read
+to a low-depth cell almost always lands on a new feature
+(non-zero count goes up by 1, sparsity drops); adding a read to a
+high-depth cell mostly lands on an already-detected feature (depth
+goes up, sparsity barely moves). Empirically:
+
+- At very low :math:`d_i`, :math:`\mathrm{nnz}_i \approx d_i` — every
+  read = one new gene.
+- At high :math:`d_i`, :math:`\mathrm{nnz}_i` saturates toward the
+  gene catalogue size, while :math:`d_i` keeps growing.
+
+In the README demo, the two batches were constructed with 10× different
+*depth* and the figure colours by *nnz* — they're nearly
+interchangeable summaries at the scale used.
+
+The confound from a factorization's point of view
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Depth is largely *technical* (how well a particular cell was
+sequenced) but it dominates the variance of any individual gene, so
+unsupervised factorizations tend to allocate their leading components
+to "tracking the row sum" rather than to biology. Sparsity is the
+secondary expression of the same technical axis. The two coupled
+effects:
+
+1. **Magnitude**: row totals differ by orders of magnitude → cells
+   with more counts dominate the squared-error loss.
+2. **Sparsity pattern**: cells with deeper sequencing have a different
+   *set of zero entries*; same biology can produce two cells that
+   look very different just because one had more reads and so more
+   genes broke above zero.
+
+L2 row-normalization (Strategy 3 below) collapses (1) exactly, but
+only attenuates (2): an :math:`L_2`-normalized low-depth cell has each
+of its few non-zero entries scaled *up* to compensate, while a
+high-depth cell's many entries are scaled *down*. That's why the
+``nonzero_mse_weight`` knob exists — if the residual sparsity pattern
+is still a meaningful driver of variance after L2-norm, evaluating
+the loss only on observed (non-zero) entries can remove the second
+order of confound too.
+
+Three strategies
+~~~~~~~~~~~~~~~~
+
+Three broad strategies for removing the depth/sparsity confound are
+in common use. ``sparseNMF`` takes the third — but it's worth being
+explicit about the tradeoffs.
+
+Strategy 1 — Explicit regression of depth (or batch) as a covariate
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+For each gene :math:`g`, fit a generative model with depth (or batch,
+or any other named nuisance) as a covariate, and downstream
+analysis runs on the **residuals**:
+
+.. math::
+
+   \log \mathbb{E}[x_{ij}] = \beta_{0, j} + \beta_{1, j} \log d_i +
+     \beta_{2, j} \, b_i + \ldots,
+   \quad
+   z_{ij} = (x_{ij} - \hat\mu_{ij}) / \sigma_{ij}
+
+This is the path taken by **sctransform** (per-gene NB GLM,
+regularized via kernel smoothing; see the dedicated entry above),
+**Seurat's** ``ScaleData(vars.to.regress = ...)`` (per-gene linear
+regression on user-named covariates), **ComBat** / **ComBat-seq**
+(empirical-Bayes batch correction, Gaussian or NB), and **limma**'s
+``removeBatchEffect`` (linear regression of nuisance design
+matrices). **Harmony** is a related-but-different idea: it runs the
+correction in PCA *embedding* space, iteratively maximum-diversity-
+clustering and centring within batches, rather than on the count
+matrix.
+
+**Pros.** Statistically principled — there's an explicit generative
+model of the nuisance. Targeted — removes only the variance
+associated with the named covariate. Composes with downstream
+methods that accept real-valued input (PCA, UMAP, clustering).
+
+**Cons.** Requires the analyst to *name* the covariate up front; if
+the confound isn't perfectly correlated with depth or with the labelled
+batch, the regression misses it. Can over-correct — biological signal
+that genuinely correlates with depth (e.g. cell-type-specific
+transcriptional output) gets removed too. Per-gene model fitting is
+slow (sctransform is ~100–1000× slower than L2 row-norm) and the
+residuals are **real-valued, often negative** — incompatible with
+downstream NMF, which requires :math:`X \ge 0`. So for NMF
+specifically, this path forces a chain of "regress → PCA / GLM-PCA →
+clustering", not "regress → NMF".
+
+References:
+
+- sctransform (per-gene NB regression):
+  Hafemeister & Satija 2019,
+  `10.1186/s13059-019-1874-1 <https://doi.org/10.1186/s13059-019-1874-1>`__,
+  code https://github.com/satijalab/sctransform.
+- ComBat (empirical-Bayes batch correction):
+  Johnson, Li & Rabinovic 2007 *Biostatistics* 8(1):118–127,
+  `10.1093/biostatistics/kxj037 <https://doi.org/10.1093/biostatistics/kxj037>`__,
+  PMID 16632515. Bioconductor: ``sva``,
+  https://bioconductor.org/packages/sva/.
+- ComBat-seq (NB version for count data):
+  Zhang, Parmigiani & Johnson 2020 *NAR Genom Bioinform* 2(3):lqaa078,
+  `10.1093/nargab/lqaa078 <https://doi.org/10.1093/nargab/lqaa078>`__,
+  PMID 33015620.
+- limma ``removeBatchEffect``:
+  Ritchie *et al.* 2015 *Nucleic Acids Res* 43(7):e47,
+  `10.1093/nar/gkv007 <https://doi.org/10.1093/nar/gkv007>`__,
+  PMID 25605792. Bioconductor: ``limma``,
+  https://bioconductor.org/packages/limma/.
+- Harmony (embedding-space iterative correction):
+  Korsunsky *et al.* 2019 *Nature Methods* 16(12):1289–1296,
+  `10.1038/s41592-019-0619-0 <https://doi.org/10.1038/s41592-019-0619-0>`__,
+  PMID 31740819. Code https://github.com/immunogenomics/harmony.
+
+Strategy 2 — Drop the top N principal components
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Folklore in single-cell pipelines: run PCA on the (normalized) count
+matrix, inspect PC1 (and sometimes PC2..N) for correlation with total
+counts, then proceed with the *later* PCs (``X_pca[:, k:]``) for
+downstream clustering / UMAP. Implemented as a manual slicing step
+in essentially every Scanpy / Seurat tutorial and as the
+``n_pcs`` / ``use_pcs`` argument in many wrappers.
+
+**Pros.** Trivial: a single array slice. No covariate label needed —
+PCA finds whatever axis dominates and the user can decide whether to
+keep it.
+
+**Cons.** All-or-nothing per PC: throws away whatever biological
+signal is co-mingled in PC1 (in real data, PC1 is rarely "purely"
+library depth — it's a linear combination of depth, total
+transcriptional activity, dominant cell type fractions, etc.). The
+depth axis may also not be cleanly aligned with PC1 — it can split
+across several PCs, leaving residual contamination after any fixed
+cutoff. Requires manual inspection (correlate each PC with
+:math:`d_i` and threshold); no principled stopping rule. Specifically
+unhelpful for **NMF**: NMF doesn't produce orthogonal axes you can
+sort by variance, so "drop the top N components" has no analogous
+operation.
+
+This strategy is widely used because it's easy, not because it's
+right. The methodologically-careful path is one of the other two.
+
+Strategy 3 — Input-level row normalization (``sparseNMF``'s default)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Apply a deterministic transform to the *input* :math:`X` that
+collapses the per-row magnitude axis before factorization. The
+specific transform in this package is :math:`L_2` row normalization:
+each cell vector is scaled to unit Euclidean length, so the row sum
+is no longer a degree of freedom in the factorization.
+
+.. math::
+
+   \widetilde{X}_{ij} = X_{ij} \,/\, \|X_{i,\cdot}\|_2
+
+After this, any signal that was per-cell magnitude (library depth,
+total transcriptional output) is gone; only the *direction* of
+expression (which genes are co-expressed and in what relative
+proportions) survives. Equivalent in spirit to running NMF on cosine
+similarities. This is the route ``sparseNMF`` takes by default
+(``normalize_inputs=True``).
+
+**Pros.** Zero-config — no covariate label required. Deterministic
+and :math:`O(\text{nnz})` cheap. Preserves non-negativity, so
+downstream NMF / NNLS runs natively. Removes **all** of the magnitude
+axis at once, including parts that don't perfectly correlate with the
+"batch" label (which Strategy 1 would miss). Compatible with sparse
+storage end-to-end.
+
+**Cons.** Coarse — discards genuinely biological per-cell magnitude
+(e.g. cell-cycle state, total metabolic activity, secretory cells
+that produce more mRNA than quiescent ones). All-or-nothing on the
+magnitude axis: unlike sctransform's gene-specific
+:math:`\beta_{1, j}`, every gene gets de-trended by the same per-cell
+scalar. Doesn't help with **non-magnitude** confounds — if Batch A
+has a gene specifically upregulated that doesn't track its cells'
+totals, L2-norm leaves that batch effect untouched. The user must
+know that depth / magnitude is the dominant nuisance for this
+strategy to be the right call.
+
+How to choose: concrete scenarios
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The right strategy depends on (a) what's *driving* the depth/sparsity
+variation in your data, and (b) what downstream method you're feeding.
+Five common scenarios with explicit recommended calls:
+
+**Scenario A — Multi-protocol scRNA-seq integration.** Cells assayed
+with different protocols (e.g. 10x v2 ~500 UMIs/cell vs Smart-seq2
+~5,000 UMIs/cell), same biological cell types. Depth varies by ~10×
+with batch and is mostly technical.
+
+   Use ``sparseNMF`` with defaults — ``train_sparse_nmf(X)`` already
+   has ``normalize_inputs=True``, which dissolves the magnitude axis.
+   If you see residual batch sub-clusters per group (the demo figure
+   shows what this looks like), add ``nonzero_mse_weight=1.0`` to
+   stop the model from also predicting the *pattern* of zeros. If
+   batch labels are reliable and you'd rather correct in the
+   embedding, run ``sparseNMF`` first then ``Harmony`` on the
+   resulting embedding — they compose.
+
+**Scenario B — Single-protocol scRNA-seq across cell types with
+genuinely different mRNA content.** All cells run on one 10x lane,
+but you're profiling e.g. neurons (transcriptionally hyperactive,
+~5,000 UMIs) alongside resting lymphocytes (~500 UMIs). The depth
+gradient *is* biology — you want to keep it.
+
+   Pass ``normalize_inputs=False`` to ``sparseNMF``. One factor will
+   pick up the per-cell magnitude as a "total activity" signal,
+   leaving the others free to encode cell type. Alternatively use
+   **cNMF** (`Kotliar 2019
+   <https://doi.org/10.7554/eLife.43803>`__) — same philosophical
+   stance, built around per-gene variance scaling rather than
+   per-cell row-norm.
+
+**Scenario C — Single-protocol scRNA-seq with technical batches you
+want gone.** All 10x, but assayed across 3 wet-lab runs that
+introduce a per-batch shift in *which genes* are detectable (not
+just per-cell depth — different reagents preferentially capture
+different transcripts).
+
+   This is the case where Strategy 3 alone is insufficient — the
+   confound is batch-specific *direction*, not magnitude. Use
+   **LIGER / online iNMF** (`Welch 2019 / Gao 2021
+   <https://doi.org/10.1038/s41587-021-00867-x>`__) which factorizes
+   :math:`X_i \approx (W + V_i) H_i` with batch-specific
+   :math:`V_i`, or run ``sparseNMF`` then apply **Harmony**
+   (`Korsunsky 2019 <https://doi.org/10.1038/s41592-019-0619-0>`__)
+   on the resulting embedding.
+
+**Scenario D — scATAC-seq (or any near-binary count matrix).** Counts
+are effectively 0/1, sparsity per cell is extreme and varies strongly
+with sequencing depth.
+
+   Same as Scenario A but more important: depth differences here
+   manifest almost entirely as sparsity-pattern differences. Pass
+   ``normalize_inputs=True`` and consider also binarizing the input
+   (``X.data = (X.data > 0).astype(np.float32)``). The
+   ``nonzero_mse_weight`` knob is particularly useful here. **CoGAPS**
+   in single-cell mode (``sparseOptimization=TRUE``) is a slower but
+   more principled alternative if you want posterior uncertainty.
+
+**Scenario E — Sparse non-genomics data (phenome × disease, document
+× term, user × item).** Row sums vary because of the underlying
+process (more disease codes for sicker patients, longer documents,
+more active users), not technical capture. You typically want to
+compare *patterns* not magnitudes.
+
+   ``sparseNMF`` defaults are designed for this. The L2 row-norm
+   makes each row a unit-magnitude direction, equivalent in spirit
+   to comparing rows by cosine similarity. Set
+   ``nonzero_mse_weight=0`` (the default) so the zeros — which here
+   *are* informative ("this patient does not have this code") —
+   continue to contribute to the loss.
+
+When NOT to use ``sparseNMF``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- The downstream task is **differential expression**, not embedding /
+  clustering. Use sctransform Pearson residuals + a count GLM
+  (DESeq2, edgeR, limma), not NMF.
+- You need **posterior uncertainty** on W and H. Use CoGAPS.
+- You have a **labeled reference atlas** and want a supervised
+  projection. Use CellMentor or Seurat's transfer-learning
+  utilities.
+- You need a **likelihood-based generative model** (e.g. for
+  imputation or counterfactual queries). Use scVI / scANVI.
+
 Adjacent: deep generative factorization
 ---------------------------------------
 
