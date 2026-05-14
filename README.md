@@ -93,15 +93,23 @@ group with 10× different nnz). Silhouette scores from the figure
 (higher = cleaner clusters; for batch, **closer to zero is better** —
 we want batches *mixed*):
 
-| method               | silhouette (group ↑) | silhouette (batch ↓) |
-|----------------------|---------------------:|---------------------:|
-| PCA (k=2)            |                +0.32 |                +0.28 |
-| NMF (k=2)            |            **+0.00** |            **+0.39** |
-| sparseNMF (k=auto) + UMAP |        **+0.92** |        **+0.00** |
+All three methods get the same latent dimensionality (`k=75`,
+auto-sized from the input shape) followed by the same UMAP(2) step —
+only the factorization differs:
 
-NMF collapses to a pure-sparsity embedding (group ≈ 0 ⇒ no biology
-captured). sparseNMF inverts the ratio: biology dominates, batch
-shrinks. Reproduce with:
+| method (k=75 + UMAP)  | silhouette (group ↑) | silhouette (batch ↓) |
+|-----------------------|---------------------:|---------------------:|
+| PCA                   |                +0.35 |                +0.31 |
+| NMF                   |                +0.60 |                +0.09 |
+| sparseNMF             |            **+0.92** |            **+0.00** |
+
+PCA's leading factors split each group along an nnz axis (visible as
+multiple sub-clusters per color in the top-left panel — confirmed by
+the strong nnz gradient in the bottom-left). NMF with enough
+components recovers most of the biology, but a batch tail still
+bleeds through. sparseNMF is the only method whose embedding has zero
+batch silhouette: cells from the same group with very different
+library depths land in the same cluster. Reproduce with:
 
 ```bash
 python examples/sparsity_confound_demo.py
