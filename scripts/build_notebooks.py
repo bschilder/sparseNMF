@@ -12,10 +12,28 @@ plots / prints baked in. ``docs/conf.py`` sets ``nb_execution_mode =
 
 The script is idempotent — re-running overwrites the .ipynb files
 in-place. Outputs are deterministic given the same package version
-(seeded RNG everywhere) so re-running shouldn't churn the diff.
+(seeded RNG + single-threaded BLAS / OMP — see ``set_global_seed``
+in ``examples/_determinism.py``).
 """
 
 from __future__ import annotations
+
+import os
+
+# Single-threaded BLAS / OpenMP env vars must be set BEFORE the child
+# kernel process starts (since they're read at thread-pool init in
+# numpy / scipy / torch). nbclient inherits env from this parent
+# process, so setting them here propagates into every notebook kernel.
+for _v in (
+    "OMP_NUM_THREADS",
+    "OPENBLAS_NUM_THREADS",
+    "MKL_NUM_THREADS",
+    "NUMEXPR_NUM_THREADS",
+    "VECLIB_MAXIMUM_THREADS",
+):
+    os.environ.setdefault(_v, "1")
+os.environ.setdefault("PYTHONHASHSEED", "0")
+os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
 
 from pathlib import Path
 
@@ -53,7 +71,8 @@ def write_nb(path: Path, cells: list[dict], title: str, timeout: int = 120) -> N
 # example module from the repo's ``examples/`` directory. Walks up from
 # cwd until the file is found, so the same notebook executes correctly
 # whether the user opens it from the repo root or from
-# ``docs/notebooks/``.
+# ``docs/notebooks/``. Also calls set_global_seed(0) so PCA / NMF /
+# sparseNMF / UMAP outputs are identical across runs.
 PATH_SETUP = (
     "import sys, pathlib\n"
     "for _p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents]:\n"
@@ -62,6 +81,8 @@ PATH_SETUP = (
     "        break\n"
     "else:\n"
     "    raise RuntimeError('Could not locate the examples/ directory')\n"
+    "from _determinism import set_global_seed\n"
+    "set_global_seed(0)\n"
 )
 
 

@@ -38,6 +38,10 @@ Writes ``docs/_static/sparsity_confound_demo.png``.
 
 from __future__ import annotations
 
+# Determinism setup must run before numpy / torch import so the
+# single-threaded BLAS / OMP env vars are read at thread-pool init.
+from _determinism import set_global_seed  # noqa: I001,E402,F401
+
 import time
 from pathlib import Path
 
@@ -287,6 +291,7 @@ def make_figure(
 
 def main() -> int:
     seed = 0
+    set_global_seed(seed)
     print("Generating synthetic data (3 groups × 2 sparsity-batches)...")
     X, groups, batches = make_sparsity_confound_data(seed=seed)
     nnz = np.asarray((X != 0).sum(axis=1)).ravel()
