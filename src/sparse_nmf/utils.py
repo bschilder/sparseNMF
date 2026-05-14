@@ -7,14 +7,7 @@ dedicated submodule rather than the package ``__init__``.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Union
-
 import numpy as np
-
-if TYPE_CHECKING:
-    import torch
-
-    ArrayLike = Union[np.ndarray, "torch.Tensor"]
 
 
 def l2_normalize(embeddings):
