@@ -31,6 +31,7 @@ densely in VRAM*.
 
    api
    prior_works
+   benchmark
    changelog
 
 .. toctree::
