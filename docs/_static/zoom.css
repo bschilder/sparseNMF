@@ -1,0 +1,16 @@
+/* Give article images a soft hover cue so users notice they're
+   clickable. medium-zoom adds its own overlay styling at run time. */
+article img:not(.no-zoom):not(.logo) {
+  cursor: zoom-in;
+  transition: filter 0.15s ease;
+}
+
+article img:not(.no-zoom):not(.logo):hover {
+  filter: brightness(1.05);
+}
+
+/* The lightbox itself uses a dark background; ensure the close-on-Esc
+   and click-to-close hint colors stay readable. */
+.medium-zoom-overlay {
+  z-index: 9999;
+}
