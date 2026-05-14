@@ -72,26 +72,31 @@ def make_sparsity_confound_data(
     """
     rng = np.random.default_rng(seed)
 
-    # Disjoint gene-program blocks, one per group. Inside the block each
-    # gene gets a positive loading; outside it loads weakly.
+    # Disjoint gene-program blocks, one per group. In-block genes load
+    # strongly (2-4); out-of-block load weakly (0.02). The high contrast
+    # is what makes the L2-normalized direction informative — without
+    # it, residual nnz signal (entries scale as 1/sqrt(nnz)) can leak
+    # through after normalization.
     block = n_features // n_groups
-    H = np.full((n_groups, n_features), 0.05, dtype=np.float32)
+    H = np.full((n_groups, n_features), 0.02, dtype=np.float32)
     for k in range(n_groups):
-        H[k, k * block : (k + 1) * block] = rng.uniform(1.0, 2.0, block).astype(np.float32)
+        H[k, k * block : (k + 1) * block] = rng.uniform(2.0, 4.0, block).astype(np.float32)
 
-    # 2 batches per group -> 6 cohorts total. Cells inside a (group,
-    # batch) cohort share group identity but get the batch's keep-rate.
+    # 2 batches per group -> 6 cohorts total. Cells inside a group
+    # share a loading center but get meaningful per-cell variability
+    # (gamma-distributed loading on the dominant component) so each
+    # group is a real cloud, not a delta-spike. This makes the batch-
+    # induced sub-clustering vs. group-level clustering an honest
+    # signal-vs-noise contest at the embedding stage.
     rows, cols, vals, groups, batches = [], [], [], [], []
     row_idx = 0
     for k in range(n_groups):
-        # Loading template: cell loads heavily on its group's component,
-        # weakly on the others. Identical for both batches of the group.
         for batch in (0, 1):
             p_keep = p_keep_low if batch == 0 else p_keep_high
             for _ in range(n_per_cohort):
-                w = rng.gamma(shape=2.0, scale=1.0, size=n_groups).astype(np.float32) * 0.2
-                w[k] += rng.gamma(shape=5.0, scale=1.0)  # dominant loading
-                mean = w @ H  # shape (n_features,)
+                w = rng.gamma(shape=2.0, scale=0.15, size=n_groups).astype(np.float32)
+                w[k] += rng.gamma(shape=4.0, scale=1.5)  # dominant, varying per-cell
+                mean = np.clip(w @ H, 0.0, None)
                 counts = rng.poisson(mean).astype(np.float32)
                 mask = rng.random(n_features) < p_keep
                 counts *= mask
@@ -134,20 +139,21 @@ def fit_nmf(X: csr_matrix, seed: int) -> np.ndarray:
 
 
 def fit_sparse_nmf(X: csr_matrix, seed: int) -> np.ndarray:
-    # ``normalize_inputs=True`` is the load-bearing knob: each cell's
-    # expression vector is L2-normalized before the multiplicative
-    # updates, so factorization happens in *direction* space — library
-    # depth (the per-row magnitude axis) is gone before NMF even starts.
+    # With smart defaults (``normalize_inputs=True``, ``patience=10``,
+    # ``n_components`` auto-sized from input shape), the call is now
+    # essentially zero-config. Production W is high-dimensional
+    # (auto-sized ~k=75 for this demo's 600 × 900 input); we project to
+    # 2-D with PCA for visualization, which is the implicit final step
+    # in real sparseNMF pipelines.
+    from sklearn.decomposition import PCA
+
     W, _model = train_sparse_nmf(
         X_sparse=X,
-        n_components=3,
-        max_iter=300,
         device="cpu",
-        normalize_inputs=True,
         random_state=seed,
         verbose=False,
     )
-    return W
+    return PCA(n_components=2, random_state=seed).fit_transform(W)
 
 
 def make_figure(
@@ -176,18 +182,29 @@ def make_figure(
     batch_markers = {0: "o", 1: "^"}
     sc_nnz = None
 
+    # Single shared permutation — avoids the silent overplotting bias
+    # where cells appended last (group 2 / batch B) always sit on top.
+    # Same order across all six panels so the *embedding* is the only
+    # thing that varies across columns.
+    perm = np.random.default_rng(0).permutation(len(nnz))
+    groups_p = groups[perm]
+    batches_p = batches[perm]
+    nnz_p = nnz[perm]
+
     for col, name in enumerate(methods):
-        z = embeddings[name]
+        z = embeddings[name][perm]
         sg, sb = metrics[name]
 
-        # Row 0: colored by biological group, marker = batch.
+        # Row 0: colored by biological group, marker = batch. Loop only
+        # to attach different markers per batch — within each batch the
+        # shared permutation governs draw order.
         ax = axes[0, col]
         for b, m in batch_markers.items():
-            mask = batches == b
+            mask = batches_p == b
             ax.scatter(
                 z[mask, 0],
                 z[mask, 1],
-                c=groups[mask],
+                c=groups_p[mask],
                 cmap=group_cmap,
                 vmin=0,
                 vmax=2,
@@ -204,7 +221,9 @@ def make_figure(
 
         # Row 1: colored by per-cell nnz (sparsity signature).
         ax = axes[1, col]
-        sc_nnz = ax.scatter(z[:, 0], z[:, 1], c=nnz, cmap="viridis", s=18, alpha=0.85, linewidth=0)
+        sc_nnz = ax.scatter(
+            z[:, 0], z[:, 1], c=nnz_p, cmap="viridis", s=18, alpha=0.85, linewidth=0
+        )
         if col == 0:
             ax.set_ylabel("colored by\nnon-zero gene count", fontsize=11)
         ax.set_xticks([])

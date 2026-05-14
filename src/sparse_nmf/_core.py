@@ -1955,7 +1955,7 @@ def train_joint_model(
 
 def train_sparse_nmf(
     X_sparse: Optional[spmatrix] = None,
-    n_components: int = 256,
+    n_components: Optional[int] = None,
     max_iter: int = 500,
     device: str = 'cuda',
     batch_size: Optional[int] = None,
@@ -1966,9 +1966,9 @@ def train_sparse_nmf(
     learning_rate: float = 0.01,
     nonzero_mse_weight: float = 0.0,
     nonzero_r2_weight: float = 0.0,
-    normalize_inputs: bool = False,  # Whether to L2-normalize input X before training
+    normalize_inputs: bool = True,  # Whether to L2-normalize input X before training
     normalize_outputs: bool = False,  # Whether to L2-normalize output W matrix
-    patience: Optional[int] = None,
+    patience: Optional[int] = 10,
     embeddings_save_path: Optional[str] = None,
     model_save_path: Optional[str] = None,
     force: bool = False,
@@ -1986,8 +1986,13 @@ def train_sparse_nmf(
         Sparse input matrix of shape (n_samples, n_features).
         Required when training a new model (force=True or files don't exist).
         Optional when loading from disk (files exist and force=False).
-    n_components : int, default 256
-        Number of components to extract.
+    n_components : int, optional
+        Number of components to extract. If ``None`` (default), is
+        auto-selected from input shape as
+        ``clip(min(n_samples, n_features) // 8, 32, 1024)`` — a
+        heuristic that lands in the empirically-good range from small
+        synthetic data through phenome-scale matrices. Pass an explicit
+        integer to override.
     max_iter : int, default 500
         Maximum number of iterations.
     device : str, default 'cuda'
@@ -2013,20 +2018,24 @@ def train_sparse_nmf(
         When > 0: R² computed only on non-zero positions (ignores zeros).
         When 0: R² computed on all positions including zeros (learns sparsity patterns).
         Only affects training when r2_weight > 0.
-    normalize_inputs : bool, default False
+    normalize_inputs : bool, default True
         Whether to L2-normalize the input X matrix before training.
-        When True, each row of X will be normalized to unit length before NMF.
-        This helps balance dense vs sparse rows and prevents dense datasets from
-        dominating the NMF factors. Useful when datasets have varying sparsity levels.
+        When True, each row of X is normalized to unit length before NMF.
+        This is the main mechanism that decouples NMF from per-row
+        magnitude (e.g., library depth in single-cell data) and is
+        enabled by default for "just works" behavior on sparse biomedical
+        data. Set to False only if your rows already have comparable
+        magnitudes (e.g., pre-normalized embeddings).
     normalize_outputs : bool, default False
         Whether to L2-normalize the output W matrix (embeddings) before returning.
         When True, each row of the output will have unit length. This is useful if you
         plan to pass the embeddings to an autoencoder with `normalize_input=True` or
         `use_cosine_loss=True`. When False, preserves the original magnitude information.
     patience : int, optional
-        Number of iterations to wait without improvement before early stopping.
-        If None, only uses tolerance-based convergence. If specified, stops training
-        if the error doesn't improve for `patience` consecutive iterations.
+        Number of iterations to wait without improvement before early
+        stopping. Defaults to 10, which is fast for typical workloads
+        and prevents over-training. Pass ``None`` to fall back to
+        tolerance-based convergence only (legacy behavior).
     embeddings_save_path : str, optional
         Path to save the transformed embeddings (W matrix) as a .npy file.
         If provided and file exists and force=False, loads embeddings from disk.
@@ -2140,10 +2149,22 @@ def train_sparse_nmf(
             "Either provide X_sparse or ensure embeddings_save_path and model_save_path "
             "point to existing files to load from disk."
         )
-    
+
+    # Auto-size n_components if not specified. The heuristic
+    # min(n_samples, n_features) // 8 clamped to [32, 1024] tracks the
+    # range that empirically performs well: ~k=32-64 for hundreds of
+    # rows, ~k=128-256 for tens of thousands, ~k=512-1024 at phenome
+    # scale (100k+ rows). The user can always pass an integer to
+    # override.
+    if n_components is None:
+        n_samples_, n_features_ = X_sparse.shape
+        n_components = int(np.clip(min(n_samples_, n_features_) // 8, 32, 1024))
+        if verbose:
+            print(f"Auto-selected n_components={n_components} (from input shape {X_sparse.shape})")
+
     if verbose:
         print("Training new NMF model...")
-    
+
     # Normalize inputs if requested (before training)
     if normalize_inputs:
         from sklearn.preprocessing import normalize
