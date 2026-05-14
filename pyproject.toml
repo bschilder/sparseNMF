@@ -39,7 +39,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-viz = ["matplotlib>=3.7", "seaborn>=0.12", "umap-learn>=0.5"]
+viz = ["matplotlib>=3.7", "seaborn>=0.12", "umap-learn>=0.5", "scanpy>=1.9"]
 docs = [
     "sphinx>=7.2",
     "sphinx-rtd-theme>=2.0",

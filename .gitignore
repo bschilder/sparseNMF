@@ -36,6 +36,7 @@ docs/_autosummary/
 *.pkl
 *.pt
 *.ckpt
+*.h5ad
 scratch/
 artifacts/
 
