@@ -65,13 +65,23 @@ When two batches of the same biology have **different sparsity
 signatures** (e.g., a deep scRNA-seq protocol with ~300 detected
 genes/cell vs. a shallow one with ~30), the per-cell magnitude axis
 swamps the biological signal. PCA and vanilla NMF, applied to the raw
-count matrix, end up factorizing *library depth* — not gene programs
-— because that's where the variance is.
+count matrix, factorize *library depth* — not gene programs — because
+that's where the variance is.
 
-`sparseNMF` solves this at the input stage. With
-`normalize_inputs=True`, each cell's expression vector is L2-normalized
-*before* the multiplicative updates, so the factorization happens in
-direction space — magnitude is gone before NMF starts.
+`sparseNMF` is engineered to "just work" on this case. By default,
+`train_sparse_nmf` (a) L2-normalizes each row before the multiplicative
+updates (so per-row magnitude is gone before NMF starts) and (b)
+auto-sizes `n_components` from the input shape (`min(n_rows, n_cols) //
+8`, clamped to `[32, 1024]`). Empirically these defaults land in the
+"good" range from small synthetic data through phenome-scale matrices,
+so callers can write:
+
+```python
+from sparse_nmf import train_sparse_nmf
+
+W, model = train_sparse_nmf(X)        # X: scipy.sparse, no other args
+# (W is high-dimensional; project to 2-D with PCA/UMAP for plotting.)
+```
 
 <p align="center">
   <img src="docs/_static/sparsity_confound_demo.png" alt="PCA vs. NMF vs. sparseNMF on data where biological signal is identical across two batches with very different non-zero gene counts. PCA and NMF lock onto the nnz axis; sparseNMF recovers the three biological groups." width="900"/>
@@ -84,16 +94,18 @@ we want batches *mixed*):
 
 | method     | silhouette (group ↑) | silhouette (batch ↓) |
 |------------|---------------------:|---------------------:|
-| PCA        |                +0.31 |                +0.29 |
-| NMF        |            **+0.00** |            **+0.45** |
-| sparseNMF  |            **+0.39** |            **+0.24** |
+| PCA        |                +0.32 |                +0.28 |
+| NMF        |            **+0.00** |            **+0.39** |
+| sparseNMF  |            **+0.73** |            **+0.17** |
 
 NMF collapses to a pure-sparsity embedding (group ≈ 0 ⇒ no biology
 captured). sparseNMF inverts the ratio: biology dominates, batch
-shrinks. Reproduce with::
+shrinks. Reproduce with:
 
-    python examples/sparsity_confound_demo.py
-    # → writes docs/_static/sparsity_confound_demo.png
+```bash
+python examples/sparsity_confound_demo.py
+# → writes docs/_static/sparsity_confound_demo.png
+```
 
 ## Install
 
