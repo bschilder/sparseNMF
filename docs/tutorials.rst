@@ -11,6 +11,8 @@ environment first.
 
    notebooks/01_basic_nmf
    notebooks/02_joint_model
+   notebooks/03_sparsity_confound_demo
+   notebooks/04_real_pancreas_demo
 
 Each notebook lives at ``docs/notebooks/`` in the source tree —
 clone the repo and run them in Jupyter to experiment with parameter
