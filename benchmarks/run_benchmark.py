@@ -109,28 +109,34 @@ def run_metrics(impl: str, dataset: str, methods: list[str], out_dir: Path, args
 
 def _load_method_row(out_dir: Path, dataset: str, method: str, impl: str) -> dict | None:
     """Return one row dict (matching the legacy CSV schema) or None
-    if the method has nothing to report."""
+    if the method has nothing to report (no timing, no metrics, no
+    error file)."""
     method_dir = out_dir / dataset / method
     timing_path = method_dir / "timing.json"
     metrics_name = "metrics_original.json" if impl == "scib_original" else "metrics_yosef.json"
     metrics_path = method_dir / metrics_name
     error_path = method_dir / "error.txt"
 
-    base = {"dataset": dataset, "method": method}
+    # Nothing was ever written for this method — don't emit a phantom row.
+    if not (timing_path.exists() or metrics_path.exists() or error_path.exists()):
+        return None
+
+    # Initialize composite columns to NaN unconditionally so the
+    # DataFrame schema stays stable even when some rows have no
+    # metrics file (partial runs, --skip-metrics, scoring failures).
+    base = {
+        "dataset": dataset, "method": method,
+        "fit_seconds": 0.0, "infer_seconds": None, "metric_seconds": 0.0,
+        "peak_rss_mb": 0.0, "gpu_peak_mb": None,
+        "error": None,
+        "_bio": float("nan"), "_batch": float("nan"), "_composite": float("nan"),
+    }
     if timing_path.exists():
         t = json.loads(timing_path.read_text())
-        base.update({
-            "fit_seconds": t.get("fit_seconds", 0.0),
-            "infer_seconds": t.get("infer_seconds"),
-            "metric_seconds": 0.0,  # filled in below
-            "peak_rss_mb": t.get("peak_rss_mb", 0.0),
-            "gpu_peak_mb": t.get("gpu_peak_mb"),
-        })
-    else:
-        base.update({
-            "fit_seconds": 0.0, "infer_seconds": None, "metric_seconds": 0.0,
-            "peak_rss_mb": 0.0, "gpu_peak_mb": None,
-        })
+        base["fit_seconds"] = t.get("fit_seconds", 0.0)
+        base["infer_seconds"] = t.get("infer_seconds")
+        base["peak_rss_mb"] = t.get("peak_rss_mb", 0.0)
+        base["gpu_peak_mb"] = t.get("gpu_peak_mb")
 
     if error_path.exists():
         base["error"] = error_path.read_text().strip()
@@ -138,13 +144,11 @@ def _load_method_row(out_dir: Path, dataset: str, method: str, impl: str) -> dic
     if metrics_path.exists():
         m = json.loads(metrics_path.read_text())
         base["metric_seconds"] = m.pop("_metric_seconds", 0.0)
-        base["error"] = base.get("error")  # preserve prior
-        # Composite triple for downstream
         bio = float(m.get("Bio conservation", float("nan")))
         bat = float(m.get("Batch correction", float("nan")))
         tot = float(m.get("Total", float("nan")))
         base.update(m)
-        base.update({"_bio": bio, "_batch": bat, "_composite": tot})
+        base["_bio"], base["_batch"], base["_composite"] = bio, bat, tot
     return base
 
 
@@ -294,6 +298,15 @@ def main() -> int:
     out_dir: Path = args.out_dir
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    if args.metrics_impl == "scib_original":
+        print(
+            "WARNING: --metrics-impl scib_original uses a hand-aggregated bio/batch "
+            "composite that differs from scib_yosef by a few hundredths. Do not "
+            "compare composite scores across impls without recalibrating. See "
+            "benchmarks/metrics/scib_original.py docstring.",
+            flush=True,
+        )
+
     # Phase 1: embed (one subprocess per method × dataset).
     t0 = time.perf_counter()
     fail_count = 0
@@ -319,7 +332,7 @@ def main() -> int:
 
     elapsed = time.perf_counter() - t0
     print(f"\nTotal: {elapsed/60:.1f}m  ({fail_count} method failures)", flush=True)
-    return 0
+    return 1 if fail_count else 0
 
 
 if __name__ == "__main__":

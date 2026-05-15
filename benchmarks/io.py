@@ -163,9 +163,21 @@ def lognorm_X(adata) -> np.ndarray:
     return X.astype(np.float32)
 
 
-def scaled_X(adata, batch_key: str) -> np.ndarray:
+def scaled_X(adata, batch_key: str) -> np.ndarray:  # noqa: ARG001 - batch_key intentionally unused
     """Zero-center + unit-variance scaling of the log1p .X.
-    Used for PCA / Harmony. May contain negatives — not for NMF."""
+    Used for PCA / Harmony. May contain negatives — not for NMF.
+
+    NOTE: This is **global** scaling, not per-batch scaling. The
+    canonical scIB recipe (Luecken 2022) scales per batch. We use
+    global scaling to match what the original ``scib_benchmark.py``
+    did so determinism comparisons against the canonical CSV hold.
+    See follow-up issue: implementing per-batch scaling correctly
+    requires the iterate-over-batches dance scanpy doesn't natively
+    expose; will be a separate PR with its own determinism baseline.
+
+    ``batch_key`` is kept in the signature so callers don't break
+    when this is upgraded to per-batch.
+    """
     import scanpy as sc
     from scipy.sparse import issparse
 
@@ -196,6 +208,16 @@ class MethodTiming:
 
 @contextmanager
 def track_memory() -> Iterator[dict]:
+    """Track peak RSS / GPU memory across the block, in MiB.
+
+    CAVEAT: ``ru_maxrss`` is the process-lifetime high-water mark, not
+    the per-block peak. We snapshot before/after and return the delta,
+    which equals the in-block peak only if this is the first (and
+    largest) block in the process. **Designed for one-shot use per
+    subprocess**; calling ``track_memory`` twice in the same process
+    will yield ~0 from the second block unless it exceeds the first's
+    high-water. Don't use this in long-lived workers.
+    """
     out: dict[str, float | None] = {"peak_rss_mb": 0.0, "gpu_peak_mb": None}
     rss_before = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
     gpu_before = None

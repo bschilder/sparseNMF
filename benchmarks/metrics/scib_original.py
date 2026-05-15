@@ -6,6 +6,28 @@ pick either via ``--metrics-impl {scib_original, scib_yosef}``.
 Requires glibc 2.38+ (LISI is a C++ extension binary). Use a 24.04
 base image. Falls back to ``scib`` without LISI if the binary fails
 to load — surfaces an explicit error rather than silently skipping.
+
+⚠ UNVALIDATED COMPOSITE AGGREGATION ⚠
+The ``scib`` package returns per-metric scores as a flat DataFrame
+without computing the bio/batch/Total category means. We hand-
+aggregate via ``np.mean`` over the legacy column names below. This
+is **not** identical to scib-metrics' aggregation:
+
+  - scib-metrics weights bio sub-categories (NMI/ARI/silhouette/
+    isolated_labels/cLISI) at 0.25 each within "Bio conservation";
+    we use a flat mean over 6 keys (treating isolated_label_F1 and
+    isolated_label_silhouette as separate, while scib-metrics
+    averages them into one isolated_labels bucket).
+  - Composite weights match Luecken 2022 (0.6 bio + 0.4 batch),
+    but the bio and batch components are off the scib-metrics
+    numbers by a few hundredths.
+
+**Do not directly compare composites across ``--metrics-impl``
+flags without recalibrating.** Use ``--metrics-impl scib_yosef``
+for the canonical, validated aggregator. ``scib_original`` is
+useful for cross-checking individual metric values but its
+composites are best treated as a sanity-check signal, not a
+score.
 """
 
 from __future__ import annotations

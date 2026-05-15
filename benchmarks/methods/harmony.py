@@ -33,9 +33,17 @@ def embed(adata, batch_key, label_key, counts_layer, k, seed):
         t1 = time.perf_counter()
         ho = hm.run_harmony(pca, adata.obs, batch_key, max_iter_harmony=20)
         harm_s = time.perf_counter() - t1
+    # harmonypy's Z_corr shape changed between major versions:
+    #   < 2.0: (n_components, n_cells) — needs .T
+    #   >= 2.0: (n_cells, n_components) — already correct
+    # Transpose only when shape is (k, n_obs); otherwise pass through.
+    # Then assert the final invariant to catch any third API drift.
     emb_ = np.asarray(ho.Z_corr)
-    if emb_.shape[0] != adata.n_obs:
+    if emb_.shape == (k, adata.n_obs) and adata.n_obs != k:
         emb_ = emb_.T
+    assert emb_.shape == (adata.n_obs, k), (
+        f"Harmony embedding shape {emb_.shape} != ({adata.n_obs}, {k})"
+    )
     return emb_, MethodTiming(pca_s + harm_s, None, peak_rss_mb=mem["peak_rss_mb"], gpu_peak_mb=mem["gpu_peak_mb"])
 
 
