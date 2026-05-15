@@ -77,6 +77,57 @@ def method_palette(methods: list[str]) -> dict[str, str]:
     return {name: _SET1[i % len(_SET1)] for i, name in enumerate(methods)}
 
 
+def _agg_scatter_xy(df: pd.DataFrame, x_col: str, y_col: str) -> pd.DataFrame:
+    """Group by (method, dataset) and compute mean+std on x_col, y_col.
+
+    Multi-seed (multiple rows per cell) → real stds; single-rep → NaN
+    stds (which downstream callers convert to 0 for error-bar drawing
+    and use as a 'no hull' signal where appropriate).
+    """
+    return (
+        df.dropna(subset=[x_col, y_col])
+        .groupby(["method", "dataset"])
+        .agg(
+            x_mean=(x_col, "mean"),
+            x_std=(x_col, "std"),
+            y_mean=(y_col, "mean"),
+            y_std=(y_col, "std"),
+        )
+        .reset_index()
+    )
+
+
+def _draw_method_hull(ax, xs, ys, color: str, *, alpha: float = 0.15) -> None:
+    """Draw a translucent convex-hull polygon over a method's points.
+
+    Falls back to a connecting line for 2 points; nothing for 1 point
+    (a hull on 1 cell is meaningless). The hull's role is to make
+    each method's "area of operation" across datasets immediately
+    visible — same color as the scatter markers."""
+    xs = np.asarray(xs, dtype=float)
+    ys = np.asarray(ys, dtype=float)
+    n = len(xs)
+    if n < 2:
+        return
+    if n == 2:
+        ax.plot(xs, ys, color=color, alpha=alpha * 2, linewidth=1.0)
+        return
+    try:
+        from scipy.spatial import ConvexHull
+        from scipy.spatial.qhull import QhullError
+    except ImportError:
+        return
+    pts = np.column_stack([xs, ys])
+    try:
+        hull = ConvexHull(pts)
+    except QhullError:
+        # Collinear points or other degenerate input → fall back to line.
+        ax.plot(xs, ys, color=color, alpha=alpha * 2, linewidth=1.0)
+        return
+    poly = pts[hull.vertices]
+    ax.fill(poly[:, 0], poly[:, 1], color=color, alpha=alpha, linewidth=0)
+
+
 def _metric_cols(df: pd.DataFrame) -> list[str]:
     """Return the per-metric (non-aggregate, non-timing) columns."""
     return [c for c in df.columns if c not in _NON_METRIC_COLS]
@@ -293,15 +344,33 @@ def plot_score_vs_time(
     palette = method_palette(methods)
     ds_marker = {d: m for d, m in zip(datasets, "ovsP^D*X", strict=False)}
 
+    agg = _agg_scatter_xy(df, x_col="fit_seconds", y_col="Total")
+
     fig, ax = plt.subplots(figsize=(7.5, 6.0))
     for method in methods:
-        sub = df[df["method"] == method].dropna(subset=["Total", "fit_seconds"])
+        sub = agg[agg["method"] == method]
         if sub.empty:
             continue
+        xs = sub["x_mean"].values
+        ys = sub["y_mean"].values
+        xerr = np.nan_to_num(sub["x_std"].values, nan=0.0)
+        yerr = np.nan_to_num(sub["y_std"].values, nan=0.0)
+
+        # Translucent convex hull behind the markers (paint first so
+        # the dots and error bars stay legible on top).
+        _draw_method_hull(ax, xs, ys, palette[method])
+
+        # Error bars: no caps, just thin lines on both axes.
+        ax.errorbar(
+            xs, ys, xerr=xerr, yerr=yerr,
+            fmt="none", ecolor=palette[method],
+            elinewidth=0.8, capsize=0, alpha=0.6,
+        )
+
+        # Per-dataset markers (so dataset identity stays visible).
         for _, row in sub.iterrows():
             ax.scatter(
-                row["fit_seconds"],
-                row["Total"],
+                row["x_mean"], row["y_mean"],
                 color=palette[method],
                 marker=ds_marker.get(row["dataset"], "o"),
                 s=85,
@@ -365,23 +434,32 @@ def plot_bio_vs_batch_tradeoff(
     palette = method_palette(methods)
     ds_marker = {d: m for d, m in zip(datasets, "ovsP^D*X", strict=False)}
 
+    agg = _agg_scatter_xy(df, x_col="Batch correction", y_col="Bio conservation")
+
     fig, ax = plt.subplots(figsize=(7.5, 6.0))
     for method in methods:
-        sub = df[df["method"] == method].dropna(subset=["Bio conservation", "Batch correction"])
+        sub = agg[agg["method"] == method]
         if sub.empty:
             continue
-        # Connect this method's points across datasets with a thin line.
-        ax.plot(
-            sub["Batch correction"],
-            sub["Bio conservation"],
-            color=palette[method],
-            linewidth=0.7,
-            alpha=0.4,
+        xs = sub["x_mean"].values
+        ys = sub["y_mean"].values
+        xerr = np.nan_to_num(sub["x_std"].values, nan=0.0)
+        yerr = np.nan_to_num(sub["y_std"].values, nan=0.0)
+
+        # Translucent convex hull = method's "area of operation"
+        # across datasets. Drawn first so markers/error bars overlay it.
+        _draw_method_hull(ax, xs, ys, palette[method])
+
+        # Error bars: no caps, just thin lines on both axes.
+        ax.errorbar(
+            xs, ys, xerr=xerr, yerr=yerr,
+            fmt="none", ecolor=palette[method],
+            elinewidth=0.8, capsize=0, alpha=0.6,
         )
+
         for _, row in sub.iterrows():
             ax.scatter(
-                row["Batch correction"],
-                row["Bio conservation"],
+                row["x_mean"], row["y_mean"],
                 color=palette[method],
                 marker=ds_marker.get(row["dataset"], "o"),
                 s=85,
