@@ -131,9 +131,20 @@ def plot_composite_summary(
     finite = pivot.values[~np.isnan(pivot.values)]
     if finite.size:
         ax.set_ylim(min(0.0, float(finite.min()) - 0.05), max(float(finite.max()) + 0.08, 1.0))
-    ax.legend(title="method", frameon=False, loc="best", fontsize=8)
     ax.set_title(title or "scIB composite score per dataset × method")
-    fig.tight_layout()
+    # Legend at the bottom, horizontal single row; method order matches
+    # the left-to-right colour order within each dataset's bar cluster.
+    handles, labels = ax.get_legend_handles_labels()
+    fig.legend(
+        handles, labels,
+        title="method",
+        loc="lower center",
+        ncol=max(len(methods), 1),
+        frameon=False,
+        fontsize=9,
+        bbox_to_anchor=(0.5, -0.02),
+    )
+    fig.tight_layout(rect=(0, 0.08, 1, 1.0))
     fig.savefig(out_path, dpi=160, bbox_inches="tight")
     plt.close(fig)
     return out_path
@@ -203,17 +214,21 @@ def plot_per_task_bars(
 
     handles, labels = axes[0, 0].get_legend_handles_labels()
     if handles:
+        # Horizontal single-row legend at the bottom; method order
+        # matches the left-to-right colour order within each metric
+        # group on the bars.
         fig.legend(
             handles,
             labels,
             title="method",
             loc="lower center",
-            ncol=min(len(methods), 6),
+            ncol=max(len(methods), 1),
             frameon=False,
+            fontsize=9,
             bbox_to_anchor=(0.5, -0.01),
         )
     fig.suptitle(title or "scIB per-metric scores by dataset", fontsize=12)
-    fig.tight_layout(rect=(0, 0.04, 1, 0.96))
+    fig.tight_layout(rect=(0, 0.06, 1, 0.96))
     fig.savefig(out_path, dpi=160, bbox_inches="tight")
     plt.close(fig)
     return out_path
