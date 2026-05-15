@@ -49,7 +49,53 @@ SCIB_DATASETS = {
         "label_key": "final_annotation",
         "counts_layer": "counts",
     },
+    "lung": {
+        # Luecken 2022 lung atlas: 32k cells × 16 batches × 17 labels.
+        "url": "https://ndownloader.figshare.com/files/24539942",
+        "filename": "Lung_atlas_public.h5ad",
+        # The preprocessing notebook builds a "dataset" column from
+        # Dropseq_transplant / 10x_* tags as the batch grouping.
+        # Cell-type label survives as "cell_type" in the published file.
+        "batch_key": ["batch", "dataset"],
+        "label_key": ["cell_type", "celltype"],
+        "counts_layer": "counts",
+    },
+    "sim1": {
+        # Splatter simulation 1.1: different cell-type proportions
+        # and sequencing depth. 12k cells × 6 batches × 7 labels.
+        "url": "https://ndownloader.figshare.com/files/33798263",
+        "filename": "sim1_1_norm.h5ad",
+        # Splatter's R sim writes "Batch" / "Group" obs columns.
+        "batch_key": ["Batch", "batch"],
+        "label_key": ["Group", "cell_type", "celltype"],
+        "counts_layer": "counts",
+    },
+    "sim2": {
+        # Splatter simulation 2: nested batch effects.
+        # 19k cells × 16 batches × 4 labels.
+        "url": "https://ndownloader.figshare.com/files/33798764",
+        "filename": "sim2_norm.h5ad",
+        "batch_key": ["Batch", "batch"],
+        "label_key": ["Group", "cell_type", "celltype"],
+        "counts_layer": "counts",
+    },
 }
+
+
+def _resolve_key(adata, candidates, kind: str, dataset: str) -> str:
+    """Return the first candidate that exists in ``adata.obs``, or raise
+    with the actual obs columns when none match. Lets a dataset config
+    list multiple obs-column names — useful when scIB datasets store
+    the batch/label under different names across files."""
+    if isinstance(candidates, str):
+        candidates = [candidates]
+    for c in candidates:
+        if c in adata.obs.columns:
+            return c
+    raise KeyError(
+        f"dataset={dataset!r}: no {kind} key in {candidates} matched "
+        f"adata.obs columns {list(adata.obs.columns)}"
+    )
 
 
 def cache_dir() -> Path:
@@ -94,10 +140,16 @@ def load_scib_dataset(
         _download_with_progress(spec["url"], cache)
     adata = ad.read_h5ad(cache)
 
+    # Resolve batch/label keys with candidate fallback — accommodates
+    # scIB datasets that store the same role under different column
+    # names (e.g. "batch" vs "dataset" vs "tech").
+    batch_key = _resolve_key(adata, spec["batch_key"], "batch", name)
+    label_key = _resolve_key(adata, spec["label_key"], "label", name)
+
     if cells_per_cohort is not None:
         rng = np.random.default_rng(seed)
-        batch = adata.obs[spec["batch_key"]].astype(str).values
-        label = adata.obs[spec["label_key"]].astype(str).values
+        batch = adata.obs[batch_key].astype(str).values
+        label = adata.obs[label_key].astype(str).values
         keep: list[np.ndarray] = []
         for b in np.unique(batch):
             for ll in np.unique(label):
@@ -113,13 +165,13 @@ def load_scib_dataset(
         sc.pp.highly_variable_genes(
             adata,
             n_top_genes=n_hvg,
-            batch_key=spec["batch_key"],
+            batch_key=batch_key,
             flavor="cell_ranger",
             n_bins=20,
         )
         adata = adata[:, adata.var["highly_variable"]].copy()
 
-    return adata, spec["batch_key"], spec["label_key"], spec["counts_layer"]
+    return adata, batch_key, label_key, spec["counts_layer"]
 
 
 def adata_fingerprint(adata) -> str:

@@ -20,10 +20,14 @@ RUNS=${RUNS:-/workspace/runs}
 mkdir -p "$RUNS"
 cd "$REPO"
 
-SEEDS=(0 1 2 3 4)
+SEEDS=(0 1 2)
 KS=(10 20 30 50 100)
 METHODS="PCA NMF sparseNMF Harmony scVI"
-DATASETS="pancreas immune"
+# All scIB-canonical RNA integration datasets except mouse_brain (978k
+# cells, multi-hour scVI training per seed) and immune_hum_mou (97k
+# cells, cross-species, much slower to converge). Lung + sim1 + sim2
+# round out the standard benchmark set.
+DATASETS="pancreas immune lung sim1 sim2"
 
 echo "=== Phase 1: multi-seed full-data run ==="
 for seed in "${SEEDS[@]}"; do
