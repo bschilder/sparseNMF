@@ -25,6 +25,16 @@ complete in seconds-to-minutes on CPU.
 
 from __future__ import annotations
 
+import os
+
+# Pin JAX to CPU BEFORE any JAX-dependent module is imported (notably
+# scib-metrics, which imports jax at top of its module). Without this,
+# JAX grabs CUDA at first import and never releases — leaving the GPU
+# wedged (100% util, 0 MiB allocator), which then starves scVI and
+# any sparseNMF re-run in the same process. CPU JAX is fine for LISI:
+# the bottleneck is the kNN graph, not the metric kernels.
+os.environ.setdefault("JAX_PLATFORMS", "cpu")
+
 import resource
 import sys
 import time
