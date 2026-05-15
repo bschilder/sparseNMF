@@ -3,9 +3,18 @@
 Mirrors the YosefLab fallback's interface so the orchestrator can
 pick either via ``--metrics-impl {scib_original, scib_yosef}``.
 
-Requires glibc 2.38+ (LISI is a C++ extension binary). Use a 24.04
-base image. Falls back to ``scib`` without LISI if the binary fails
-to load — surfaces an explicit error rather than silently skipping.
+Requires glibc 2.38+ for scib's *shipped* precompiled LISI binary,
+OR a one-shot rebuild of that binary against the host glibc. On
+Ubuntu 22.04 (glibc 2.35) the shipped ``knn_graph.o`` fails to
+load; the source ships alongside it and rebuilds in ~1 second:
+
+    bash benchmarks/scripts/rebuild_scib_lisi.sh
+
+This rebuild is idempotent and only needs to run once per
+environment after ``pip install scib`` — it overwrites the .o
+in scib's package directory. Without LISI on, scib_original
+still scores graph_connectivity + silhouette_batch + bio metrics
+correctly (validated on the L4 pod cr9kutuaxc5l88, 2026-05-15).
 
 ⚠ UNVALIDATED COMPOSITE AGGREGATION ⚠
 The ``scib`` package returns per-metric scores as a flat DataFrame
@@ -76,6 +85,10 @@ def evaluate(adata, embedding: np.ndarray, batch_key: str, label_key: str, *, li
 
     # scIB's metric flags. Embedding-based methods → embed=True; pcr
     # needs the uncorrected adata which we pass as `adata`.
+    # scib 1.1.x kwargs (verified via inspect.signature on the pod).
+    # silhouette_=True turns on BOTH ASW_label and ASW_label/batch
+    # (there is no separate silhouette_batch_ flag). lisi_graph_ is
+    # the umbrella for LISI computation; clisi_/ilisi_ select which.
     results = scib.metrics.metrics(
         adata=a,
         adata_int=a_int,
@@ -86,15 +99,15 @@ def evaluate(adata, embedding: np.ndarray, batch_key: str, label_key: str, *, li
         # Bio
         nmi_=True,
         ari_=True,
-        silhouette_=True,
+        silhouette_=True,  # both ASW_label and ASW_label/batch
         isolated_labels_asw_=True,
         isolated_labels_f1_=True,
         clisi_=lisi,
         # Batch
         graph_conn_=True,
-        silhouette_batch_=True,
         pcr_=False,  # needs HVGs handled separately; skip for now
         kBET_=False,  # legacy R dep
+        lisi_graph_=lisi,  # umbrella — required when clisi_/ilisi_ are on
         ilisi_=lisi,
         # Higher-cost extras we're not running
         cell_cycle_=False,
