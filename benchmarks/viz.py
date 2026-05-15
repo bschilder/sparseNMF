@@ -49,18 +49,23 @@ _NON_METRIC_COLS = [
 ]
 
 
-# Wong palette (color-blind friendly). Stable across plots so the
-# same method gets the same colour everywhere.
-_WONG = [
-    "#0072B2",  # blue
-    "#E69F00",  # orange
-    "#009E73",  # green
-    "#CC79A7",  # pink
-    "#56B4E9",  # sky
-    "#D55E00",  # vermillion
-    "#F0E442",  # yellow
+# ColorBrewer "Set1" — designed for maximum hue separation in a
+# qualitative palette. Wong is CB-safer but its first 5 entries
+# include two blues (#0072B2 + #56B4E9) that landed on important
+# methods after alphabetical sorting (Harmony got dark blue,
+# sparseNMF got sky blue). Set1's first 5 are red/blue/green/
+# purple/orange — distinct hues, no near-duplicates.
+_SET1 = [
+    "#e41a1c",  # red
+    "#377eb8",  # blue
+    "#4daf4a",  # green
+    "#984ea3",  # purple
+    "#ff7f00",  # orange
+    "#a65628",  # brown
+    "#f781bf",  # pink
+    "#666666",  # grey
     "#000000",  # black
-    "#999999",  # grey
+    "#ffff33",  # yellow
 ]
 
 
@@ -68,7 +73,7 @@ def method_palette(methods: list[str]) -> dict[str, str]:
     """Stable per-method colour. Use this everywhere so a given
     method has the same colour across plots."""
     methods = sorted(methods)
-    return {name: _WONG[i % len(_WONG)] for i, name in enumerate(methods)}
+    return {name: _SET1[i % len(_SET1)] for i, name in enumerate(methods)}
 
 
 def _metric_cols(df: pd.DataFrame) -> list[str]:
@@ -99,7 +104,7 @@ def plot_composite_summary(
     datasets = list(pivot.index)
     palette = method_palette(methods)
 
-    fig, ax = plt.subplots(figsize=(1.6 * max(len(datasets), 3) + 2, 4.5))
+    fig, ax = plt.subplots(figsize=(1.0 * max(len(datasets), 3) + 1.4, 4.0))
     x = np.arange(len(datasets))
     width = 0.8 / max(len(methods), 1)
     for i, method in enumerate(methods):
@@ -178,7 +183,7 @@ def plot_per_task_bars(
     fig, axes = plt.subplots(
         len(datasets),
         1,
-        figsize=(0.85 * len(metric_cols) + 3, 3.5 * len(datasets)),
+        figsize=(0.55 * len(metric_cols) + 1.8, 2.8 * len(datasets) + 0.4),
         squeeze=False,
         sharex=True,
     )
