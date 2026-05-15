@@ -3,9 +3,18 @@
 Mirrors the YosefLab fallback's interface so the orchestrator can
 pick either via ``--metrics-impl {scib_original, scib_yosef}``.
 
-Requires glibc 2.38+ (LISI is a C++ extension binary). Use a 24.04
-base image. Falls back to ``scib`` without LISI if the binary fails
-to load — surfaces an explicit error rather than silently skipping.
+Requires glibc 2.38+ for scib's *shipped* precompiled LISI binary,
+OR a one-shot rebuild of that binary against the host glibc. On
+Ubuntu 22.04 (glibc 2.35) the shipped ``knn_graph.o`` fails to
+load; the source ships alongside it and rebuilds in ~1 second:
+
+    bash benchmarks/scripts/rebuild_scib_lisi.sh
+
+This rebuild is idempotent and only needs to run once per
+environment after ``pip install scib`` — it overwrites the .o
+in scib's package directory. Without LISI on, scib_original
+still scores graph_connectivity + silhouette_batch + bio metrics
+correctly (validated on the L4 pod cr9kutuaxc5l88, 2026-05-15).
 
 ⚠ UNVALIDATED COMPOSITE AGGREGATION ⚠
 The ``scib`` package returns per-metric scores as a flat DataFrame
