@@ -1,0 +1,1349 @@
+
+=== pancreas ===
+  (8711, 19093)  batches=9  labels=14
+                 PCA: fitting...
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:96: FutureWarning: In the future, the default backend for leiden will be igraph instead of leidenalg.
+
+ To achieve the future defaults please pass: flavor="igraph" and n_iterations=2.  directed must also be False to work with igraph's implementation.
+  cluster_function(adata, resolution=res, key_added=resolution_key, **kwargs)
+Cluster for cluster_0.2 with leiden
+resolution: 0.2, nmi: 0.6203138552678475
+Cluster for cluster_0.4 with leiden
+resolution: 0.4, nmi: 0.6069175262957647
+Cluster for cluster_0.6 with leiden
+resolution: 0.6, nmi: 0.6116980159007551
+Cluster for cluster_0.8 with leiden
+resolution: 0.8, nmi: 0.6035547935292158
+Cluster for cluster_1.0 with leiden
+resolution: 1.0, nmi: 0.5945964666795532
+Cluster for cluster_1.2 with leiden
+resolution: 1.2, nmi: 0.5854168330027492
+Cluster for cluster_1.4 with leiden
+resolution: 1.4, nmi: 0.5732252540815437
+Cluster for cluster_1.6 with leiden
+resolution: 1.6, nmi: 0.5701368557062721
+Cluster for cluster_1.8 with leiden
+resolution: 1.8, nmi: 0.5728022624602798
+Cluster for cluster_2.0 with leiden
+resolution: 2.0, nmi: 0.5639886138705392
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_0.2 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_0.4 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_0.6 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_0.8 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.0 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.2 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.4 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.6 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.8 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_2.0 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/metrics.py:293: UserWarning: Overwriting existing key cluster in adata.obs
+  res_max, nmi_max, nmi_all = cluster_optimal_resolution(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/isolated_labels.py:311: FutureWarning: The default of observed=False is deprecated and will be changed to True in a future version of pandas. Pass observed=False to retain current behavior or observed=True to adopt the future default and silence this warning.
+  batch_per_lab = tmp.groupby(label_key).agg({batch_key: "count"})
+/usr/local/lib/python3.11/dist-packages/scib/metrics/isolated_labels.py:311: FutureWarning: The default of observed=False is deprecated and will be changed to True in a future version of pandas. Pass observed=False to retain current behavior or observed=True to adopt the future default and silence this warning.
+  batch_per_lab = tmp.groupby(label_key).agg({batch_key: "count"})
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+optimised clustering against celltype
+optimal cluster resolution: 0.2
+optimal score: 0.6203138552678475
+Cluster for cluster_0.2 with leiden
+Cluster for cluster_0.4 with leiden
+Cluster for cluster_0.6 with leiden
+Cluster for cluster_0.8 with leiden
+Cluster for cluster_1.0 with leiden
+Cluster for cluster_1.2 with leiden
+Cluster for cluster_1.4 with leiden
+Cluster for cluster_1.6 with leiden
+Cluster for cluster_1.8 with leiden
+Cluster for cluster_2.0 with leiden
+NMI...
+ARI...
+Silhouette score...
+Isolated labels F1...
+Cluster for iso_label_0.2 with leiden
+Cluster for iso_label_0.4 with leiden
+Cluster for iso_label_0.6 with leiden
+Cluster for iso_label_0.8 with leiden
+Cluster for iso_label_1.0 with leiden
+Cluster for iso_label_1.2 with leiden
+Cluster for iso_label_1.4 with leiden
+Cluster for iso_label_1.6 with leiden
+Cluster for iso_label_1.8 with leiden
+Cluster for iso_label_2.0 with leiden
+Isolated labels ASW...
+Graph connectivity...
+                   PCA: fit=  11.7s  infer=  0.2s  metrics=123.9s  rss=    0MB  gpu=     —  bio=+0.441  batch=+0.805  composite=+0.587
+                 NMF: fitting...
+Cluster for cluster_0.2 with leiden
+resolution: 0.2, nmi: 0.6599606078028843
+Cluster for cluster_0.4 with leiden
+resolution: 0.4, nmi: 0.648028028727498
+Cluster for cluster_0.6 with leiden
+resolution: 0.6, nmi: 0.6399923595112627
+Cluster for cluster_0.8 with leiden
+resolution: 0.8, nmi: 0.630991411863325
+Cluster for cluster_1.0 with leiden
+resolution: 1.0, nmi: 0.613070854078983
+Cluster for cluster_1.2 with leiden
+resolution: 1.2, nmi: 0.6160129648997517
+Cluster for cluster_1.4 with leiden
+resolution: 1.4, nmi: 0.5909915739179479
+Cluster for cluster_1.6 with leiden
+resolution: 1.6, nmi: 0.5897075899881629
+Cluster for cluster_1.8 with leiden
+resolution: 1.8, nmi: 0.5859265542755152
+Cluster for cluster_2.0 with leiden
+resolution: 2.0, nmi: 0.5813328245726281
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_0.2 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_0.4 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_0.6 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_0.8 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.0 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.2 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.4 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.6 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.8 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_2.0 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/metrics.py:293: UserWarning: Overwriting existing key cluster in adata.obs
+  res_max, nmi_max, nmi_all = cluster_optimal_resolution(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/isolated_labels.py:311: FutureWarning: The default of observed=False is deprecated and will be changed to True in a future version of pandas. Pass observed=False to retain current behavior or observed=True to adopt the future default and silence this warning.
+  batch_per_lab = tmp.groupby(label_key).agg({batch_key: "count"})
+/usr/local/lib/python3.11/dist-packages/scib/metrics/isolated_labels.py:311: FutureWarning: The default of observed=False is deprecated and will be changed to True in a future version of pandas. Pass observed=False to retain current behavior or observed=True to adopt the future default and silence this warning.
+  batch_per_lab = tmp.groupby(label_key).agg({batch_key: "count"})
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+optimised clustering against celltype
+optimal cluster resolution: 0.2
+optimal score: 0.6599606078028843
+Cluster for cluster_0.2 with leiden
+Cluster for cluster_0.4 with leiden
+Cluster for cluster_0.6 with leiden
+Cluster for cluster_0.8 with leiden
+Cluster for cluster_1.0 with leiden
+Cluster for cluster_1.2 with leiden
+Cluster for cluster_1.4 with leiden
+Cluster for cluster_1.6 with leiden
+Cluster for cluster_1.8 with leiden
+Cluster for cluster_2.0 with leiden
+NMI...
+ARI...
+Silhouette score...
+Isolated labels F1...
+Cluster for iso_label_0.2 with leiden
+Cluster for iso_label_0.4 with leiden
+Cluster for iso_label_0.6 with leiden
+Cluster for iso_label_0.8 with leiden
+Cluster for iso_label_1.0 with leiden
+Cluster for iso_label_1.2 with leiden
+Cluster for iso_label_1.4 with leiden
+Cluster for iso_label_1.6 with leiden
+Cluster for iso_label_1.8 with leiden
+Cluster for iso_label_2.0 with leiden
+Isolated labels ASW...
+Graph connectivity...
+                   NMF: fit= 164.1s  infer=  2.4s  metrics= 82.2s  rss=    0MB  gpu=     —  bio=+0.463  batch=+0.816  composite=+0.604
+           sparseNMF: fitting...
+Cluster for cluster_0.2 with leiden
+resolution: 0.2, nmi: 0.8064868851027802
+Cluster for cluster_0.4 with leiden
+resolution: 0.4, nmi: 0.7209413477512557
+Cluster for cluster_0.6 with leiden
+resolution: 0.6, nmi: 0.6895282198871923
+Cluster for cluster_0.8 with leiden
+resolution: 0.8, nmi: 0.6599445676608676
+Cluster for cluster_1.0 with leiden
+resolution: 1.0, nmi: 0.6537211930349562
+Cluster for cluster_1.2 with leiden
+resolution: 1.2, nmi: 0.6458056255243089
+Cluster for cluster_1.4 with leiden
+resolution: 1.4, nmi: 0.6270156029403224
+Cluster for cluster_1.6 with leiden
+resolution: 1.6, nmi: 0.6234975914771157
+Cluster for cluster_1.8 with leiden
+resolution: 1.8, nmi: 0.619459507906504
+Cluster for cluster_2.0 with leiden
+resolution: 2.0, nmi: 0.614692867224448
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_0.2 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_0.4 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_0.6 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_0.8 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.0 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.2 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.4 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.6 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.8 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_2.0 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/metrics.py:293: UserWarning: Overwriting existing key cluster in adata.obs
+  res_max, nmi_max, nmi_all = cluster_optimal_resolution(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/isolated_labels.py:311: FutureWarning: The default of observed=False is deprecated and will be changed to True in a future version of pandas. Pass observed=False to retain current behavior or observed=True to adopt the future default and silence this warning.
+  batch_per_lab = tmp.groupby(label_key).agg({batch_key: "count"})
+/usr/local/lib/python3.11/dist-packages/scib/metrics/isolated_labels.py:311: FutureWarning: The default of observed=False is deprecated and will be changed to True in a future version of pandas. Pass observed=False to retain current behavior or observed=True to adopt the future default and silence this warning.
+  batch_per_lab = tmp.groupby(label_key).agg({batch_key: "count"})
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+optimised clustering against celltype
+optimal cluster resolution: 0.2
+optimal score: 0.8064868851027802
+Cluster for cluster_0.2 with leiden
+Cluster for cluster_0.4 with leiden
+Cluster for cluster_0.6 with leiden
+Cluster for cluster_0.8 with leiden
+Cluster for cluster_1.0 with leiden
+Cluster for cluster_1.2 with leiden
+Cluster for cluster_1.4 with leiden
+Cluster for cluster_1.6 with leiden
+Cluster for cluster_1.8 with leiden
+Cluster for cluster_2.0 with leiden
+NMI...
+ARI...
+Silhouette score...
+Isolated labels F1...
+Cluster for iso_label_0.2 with leiden
+Cluster for iso_label_0.4 with leiden
+Cluster for iso_label_0.6 with leiden
+Cluster for iso_label_0.8 with leiden
+Cluster for iso_label_1.0 with leiden
+Cluster for iso_label_1.2 with leiden
+Cluster for iso_label_1.4 with leiden
+Cluster for iso_label_1.6 with leiden
+Cluster for iso_label_1.8 with leiden
+Cluster for iso_label_2.0 with leiden
+Isolated labels ASW...
+Graph connectivity...
+             sparseNMF: fit= 498.7s  infer=  N/A  metrics= 99.6s  rss=  529MB  gpu=  4233MB  bio=+0.587  batch=+0.882  composite=+0.705
+   sparseNMF+nonzero: fitting...
+    FAILED: OutOfMemoryError: CUDA out of memory. Tried to allocate 3.43 GiB. GPU 0 has a total capacity of 15.60 GiB of which 2.21 GiB is free. Including non-PyTorch memory, this process has 13.38 GiB memory in use. Of the allocated memory 12.84 GiB is allocated by PyTorch, and 356.25 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+             Harmony: fitting...
+2026-05-15 01:44:29,251 - harmonypy - INFO - Running Harmony
+2026-05-15 01:44:29,251 - harmonypy - INFO -   Parameters:
+2026-05-15 01:44:29,251 - harmonypy - INFO -     max_iter_harmony: 20
+2026-05-15 01:44:29,251 - harmonypy - INFO -     max_iter_kmeans: 4
+2026-05-15 01:44:29,251 - harmonypy - INFO -     epsilon_cluster: 0.001
+2026-05-15 01:44:29,251 - harmonypy - INFO -     epsilon_harmony: 0.01
+2026-05-15 01:44:29,251 - harmonypy - INFO -     nclust: 100
+2026-05-15 01:44:29,251 - harmonypy - INFO -     block_size: 0.05
+2026-05-15 01:44:29,251 - harmonypy - INFO -     lamb: dynamic (alpha=0.2)
+2026-05-15 01:44:29,252 - harmonypy - INFO -     theta: [2. 2. 2. 2. 2. 2. 2. 2. 2.]
+2026-05-15 01:44:29,252 - harmonypy - INFO -     sigma: [0.1 0.1 0.1 0.1 0.1]...
+2026-05-15 01:44:29,252 - harmonypy - INFO -     verbose: True
+2026-05-15 01:44:29,252 - harmonypy - INFO -     random_state: 0
+2026-05-15 01:44:29,252 - harmonypy - INFO -   Data: 30 PCs × 8711 cells
+2026-05-15 01:44:29,252 - harmonypy - INFO -   Batch variables: ['tech']
+2026-05-15 01:44:29,257 - harmonypy - INFO - Computing initial centroids...
+2026-05-15 01:44:29,503 - harmonypy - INFO - Initialization complete.
+2026-05-15 01:44:29,503 - harmonypy - INFO - Iteration 1 of 20
+2026-05-15 01:44:29,686 - harmonypy - INFO - Iteration 2 of 20
+2026-05-15 01:44:29,878 - harmonypy - INFO - Iteration 3 of 20
+2026-05-15 01:44:30,070 - harmonypy - INFO - Iteration 4 of 20
+2026-05-15 01:44:30,261 - harmonypy - INFO - Iteration 5 of 20
+2026-05-15 01:44:30,452 - harmonypy - INFO - Converged after 5 iterations
+    FAILED: ValueError: Value passed for key 'X_emb' is of incorrect shape. Values of obsm must match dimensions ('obs',) of parent. Value had shape (30,) while it should have had (8711,).
+                scVI: fitting...
+/usr/local/lib/python3.11/dist-packages/scvi/data/fields/_base_field.py:63: UserWarning: adata.X does not contain unnormalized count data. Are you sure this is what you want?
+  self.validate_field(adata)
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+💡 Tip: For seamless cloud logging and experiment tracking, try installing [litlogger](https://pypi.org/project/litlogger/) to enable LitLogger, which logs metrics and artifacts automatically to the Lightning Experiments platform.
+You are using a CUDA device ('NVIDIA RTX A4000') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
+/usr/local/lib/python3.11/dist-packages/lightning/pytorch/trainer/connectors/data_connector.py:434: The 'train_dataloader' does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` to `num_workers=47` in the `DataLoader` to improve performance.
+Training:   0%|          | 0/100 [00:00<?, ?it/s]Epoch 1/100:   0%|          | 0/100 [00:00<?, ?it/s]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 1/100:   1%|          | 1/100 [00:02<03:57,  2.40s/it]Epoch 1/100:   1%|          | 1/100 [00:02<03:57,  2.40s/it, v_num=1, train_loss=1.9e+4]Epoch 2/100:   1%|          | 1/100 [00:02<03:57,  2.40s/it, v_num=1, train_loss=1.9e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 2/100:   2%|▏         | 2/100 [00:03<02:30,  1.53s/it, v_num=1, train_loss=1.9e+4]Epoch 2/100:   2%|▏         | 2/100 [00:03<02:30,  1.53s/it, v_num=1, train_loss=1.63e+4]Epoch 3/100:   2%|▏         | 2/100 [00:03<02:30,  1.53s/it, v_num=1, train_loss=1.63e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 3/100:   3%|▎         | 3/100 [00:04<02:01,  1.25s/it, v_num=1, train_loss=1.63e+4]Epoch 3/100:   3%|▎         | 3/100 [00:04<02:01,  1.25s/it, v_num=1, train_loss=1.57e+4]Epoch 4/100:   3%|▎         | 3/100 [00:04<02:01,  1.25s/it, v_num=1, train_loss=1.57e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 4/100:   4%|▍         | 4/100 [00:05<01:47,  1.12s/it, v_num=1, train_loss=1.57e+4]Epoch 4/100:   4%|▍         | 4/100 [00:05<01:47,  1.12s/it, v_num=1, train_loss=1.54e+4]Epoch 5/100:   4%|▍         | 4/100 [00:05<01:47,  1.12s/it, v_num=1, train_loss=1.54e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 5/100:   5%|▌         | 5/100 [00:06<01:39,  1.05s/it, v_num=1, train_loss=1.54e+4]Epoch 5/100:   5%|▌         | 5/100 [00:06<01:39,  1.05s/it, v_num=1, train_loss=1.52e+4]Epoch 6/100:   5%|▌         | 5/100 [00:06<01:39,  1.05s/it, v_num=1, train_loss=1.52e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 6/100:   6%|▌         | 6/100 [00:06<01:34,  1.00s/it, v_num=1, train_loss=1.52e+4]Epoch 6/100:   6%|▌         | 6/100 [00:06<01:34,  1.00s/it, v_num=1, train_loss=1.5e+4] Epoch 7/100:   6%|▌         | 6/100 [00:06<01:34,  1.00s/it, v_num=1, train_loss=1.5e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 7/100:   7%|▋         | 7/100 [00:07<01:30,  1.03it/s, v_num=1, train_loss=1.5e+4]Epoch 7/100:   7%|▋         | 7/100 [00:07<01:30,  1.03it/s, v_num=1, train_loss=1.49e+4]Epoch 8/100:   7%|▋         | 7/100 [00:07<01:30,  1.03it/s, v_num=1, train_loss=1.49e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 8/100:   8%|▊         | 8/100 [00:08<01:27,  1.05it/s, v_num=1, train_loss=1.49e+4]Epoch 8/100:   8%|▊         | 8/100 [00:08<01:27,  1.05it/s, v_num=1, train_loss=1.48e+4]Epoch 9/100:   8%|▊         | 8/100 [00:08<01:27,  1.05it/s, v_num=1, train_loss=1.48e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 9/100:   9%|▉         | 9/100 [00:09<01:25,  1.06it/s, v_num=1, train_loss=1.48e+4]Epoch 9/100:   9%|▉         | 9/100 [00:09<01:25,  1.06it/s, v_num=1, train_loss=1.47e+4]Epoch 10/100:   9%|▉         | 9/100 [00:09<01:25,  1.06it/s, v_num=1, train_loss=1.47e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 10/100:  10%|█         | 10/100 [00:10<01:25,  1.06it/s, v_num=1, train_loss=1.47e+4]Epoch 10/100:  10%|█         | 10/100 [00:10<01:25,  1.06it/s, v_num=1, train_loss=1.47e+4]Epoch 11/100:  10%|█         | 10/100 [00:10<01:25,  1.06it/s, v_num=1, train_loss=1.47e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 11/100:  11%|█         | 11/100 [00:11<01:23,  1.06it/s, v_num=1, train_loss=1.47e+4]Epoch 11/100:  11%|█         | 11/100 [00:11<01:23,  1.06it/s, v_num=1, train_loss=1.46e+4]Epoch 12/100:  11%|█         | 11/100 [00:11<01:23,  1.06it/s, v_num=1, train_loss=1.46e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 12/100:  12%|█▏        | 12/100 [00:12<01:22,  1.07it/s, v_num=1, train_loss=1.46e+4]Epoch 12/100:  12%|█▏        | 12/100 [00:12<01:22,  1.07it/s, v_num=1, train_loss=1.46e+4]Epoch 13/100:  12%|█▏        | 12/100 [00:12<01:22,  1.07it/s, v_num=1, train_loss=1.46e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 13/100:  13%|█▎        | 13/100 [00:13<01:21,  1.07it/s, v_num=1, train_loss=1.46e+4]Epoch 13/100:  13%|█▎        | 13/100 [00:13<01:21,  1.07it/s, v_num=1, train_loss=1.45e+4]Epoch 14/100:  13%|█▎        | 13/100 [00:13<01:21,  1.07it/s, v_num=1, train_loss=1.45e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 14/100:  14%|█▍        | 14/100 [00:14<01:20,  1.07it/s, v_num=1, train_loss=1.45e+4]Epoch 14/100:  14%|█▍        | 14/100 [00:14<01:20,  1.07it/s, v_num=1, train_loss=1.45e+4]Epoch 15/100:  14%|█▍        | 14/100 [00:14<01:20,  1.07it/s, v_num=1, train_loss=1.45e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 15/100:  15%|█▌        | 15/100 [00:15<01:19,  1.07it/s, v_num=1, train_loss=1.45e+4]Epoch 15/100:  15%|█▌        | 15/100 [00:15<01:19,  1.07it/s, v_num=1, train_loss=1.45e+4]Epoch 16/100:  15%|█▌        | 15/100 [00:15<01:19,  1.07it/s, v_num=1, train_loss=1.45e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 16/100:  16%|█▌        | 16/100 [00:16<01:19,  1.06it/s, v_num=1, train_loss=1.45e+4]Epoch 16/100:  16%|█▌        | 16/100 [00:16<01:19,  1.06it/s, v_num=1, train_loss=1.44e+4]Epoch 17/100:  16%|█▌        | 16/100 [00:16<01:19,  1.06it/s, v_num=1, train_loss=1.44e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 17/100:  17%|█▋        | 17/100 [00:17<01:18,  1.05it/s, v_num=1, train_loss=1.44e+4]Epoch 17/100:  17%|█▋        | 17/100 [00:17<01:18,  1.05it/s, v_num=1, train_loss=1.44e+4]Epoch 18/100:  17%|█▋        | 17/100 [00:17<01:18,  1.05it/s, v_num=1, train_loss=1.44e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 18/100:  18%|█▊        | 18/100 [00:18<01:18,  1.05it/s, v_num=1, train_loss=1.44e+4]Epoch 18/100:  18%|█▊        | 18/100 [00:18<01:18,  1.05it/s, v_num=1, train_loss=1.44e+4]Epoch 19/100:  18%|█▊        | 18/100 [00:18<01:18,  1.05it/s, v_num=1, train_loss=1.44e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 19/100:  19%|█▉        | 19/100 [00:19<01:17,  1.05it/s, v_num=1, train_loss=1.44e+4]Epoch 19/100:  19%|█▉        | 19/100 [00:19<01:17,  1.05it/s, v_num=1, train_loss=1.43e+4]Epoch 20/100:  19%|█▉        | 19/100 [00:19<01:17,  1.05it/s, v_num=1, train_loss=1.43e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 20/100:  20%|██        | 20/100 [00:20<01:16,  1.05it/s, v_num=1, train_loss=1.43e+4]Epoch 20/100:  20%|██        | 20/100 [00:20<01:16,  1.05it/s, v_num=1, train_loss=1.43e+4]Epoch 21/100:  20%|██        | 20/100 [00:20<01:16,  1.05it/s, v_num=1, train_loss=1.43e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 21/100:  21%|██        | 21/100 [00:21<01:14,  1.06it/s, v_num=1, train_loss=1.43e+4]Epoch 21/100:  21%|██        | 21/100 [00:21<01:14,  1.06it/s, v_num=1, train_loss=1.43e+4]Epoch 22/100:  21%|██        | 21/100 [00:21<01:14,  1.06it/s, v_num=1, train_loss=1.43e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 22/100:  22%|██▏       | 22/100 [00:21<01:13,  1.06it/s, v_num=1, train_loss=1.43e+4]Epoch 22/100:  22%|██▏       | 22/100 [00:22<01:13,  1.06it/s, v_num=1, train_loss=1.43e+4]Epoch 23/100:  22%|██▏       | 22/100 [00:22<01:13,  1.06it/s, v_num=1, train_loss=1.43e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 23/100:  23%|██▎       | 23/100 [00:22<01:12,  1.07it/s, v_num=1, train_loss=1.43e+4]Epoch 23/100:  23%|██▎       | 23/100 [00:22<01:12,  1.07it/s, v_num=1, train_loss=1.42e+4]Epoch 24/100:  23%|██▎       | 23/100 [00:22<01:12,  1.07it/s, v_num=1, train_loss=1.42e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 24/100:  24%|██▍       | 24/100 [00:23<01:11,  1.07it/s, v_num=1, train_loss=1.42e+4]Epoch 24/100:  24%|██▍       | 24/100 [00:23<01:11,  1.07it/s, v_num=1, train_loss=1.42e+4]Epoch 25/100:  24%|██▍       | 24/100 [00:23<01:11,  1.07it/s, v_num=1, train_loss=1.42e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 25/100:  25%|██▌       | 25/100 [00:24<01:10,  1.06it/s, v_num=1, train_loss=1.42e+4]Epoch 25/100:  25%|██▌       | 25/100 [00:24<01:10,  1.06it/s, v_num=1, train_loss=1.42e+4]Epoch 26/100:  25%|██▌       | 25/100 [00:24<01:10,  1.06it/s, v_num=1, train_loss=1.42e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 26/100:  26%|██▌       | 26/100 [00:25<01:09,  1.07it/s, v_num=1, train_loss=1.42e+4]Epoch 26/100:  26%|██▌       | 26/100 [00:25<01:09,  1.07it/s, v_num=1, train_loss=1.42e+4]Epoch 27/100:  26%|██▌       | 26/100 [00:25<01:09,  1.07it/s, v_num=1, train_loss=1.42e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 27/100:  27%|██▋       | 27/100 [00:26<01:08,  1.07it/s, v_num=1, train_loss=1.42e+4]Epoch 27/100:  27%|██▋       | 27/100 [00:26<01:08,  1.07it/s, v_num=1, train_loss=1.42e+4]Epoch 28/100:  27%|██▋       | 27/100 [00:26<01:08,  1.07it/s, v_num=1, train_loss=1.42e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 28/100:  28%|██▊       | 28/100 [00:27<01:08,  1.06it/s, v_num=1, train_loss=1.42e+4]Epoch 28/100:  28%|██▊       | 28/100 [00:27<01:08,  1.06it/s, v_num=1, train_loss=1.42e+4]Epoch 29/100:  28%|██▊       | 28/100 [00:27<01:08,  1.06it/s, v_num=1, train_loss=1.42e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 29/100:  29%|██▉       | 29/100 [00:28<01:07,  1.05it/s, v_num=1, train_loss=1.42e+4]Epoch 29/100:  29%|██▉       | 29/100 [00:28<01:07,  1.05it/s, v_num=1, train_loss=1.41e+4]Epoch 30/100:  29%|██▉       | 29/100 [00:28<01:07,  1.05it/s, v_num=1, train_loss=1.41e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 30/100:  30%|███       | 30/100 [00:29<01:06,  1.05it/s, v_num=1, train_loss=1.41e+4]Epoch 30/100:  30%|███       | 30/100 [00:29<01:06,  1.05it/s, v_num=1, train_loss=1.41e+4]Epoch 31/100:  30%|███       | 30/100 [00:29<01:06,  1.05it/s, v_num=1, train_loss=1.41e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 31/100:  31%|███       | 31/100 [00:30<01:05,  1.05it/s, v_num=1, train_loss=1.41e+4]Epoch 31/100:  31%|███       | 31/100 [00:30<01:05,  1.05it/s, v_num=1, train_loss=1.41e+4]Epoch 32/100:  31%|███       | 31/100 [00:30<01:05,  1.05it/s, v_num=1, train_loss=1.41e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 32/100:  32%|███▏      | 32/100 [00:31<01:04,  1.05it/s, v_num=1, train_loss=1.41e+4]Epoch 32/100:  32%|███▏      | 32/100 [00:31<01:04,  1.05it/s, v_num=1, train_loss=1.41e+4]Epoch 33/100:  32%|███▏      | 32/100 [00:31<01:04,  1.05it/s, v_num=1, train_loss=1.41e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 33/100:  33%|███▎      | 33/100 [00:32<01:03,  1.05it/s, v_num=1, train_loss=1.41e+4]Epoch 33/100:  33%|███▎      | 33/100 [00:32<01:03,  1.05it/s, v_num=1, train_loss=1.41e+4]Epoch 34/100:  33%|███▎      | 33/100 [00:32<01:03,  1.05it/s, v_num=1, train_loss=1.41e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 34/100:  34%|███▍      | 34/100 [00:33<01:03,  1.04it/s, v_num=1, train_loss=1.41e+4]Epoch 34/100:  34%|███▍      | 34/100 [00:33<01:03,  1.04it/s, v_num=1, train_loss=1.41e+4]Epoch 35/100:  34%|███▍      | 34/100 [00:33<01:03,  1.04it/s, v_num=1, train_loss=1.41e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 35/100:  35%|███▌      | 35/100 [00:34<01:02,  1.05it/s, v_num=1, train_loss=1.41e+4]Epoch 35/100:  35%|███▌      | 35/100 [00:34<01:02,  1.05it/s, v_num=1, train_loss=1.41e+4]Epoch 36/100:  35%|███▌      | 35/100 [00:34<01:02,  1.05it/s, v_num=1, train_loss=1.41e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 36/100:  36%|███▌      | 36/100 [00:35<01:01,  1.05it/s, v_num=1, train_loss=1.41e+4]Epoch 36/100:  36%|███▌      | 36/100 [00:35<01:01,  1.05it/s, v_num=1, train_loss=1.41e+4]Epoch 37/100:  36%|███▌      | 36/100 [00:35<01:01,  1.05it/s, v_num=1, train_loss=1.41e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 37/100:  37%|███▋      | 37/100 [00:36<01:00,  1.04it/s, v_num=1, train_loss=1.41e+4]Epoch 37/100:  37%|███▋      | 37/100 [00:36<01:00,  1.04it/s, v_num=1, train_loss=1.4e+4] Epoch 38/100:  37%|███▋      | 37/100 [00:36<01:00,  1.04it/s, v_num=1, train_loss=1.4e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 38/100:  38%|███▊      | 38/100 [00:37<00:59,  1.04it/s, v_num=1, train_loss=1.4e+4]Epoch 38/100:  38%|███▊      | 38/100 [00:37<00:59,  1.04it/s, v_num=1, train_loss=1.4e+4]Epoch 39/100:  38%|███▊      | 38/100 [00:37<00:59,  1.04it/s, v_num=1, train_loss=1.4e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 39/100:  39%|███▉      | 39/100 [00:38<00:58,  1.04it/s, v_num=1, train_loss=1.4e+4]Epoch 39/100:  39%|███▉      | 39/100 [00:38<00:58,  1.04it/s, v_num=1, train_loss=1.4e+4]Epoch 40/100:  39%|███▉      | 39/100 [00:38<00:58,  1.04it/s, v_num=1, train_loss=1.4e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 40/100:  40%|████      | 40/100 [00:39<00:57,  1.04it/s, v_num=1, train_loss=1.4e+4]Epoch 40/100:  40%|████      | 40/100 [00:39<00:57,  1.04it/s, v_num=1, train_loss=1.4e+4]Epoch 41/100:  40%|████      | 40/100 [00:39<00:57,  1.04it/s, v_num=1, train_loss=1.4e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 41/100:  41%|████      | 41/100 [00:40<00:57,  1.04it/s, v_num=1, train_loss=1.4e+4]Epoch 41/100:  41%|████      | 41/100 [00:40<00:57,  1.04it/s, v_num=1, train_loss=1.4e+4]Epoch 42/100:  41%|████      | 41/100 [00:40<00:57,  1.04it/s, v_num=1, train_loss=1.4e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 42/100:  42%|████▏     | 42/100 [00:41<00:55,  1.04it/s, v_num=1, train_loss=1.4e+4]Epoch 42/100:  42%|████▏     | 42/100 [00:41<00:55,  1.04it/s, v_num=1, train_loss=1.4e+4]Epoch 43/100:  42%|████▏     | 42/100 [00:41<00:55,  1.04it/s, v_num=1, train_loss=1.4e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 43/100:  43%|████▎     | 43/100 [00:42<00:54,  1.04it/s, v_num=1, train_loss=1.4e+4]Epoch 43/100:  43%|████▎     | 43/100 [00:42<00:54,  1.04it/s, v_num=1, train_loss=1.4e+4]Epoch 44/100:  43%|████▎     | 43/100 [00:42<00:54,  1.04it/s, v_num=1, train_loss=1.4e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 44/100:  44%|████▍     | 44/100 [00:42<00:53,  1.05it/s, v_num=1, train_loss=1.4e+4]Epoch 44/100:  44%|████▍     | 44/100 [00:42<00:53,  1.05it/s, v_num=1, train_loss=1.4e+4]Epoch 45/100:  44%|████▍     | 44/100 [00:42<00:53,  1.05it/s, v_num=1, train_loss=1.4e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 45/100:  45%|████▌     | 45/100 [00:43<00:52,  1.05it/s, v_num=1, train_loss=1.4e+4]Epoch 45/100:  45%|████▌     | 45/100 [00:43<00:52,  1.05it/s, v_num=1, train_loss=1.4e+4]Epoch 46/100:  45%|████▌     | 45/100 [00:43<00:52,  1.05it/s, v_num=1, train_loss=1.4e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 46/100:  46%|████▌     | 46/100 [00:44<00:51,  1.05it/s, v_num=1, train_loss=1.4e+4]Epoch 46/100:  46%|████▌     | 46/100 [00:44<00:51,  1.05it/s, v_num=1, train_loss=1.4e+4]Epoch 47/100:  46%|████▌     | 46/100 [00:44<00:51,  1.05it/s, v_num=1, train_loss=1.4e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 47/100:  47%|████▋     | 47/100 [00:45<00:50,  1.05it/s, v_num=1, train_loss=1.4e+4]Epoch 47/100:  47%|████▋     | 47/100 [00:45<00:50,  1.05it/s, v_num=1, train_loss=1.4e+4]Epoch 48/100:  47%|████▋     | 47/100 [00:45<00:50,  1.05it/s, v_num=1, train_loss=1.4e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 48/100:  48%|████▊     | 48/100 [00:46<00:49,  1.05it/s, v_num=1, train_loss=1.4e+4]Epoch 48/100:  48%|████▊     | 48/100 [00:46<00:49,  1.05it/s, v_num=1, train_loss=1.4e+4]Epoch 49/100:  48%|████▊     | 48/100 [00:46<00:49,  1.05it/s, v_num=1, train_loss=1.4e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 49/100:  49%|████▉     | 49/100 [00:47<00:48,  1.05it/s, v_num=1, train_loss=1.4e+4]Epoch 49/100:  49%|████▉     | 49/100 [00:47<00:48,  1.05it/s, v_num=1, train_loss=1.4e+4]Epoch 50/100:  49%|████▉     | 49/100 [00:47<00:48,  1.05it/s, v_num=1, train_loss=1.4e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 50/100:  50%|█████     | 50/100 [00:48<00:47,  1.04it/s, v_num=1, train_loss=1.4e+4]Epoch 50/100:  50%|█████     | 50/100 [00:48<00:47,  1.04it/s, v_num=1, train_loss=1.4e+4]Epoch 51/100:  50%|█████     | 50/100 [00:48<00:47,  1.04it/s, v_num=1, train_loss=1.4e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 51/100:  51%|█████     | 51/100 [00:49<00:46,  1.05it/s, v_num=1, train_loss=1.4e+4]Epoch 51/100:  51%|█████     | 51/100 [00:49<00:46,  1.05it/s, v_num=1, train_loss=1.39e+4]Epoch 52/100:  51%|█████     | 51/100 [00:49<00:46,  1.05it/s, v_num=1, train_loss=1.39e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 52/100:  52%|█████▏    | 52/100 [00:50<00:45,  1.05it/s, v_num=1, train_loss=1.39e+4]Epoch 52/100:  52%|█████▏    | 52/100 [00:50<00:45,  1.05it/s, v_num=1, train_loss=1.39e+4]Epoch 53/100:  52%|█████▏    | 52/100 [00:50<00:45,  1.05it/s, v_num=1, train_loss=1.39e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 53/100:  53%|█████▎    | 53/100 [00:51<00:44,  1.05it/s, v_num=1, train_loss=1.39e+4]Epoch 53/100:  53%|█████▎    | 53/100 [00:51<00:44,  1.05it/s, v_num=1, train_loss=1.39e+4]Epoch 54/100:  53%|█████▎    | 53/100 [00:51<00:44,  1.05it/s, v_num=1, train_loss=1.39e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 54/100:  54%|█████▍    | 54/100 [00:52<00:44,  1.04it/s, v_num=1, train_loss=1.39e+4]Epoch 54/100:  54%|█████▍    | 54/100 [00:52<00:44,  1.04it/s, v_num=1, train_loss=1.39e+4]Epoch 55/100:  54%|█████▍    | 54/100 [00:52<00:44,  1.04it/s, v_num=1, train_loss=1.39e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 55/100:  55%|█████▌    | 55/100 [00:53<00:43,  1.04it/s, v_num=1, train_loss=1.39e+4]Epoch 55/100:  55%|█████▌    | 55/100 [00:53<00:43,  1.04it/s, v_num=1, train_loss=1.39e+4]Epoch 56/100:  55%|█████▌    | 55/100 [00:53<00:43,  1.04it/s, v_num=1, train_loss=1.39e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 56/100:  56%|█████▌    | 56/100 [00:54<00:42,  1.04it/s, v_num=1, train_loss=1.39e+4]Epoch 56/100:  56%|█████▌    | 56/100 [00:54<00:42,  1.04it/s, v_num=1, train_loss=1.39e+4]Epoch 57/100:  56%|█████▌    | 56/100 [00:54<00:42,  1.04it/s, v_num=1, train_loss=1.39e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 57/100:  57%|█████▋    | 57/100 [00:55<00:41,  1.04it/s, v_num=1, train_loss=1.39e+4]Epoch 57/100:  57%|█████▋    | 57/100 [00:55<00:41,  1.04it/s, v_num=1, train_loss=1.39e+4]Epoch 58/100:  57%|█████▋    | 57/100 [00:55<00:41,  1.04it/s, v_num=1, train_loss=1.39e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 58/100:  58%|█████▊    | 58/100 [00:56<00:40,  1.04it/s, v_num=1, train_loss=1.39e+4]Epoch 58/100:  58%|█████▊    | 58/100 [00:56<00:40,  1.04it/s, v_num=1, train_loss=1.39e+4]Epoch 59/100:  58%|█████▊    | 58/100 [00:56<00:40,  1.04it/s, v_num=1, train_loss=1.39e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 59/100:  59%|█████▉    | 59/100 [00:57<00:39,  1.04it/s, v_num=1, train_loss=1.39e+4]Epoch 59/100:  59%|█████▉    | 59/100 [00:57<00:39,  1.04it/s, v_num=1, train_loss=1.39e+4]Epoch 60/100:  59%|█████▉    | 59/100 [00:57<00:39,  1.04it/s, v_num=1, train_loss=1.39e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 60/100:  60%|██████    | 60/100 [00:58<00:38,  1.04it/s, v_num=1, train_loss=1.39e+4]Epoch 60/100:  60%|██████    | 60/100 [00:58<00:38,  1.04it/s, v_num=1, train_loss=1.39e+4]Epoch 61/100:  60%|██████    | 60/100 [00:58<00:38,  1.04it/s, v_num=1, train_loss=1.39e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 61/100:  61%|██████    | 61/100 [00:59<00:37,  1.05it/s, v_num=1, train_loss=1.39e+4]Epoch 61/100:  61%|██████    | 61/100 [00:59<00:37,  1.05it/s, v_num=1, train_loss=1.39e+4]Epoch 62/100:  61%|██████    | 61/100 [00:59<00:37,  1.05it/s, v_num=1, train_loss=1.39e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 62/100:  62%|██████▏   | 62/100 [01:00<00:36,  1.05it/s, v_num=1, train_loss=1.39e+4]Epoch 62/100:  62%|██████▏   | 62/100 [01:00<00:36,  1.05it/s, v_num=1, train_loss=1.39e+4]Epoch 63/100:  62%|██████▏   | 62/100 [01:00<00:36,  1.05it/s, v_num=1, train_loss=1.39e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 63/100:  63%|██████▎   | 63/100 [01:01<00:35,  1.05it/s, v_num=1, train_loss=1.39e+4]Epoch 63/100:  63%|██████▎   | 63/100 [01:01<00:35,  1.05it/s, v_num=1, train_loss=1.39e+4]Epoch 64/100:  63%|██████▎   | 63/100 [01:01<00:35,  1.05it/s, v_num=1, train_loss=1.39e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 64/100:  64%|██████▍   | 64/100 [01:02<00:34,  1.05it/s, v_num=1, train_loss=1.39e+4]Epoch 64/100:  64%|██████▍   | 64/100 [01:02<00:34,  1.05it/s, v_num=1, train_loss=1.39e+4]Epoch 65/100:  64%|██████▍   | 64/100 [01:02<00:34,  1.05it/s, v_num=1, train_loss=1.39e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 65/100:  65%|██████▌   | 65/100 [01:03<00:33,  1.04it/s, v_num=1, train_loss=1.39e+4]Epoch 65/100:  65%|██████▌   | 65/100 [01:03<00:33,  1.04it/s, v_num=1, train_loss=1.39e+4]Epoch 66/100:  65%|██████▌   | 65/100 [01:03<00:33,  1.04it/s, v_num=1, train_loss=1.39e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 66/100:  66%|██████▌   | 66/100 [01:04<00:32,  1.04it/s, v_num=1, train_loss=1.39e+4]Epoch 66/100:  66%|██████▌   | 66/100 [01:04<00:32,  1.04it/s, v_num=1, train_loss=1.39e+4]Epoch 67/100:  66%|██████▌   | 66/100 [01:04<00:32,  1.04it/s, v_num=1, train_loss=1.39e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 67/100:  67%|██████▋   | 67/100 [01:05<00:31,  1.04it/s, v_num=1, train_loss=1.39e+4]Epoch 67/100:  67%|██████▋   | 67/100 [01:05<00:31,  1.04it/s, v_num=1, train_loss=1.39e+4]Epoch 68/100:  67%|██████▋   | 67/100 [01:05<00:31,  1.04it/s, v_num=1, train_loss=1.39e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 68/100:  68%|██████▊   | 68/100 [01:05<00:30,  1.05it/s, v_num=1, train_loss=1.39e+4]Epoch 68/100:  68%|██████▊   | 68/100 [01:05<00:30,  1.05it/s, v_num=1, train_loss=1.39e+4]Epoch 69/100:  68%|██████▊   | 68/100 [01:05<00:30,  1.05it/s, v_num=1, train_loss=1.39e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 69/100:  69%|██████▉   | 69/100 [01:06<00:29,  1.04it/s, v_num=1, train_loss=1.39e+4]Epoch 69/100:  69%|██████▉   | 69/100 [01:06<00:29,  1.04it/s, v_num=1, train_loss=1.39e+4]Epoch 70/100:  69%|██████▉   | 69/100 [01:06<00:29,  1.04it/s, v_num=1, train_loss=1.39e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 70/100:  70%|███████   | 70/100 [01:07<00:28,  1.04it/s, v_num=1, train_loss=1.39e+4]Epoch 70/100:  70%|███████   | 70/100 [01:07<00:28,  1.04it/s, v_num=1, train_loss=1.39e+4]Epoch 71/100:  70%|███████   | 70/100 [01:07<00:28,  1.04it/s, v_num=1, train_loss=1.39e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 71/100:  71%|███████   | 71/100 [01:08<00:27,  1.05it/s, v_num=1, train_loss=1.39e+4]Epoch 71/100:  71%|███████   | 71/100 [01:08<00:27,  1.05it/s, v_num=1, train_loss=1.39e+4]Epoch 72/100:  71%|███████   | 71/100 [01:08<00:27,  1.05it/s, v_num=1, train_loss=1.39e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 72/100:  72%|███████▏  | 72/100 [01:09<00:26,  1.05it/s, v_num=1, train_loss=1.39e+4]Epoch 72/100:  72%|███████▏  | 72/100 [01:09<00:26,  1.05it/s, v_num=1, train_loss=1.39e+4]Epoch 73/100:  72%|███████▏  | 72/100 [01:09<00:26,  1.05it/s, v_num=1, train_loss=1.39e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 73/100:  73%|███████▎  | 73/100 [01:10<00:25,  1.05it/s, v_num=1, train_loss=1.39e+4]Epoch 73/100:  73%|███████▎  | 73/100 [01:10<00:25,  1.05it/s, v_num=1, train_loss=1.39e+4]Epoch 74/100:  73%|███████▎  | 73/100 [01:10<00:25,  1.05it/s, v_num=1, train_loss=1.39e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 74/100:  74%|███████▍  | 74/100 [01:11<00:24,  1.05it/s, v_num=1, train_loss=1.39e+4]Epoch 74/100:  74%|███████▍  | 74/100 [01:11<00:24,  1.05it/s, v_num=1, train_loss=1.39e+4]Epoch 75/100:  74%|███████▍  | 74/100 [01:11<00:24,  1.05it/s, v_num=1, train_loss=1.39e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 75/100:  75%|███████▌  | 75/100 [01:12<00:23,  1.06it/s, v_num=1, train_loss=1.39e+4]Epoch 75/100:  75%|███████▌  | 75/100 [01:12<00:23,  1.06it/s, v_num=1, train_loss=1.39e+4]Epoch 76/100:  75%|███████▌  | 75/100 [01:12<00:23,  1.06it/s, v_num=1, train_loss=1.39e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 76/100:  76%|███████▌  | 76/100 [01:13<00:22,  1.06it/s, v_num=1, train_loss=1.39e+4]Epoch 76/100:  76%|███████▌  | 76/100 [01:13<00:22,  1.06it/s, v_num=1, train_loss=1.39e+4]Epoch 77/100:  76%|███████▌  | 76/100 [01:13<00:22,  1.06it/s, v_num=1, train_loss=1.39e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 77/100:  77%|███████▋  | 77/100 [01:14<00:21,  1.06it/s, v_num=1, train_loss=1.39e+4]Epoch 77/100:  77%|███████▋  | 77/100 [01:14<00:21,  1.06it/s, v_num=1, train_loss=1.39e+4]Epoch 78/100:  77%|███████▋  | 77/100 [01:14<00:21,  1.06it/s, v_num=1, train_loss=1.39e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 78/100:  78%|███████▊  | 78/100 [01:15<00:20,  1.06it/s, v_num=1, train_loss=1.39e+4]Epoch 78/100:  78%|███████▊  | 78/100 [01:15<00:20,  1.06it/s, v_num=1, train_loss=1.39e+4]Epoch 79/100:  78%|███████▊  | 78/100 [01:15<00:20,  1.06it/s, v_num=1, train_loss=1.39e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 79/100:  79%|███████▉  | 79/100 [01:16<00:19,  1.06it/s, v_num=1, train_loss=1.39e+4]Epoch 79/100:  79%|███████▉  | 79/100 [01:16<00:19,  1.06it/s, v_num=1, train_loss=1.38e+4]Epoch 80/100:  79%|███████▉  | 79/100 [01:16<00:19,  1.06it/s, v_num=1, train_loss=1.38e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 80/100:  80%|████████  | 80/100 [01:17<00:18,  1.06it/s, v_num=1, train_loss=1.38e+4]Epoch 80/100:  80%|████████  | 80/100 [01:17<00:18,  1.06it/s, v_num=1, train_loss=1.38e+4]Epoch 81/100:  80%|████████  | 80/100 [01:17<00:18,  1.06it/s, v_num=1, train_loss=1.38e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 81/100:  81%|████████  | 81/100 [01:18<00:17,  1.06it/s, v_num=1, train_loss=1.38e+4]Epoch 81/100:  81%|████████  | 81/100 [01:18<00:17,  1.06it/s, v_num=1, train_loss=1.38e+4]Epoch 82/100:  81%|████████  | 81/100 [01:18<00:17,  1.06it/s, v_num=1, train_loss=1.38e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 82/100:  82%|████████▏ | 82/100 [01:19<00:16,  1.07it/s, v_num=1, train_loss=1.38e+4]Epoch 82/100:  82%|████████▏ | 82/100 [01:19<00:16,  1.07it/s, v_num=1, train_loss=1.38e+4]Epoch 83/100:  82%|████████▏ | 82/100 [01:19<00:16,  1.07it/s, v_num=1, train_loss=1.38e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 83/100:  83%|████████▎ | 83/100 [01:20<00:15,  1.07it/s, v_num=1, train_loss=1.38e+4]Epoch 83/100:  83%|████████▎ | 83/100 [01:20<00:15,  1.07it/s, v_num=1, train_loss=1.38e+4]Epoch 84/100:  83%|████████▎ | 83/100 [01:20<00:15,  1.07it/s, v_num=1, train_loss=1.38e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 84/100:  84%|████████▍ | 84/100 [01:21<00:15,  1.06it/s, v_num=1, train_loss=1.38e+4]Epoch 84/100:  84%|████████▍ | 84/100 [01:21<00:15,  1.06it/s, v_num=1, train_loss=1.38e+4]Epoch 85/100:  84%|████████▍ | 84/100 [01:21<00:15,  1.06it/s, v_num=1, train_loss=1.38e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 85/100:  85%|████████▌ | 85/100 [01:22<00:14,  1.06it/s, v_num=1, train_loss=1.38e+4]Epoch 85/100:  85%|████████▌ | 85/100 [01:22<00:14,  1.06it/s, v_num=1, train_loss=1.38e+4]Epoch 86/100:  85%|████████▌ | 85/100 [01:22<00:14,  1.06it/s, v_num=1, train_loss=1.38e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 86/100:  86%|████████▌ | 86/100 [01:22<00:13,  1.07it/s, v_num=1, train_loss=1.38e+4]Epoch 86/100:  86%|████████▌ | 86/100 [01:22<00:13,  1.07it/s, v_num=1, train_loss=1.38e+4]Epoch 87/100:  86%|████████▌ | 86/100 [01:22<00:13,  1.07it/s, v_num=1, train_loss=1.38e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 87/100:  87%|████████▋ | 87/100 [01:23<00:12,  1.06it/s, v_num=1, train_loss=1.38e+4]Epoch 87/100:  87%|████████▋ | 87/100 [01:23<00:12,  1.06it/s, v_num=1, train_loss=1.38e+4]Epoch 88/100:  87%|████████▋ | 87/100 [01:23<00:12,  1.06it/s, v_num=1, train_loss=1.38e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 88/100:  88%|████████▊ | 88/100 [01:24<00:11,  1.06it/s, v_num=1, train_loss=1.38e+4]Epoch 88/100:  88%|████████▊ | 88/100 [01:24<00:11,  1.06it/s, v_num=1, train_loss=1.38e+4]Epoch 89/100:  88%|████████▊ | 88/100 [01:24<00:11,  1.06it/s, v_num=1, train_loss=1.38e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 89/100:  89%|████████▉ | 89/100 [01:25<00:10,  1.05it/s, v_num=1, train_loss=1.38e+4]Epoch 89/100:  89%|████████▉ | 89/100 [01:25<00:10,  1.05it/s, v_num=1, train_loss=1.38e+4]Epoch 90/100:  89%|████████▉ | 89/100 [01:25<00:10,  1.05it/s, v_num=1, train_loss=1.38e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 90/100:  90%|█████████ | 90/100 [01:26<00:09,  1.05it/s, v_num=1, train_loss=1.38e+4]Epoch 90/100:  90%|█████████ | 90/100 [01:26<00:09,  1.05it/s, v_num=1, train_loss=1.38e+4]Epoch 91/100:  90%|█████████ | 90/100 [01:26<00:09,  1.05it/s, v_num=1, train_loss=1.38e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 91/100:  91%|█████████ | 91/100 [01:27<00:08,  1.05it/s, v_num=1, train_loss=1.38e+4]Epoch 91/100:  91%|█████████ | 91/100 [01:27<00:08,  1.05it/s, v_num=1, train_loss=1.38e+4]Epoch 92/100:  91%|█████████ | 91/100 [01:27<00:08,  1.05it/s, v_num=1, train_loss=1.38e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 92/100:  92%|█████████▏| 92/100 [01:28<00:07,  1.05it/s, v_num=1, train_loss=1.38e+4]Epoch 92/100:  92%|█████████▏| 92/100 [01:28<00:07,  1.05it/s, v_num=1, train_loss=1.38e+4]Epoch 93/100:  92%|█████████▏| 92/100 [01:28<00:07,  1.05it/s, v_num=1, train_loss=1.38e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 93/100:  93%|█████████▎| 93/100 [01:29<00:06,  1.05it/s, v_num=1, train_loss=1.38e+4]Epoch 93/100:  93%|█████████▎| 93/100 [01:29<00:06,  1.05it/s, v_num=1, train_loss=1.38e+4]Epoch 94/100:  93%|█████████▎| 93/100 [01:29<00:06,  1.05it/s, v_num=1, train_loss=1.38e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 94/100:  94%|█████████▍| 94/100 [01:30<00:05,  1.05it/s, v_num=1, train_loss=1.38e+4]Epoch 94/100:  94%|█████████▍| 94/100 [01:30<00:05,  1.05it/s, v_num=1, train_loss=1.38e+4]Epoch 95/100:  94%|█████████▍| 94/100 [01:30<00:05,  1.05it/s, v_num=1, train_loss=1.38e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 95/100:  95%|█████████▌| 95/100 [01:31<00:04,  1.04it/s, v_num=1, train_loss=1.38e+4]Epoch 95/100:  95%|█████████▌| 95/100 [01:31<00:04,  1.04it/s, v_num=1, train_loss=1.38e+4]Epoch 96/100:  95%|█████████▌| 95/100 [01:31<00:04,  1.04it/s, v_num=1, train_loss=1.38e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 96/100:  96%|█████████▌| 96/100 [01:32<00:03,  1.04it/s, v_num=1, train_loss=1.38e+4]Epoch 96/100:  96%|█████████▌| 96/100 [01:32<00:03,  1.04it/s, v_num=1, train_loss=1.38e+4]Epoch 97/100:  96%|█████████▌| 96/100 [01:32<00:03,  1.04it/s, v_num=1, train_loss=1.38e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 97/100:  97%|█████████▋| 97/100 [01:33<00:02,  1.04it/s, v_num=1, train_loss=1.38e+4]Epoch 97/100:  97%|█████████▋| 97/100 [01:33<00:02,  1.04it/s, v_num=1, train_loss=1.38e+4]Epoch 98/100:  97%|█████████▋| 97/100 [01:33<00:02,  1.04it/s, v_num=1, train_loss=1.38e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 98/100:  98%|█████████▊| 98/100 [01:34<00:01,  1.04it/s, v_num=1, train_loss=1.38e+4]Epoch 98/100:  98%|█████████▊| 98/100 [01:34<00:01,  1.04it/s, v_num=1, train_loss=1.38e+4]Epoch 99/100:  98%|█████████▊| 98/100 [01:34<00:01,  1.04it/s, v_num=1, train_loss=1.38e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 99/100:  99%|█████████▉| 99/100 [01:35<00:00,  1.04it/s, v_num=1, train_loss=1.38e+4]Epoch 99/100:  99%|█████████▉| 99/100 [01:35<00:00,  1.04it/s, v_num=1, train_loss=1.38e+4]Epoch 100/100:  99%|█████████▉| 99/100 [01:35<00:00,  1.04it/s, v_num=1, train_loss=1.38e+4]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
+  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
+Epoch 100/100: 100%|██████████| 100/100 [01:36<00:00,  1.04it/s, v_num=1, train_loss=1.38e+4]Epoch 100/100: 100%|██████████| 100/100 [01:36<00:00,  1.04it/s, v_num=1, train_loss=1.38e+4]`Trainer.fit` stopped: `max_epochs=100` reached.
+Epoch 100/100: 100%|██████████| 100/100 [01:36<00:00,  1.04it/s, v_num=1, train_loss=1.38e+4]
+Cluster for cluster_0.2 with leiden
+resolution: 0.2, nmi: 0.8353548183865566
+Cluster for cluster_0.4 with leiden
+resolution: 0.4, nmi: 0.80901966063334
+Cluster for cluster_0.6 with leiden
+resolution: 0.6, nmi: 0.7636278761340144
+Cluster for cluster_0.8 with leiden
+resolution: 0.8, nmi: 0.7413664782986992
+Cluster for cluster_1.0 with leiden
+resolution: 1.0, nmi: 0.7147282257865419
+Cluster for cluster_1.2 with leiden
+resolution: 1.2, nmi: 0.702693717789375
+Cluster for cluster_1.4 with leiden
+resolution: 1.4, nmi: 0.7015506040557551
+Cluster for cluster_1.6 with leiden
+resolution: 1.6, nmi: 0.6945928391299078
+Cluster for cluster_1.8 with leiden
+resolution: 1.8, nmi: 0.6855543029124631
+Cluster for cluster_2.0 with leiden
+resolution: 2.0, nmi: 0.682644956731378
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_0.2 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_0.4 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_0.6 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_0.8 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.0 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.2 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.4 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.6 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.8 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_2.0 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/metrics.py:293: UserWarning: Overwriting existing key cluster in adata.obs
+  res_max, nmi_max, nmi_all = cluster_optimal_resolution(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/isolated_labels.py:311: FutureWarning: The default of observed=False is deprecated and will be changed to True in a future version of pandas. Pass observed=False to retain current behavior or observed=True to adopt the future default and silence this warning.
+  batch_per_lab = tmp.groupby(label_key).agg({batch_key: "count"})
+/usr/local/lib/python3.11/dist-packages/scib/metrics/isolated_labels.py:311: FutureWarning: The default of observed=False is deprecated and will be changed to True in a future version of pandas. Pass observed=False to retain current behavior or observed=True to adopt the future default and silence this warning.
+  batch_per_lab = tmp.groupby(label_key).agg({batch_key: "count"})
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/anndata/_io/specs/registry.py:287: OldFormatWarning: Element '/layers' was written without encoding metadata.
+  return self.callback(read_func, elem.name, elem, iospec=iospec)
+/usr/local/lib/python3.11/dist-packages/anndata/_io/specs/registry.py:287: OldFormatWarning: Element '/layers/counts' was written without encoding metadata.
+  return self.callback(read_func, elem.name, elem, iospec=iospec)
+/usr/local/lib/python3.11/dist-packages/anndata/_io/utils.py:234: OldFormatWarning: Element '/obs/__categories/batch' was written without encoding metadata.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.11/dist-packages/anndata/_io/utils.py:234: OldFormatWarning: Element '/obs/batch' was written without encoding metadata.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.11/dist-packages/anndata/_io/utils.py:234: OldFormatWarning: Element '/obs/__categories/chemistry' was written without encoding metadata.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.11/dist-packages/anndata/_io/utils.py:234: OldFormatWarning: Element '/obs/chemistry' was written without encoding metadata.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.11/dist-packages/anndata/_io/utils.py:234: OldFormatWarning: Element '/obs/__categories/data_type' was written without encoding metadata.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.11/dist-packages/anndata/_io/utils.py:234: OldFormatWarning: Element '/obs/data_type' was written without encoding metadata.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.11/dist-packages/anndata/_io/utils.py:234: OldFormatWarning: Element '/obs/dpt_pseudotime' was written without encoding metadata.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.11/dist-packages/anndata/_io/utils.py:234: OldFormatWarning: Element '/obs/__categories/final_annotation' was written without encoding metadata.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.11/dist-packages/anndata/_io/utils.py:234: OldFormatWarning: Element '/obs/final_annotation' was written without encoding metadata.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.11/dist-packages/anndata/_io/utils.py:234: OldFormatWarning: Element '/obs/mt_frac' was written without encoding metadata.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.11/dist-packages/anndata/_io/utils.py:234: OldFormatWarning: Element '/obs/n_counts' was written without encoding metadata.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.11/dist-packages/anndata/_io/utils.py:234: OldFormatWarning: Element '/obs/n_genes' was written without encoding metadata.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.11/dist-packages/anndata/_io/utils.py:234: OldFormatWarning: Element '/obs/__categories/sample_ID' was written without encoding metadata.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.11/dist-packages/anndata/_io/utils.py:234: OldFormatWarning: Element '/obs/sample_ID' was written without encoding metadata.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.11/dist-packages/anndata/_io/utils.py:234: OldFormatWarning: Element '/obs/size_factors' was written without encoding metadata.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.11/dist-packages/anndata/_io/utils.py:234: OldFormatWarning: Element '/obs/__categories/species' was written without encoding metadata.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.11/dist-packages/anndata/_io/utils.py:234: OldFormatWarning: Element '/obs/species' was written without encoding metadata.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.11/dist-packages/anndata/_io/utils.py:234: OldFormatWarning: Element '/obs/__categories/study' was written without encoding metadata.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.11/dist-packages/anndata/_io/utils.py:234: OldFormatWarning: Element '/obs/study' was written without encoding metadata.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.11/dist-packages/anndata/_io/utils.py:234: OldFormatWarning: Element '/obs/__categories/tissue' was written without encoding metadata.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.11/dist-packages/anndata/_io/utils.py:234: OldFormatWarning: Element '/obs/tissue' was written without encoding metadata.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.11/dist-packages/anndata/_io/utils.py:234: OldFormatWarning: Element '/obs/index' was written without encoding metadata.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.11/dist-packages/anndata/_io/utils.py:234: OldFormatWarning: Element '/var/index' was written without encoding metadata.
+  return func(*args, **kwargs)
+optimised clustering against celltype
+optimal cluster resolution: 0.2
+optimal score: 0.8353548183865566
+Cluster for cluster_0.2 with leiden
+Cluster for cluster_0.4 with leiden
+Cluster for cluster_0.6 with leiden
+Cluster for cluster_0.8 with leiden
+Cluster for cluster_1.0 with leiden
+Cluster for cluster_1.2 with leiden
+Cluster for cluster_1.4 with leiden
+Cluster for cluster_1.6 with leiden
+Cluster for cluster_1.8 with leiden
+Cluster for cluster_2.0 with leiden
+NMI...
+ARI...
+Silhouette score...
+Isolated labels F1...
+Cluster for iso_label_0.2 with leiden
+Cluster for iso_label_0.4 with leiden
+Cluster for iso_label_0.6 with leiden
+Cluster for iso_label_0.8 with leiden
+Cluster for iso_label_1.0 with leiden
+Cluster for iso_label_1.2 with leiden
+Cluster for iso_label_1.4 with leiden
+Cluster for iso_label_1.6 with leiden
+Cluster for iso_label_1.8 with leiden
+Cluster for iso_label_2.0 with leiden
+Isolated labels ASW...
+Graph connectivity...
+                  scVI: fit=  97.1s  infer=  0.2s  metrics= 78.5s  rss=    0MB  gpu=   354MB  bio=+0.631  batch=+0.971  composite=+0.767
+
+=== immune ===
+Downloading https://ndownloader.figshare.com/files/25717328 → /root/.cache/sparse-nmf/Immune_ALL_human.h5ad
+  ... 0% (0 / 2065 MB)
+  ... 10% (206 / 2065 MB)
+  ... 20% (413 / 2065 MB)
+  ... 30% (619 / 2065 MB)
+  ... 40% (826 / 2065 MB)
+  ... 50% (1032 / 2065 MB)
+  ... 60% (1239 / 2065 MB)
+  ... 70% (1445 / 2065 MB)
+  ... 80% (1652 / 2065 MB)
+  ... 90% (1858 / 2065 MB)
+  ... 100% (2065 / 2065 MB)
+  (13080, 12303)  batches=10  labels=16
+                 PCA: fitting...
+Cluster for cluster_0.2 with leiden
+resolution: 0.2, nmi: 0.549445875429026
+Cluster for cluster_0.4 with leiden
+resolution: 0.4, nmi: 0.5874881675622318
+Cluster for cluster_0.6 with leiden
+resolution: 0.6, nmi: 0.570421547859926
+Cluster for cluster_0.8 with leiden
+resolution: 0.8, nmi: 0.5616360199172394
+Cluster for cluster_1.0 with leiden
+resolution: 1.0, nmi: 0.5524257582247845
+Cluster for cluster_1.2 with leiden
+resolution: 1.2, nmi: 0.5491849788541988
+Cluster for cluster_1.4 with leiden
+resolution: 1.4, nmi: 0.5491313508847923
+Cluster for cluster_1.6 with leiden
+resolution: 1.6, nmi: 0.5491172516665785
+Cluster for cluster_1.8 with leiden
+resolution: 1.8, nmi: 0.5420725583802166
+Cluster for cluster_2.0 with leiden
+resolution: 2.0, nmi: 0.5410827457538073
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_0.2 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_0.4 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_0.6 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_0.8 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.0 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.2 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.4 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.6 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.8 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_2.0 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/metrics.py:293: UserWarning: Overwriting existing key cluster in adata.obs
+  res_max, nmi_max, nmi_all = cluster_optimal_resolution(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/isolated_labels.py:311: FutureWarning: The default of observed=False is deprecated and will be changed to True in a future version of pandas. Pass observed=False to retain current behavior or observed=True to adopt the future default and silence this warning.
+  batch_per_lab = tmp.groupby(label_key).agg({batch_key: "count"})
+/usr/local/lib/python3.11/dist-packages/scib/metrics/isolated_labels.py:311: FutureWarning: The default of observed=False is deprecated and will be changed to True in a future version of pandas. Pass observed=False to retain current behavior or observed=True to adopt the future default and silence this warning.
+  batch_per_lab = tmp.groupby(label_key).agg({batch_key: "count"})
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+optimised clustering against final_annotation
+optimal cluster resolution: 0.4
+optimal score: 0.5874881675622318
+Cluster for cluster_0.2 with leiden
+Cluster for cluster_0.4 with leiden
+Cluster for cluster_0.6 with leiden
+Cluster for cluster_0.8 with leiden
+Cluster for cluster_1.0 with leiden
+Cluster for cluster_1.2 with leiden
+Cluster for cluster_1.4 with leiden
+Cluster for cluster_1.6 with leiden
+Cluster for cluster_1.8 with leiden
+Cluster for cluster_2.0 with leiden
+NMI...
+ARI...
+Silhouette score...
+Isolated labels F1...
+Cluster for iso_label_0.2 with leiden
+Cluster for iso_label_0.4 with leiden
+Cluster for iso_label_0.6 with leiden
+Cluster for iso_label_0.8 with leiden
+Cluster for iso_label_1.0 with leiden
+Cluster for iso_label_1.2 with leiden
+Cluster for iso_label_1.4 with leiden
+Cluster for iso_label_1.6 with leiden
+Cluster for iso_label_1.8 with leiden
+Cluster for iso_label_2.0 with leiden
+Cluster for iso_label_0.2 with leiden
+Cluster for iso_label_0.4 with leiden
+Cluster for iso_label_0.6 with leiden
+Cluster for iso_label_0.8 with leiden
+Cluster for iso_label_1.0 with leiden
+Cluster for iso_label_1.2 with leiden
+Cluster for iso_label_1.4 with leiden
+Cluster for iso_label_1.6 with leiden
+Cluster for iso_label_1.8 with leiden
+Cluster for iso_label_2.0 with leiden
+Cluster for iso_label_0.2 with leiden
+Cluster for iso_label_0.4 with leiden
+Cluster for iso_label_0.6 with leiden
+Cluster for iso_label_0.8 with leiden
+Cluster for iso_label_1.0 with leiden
+Cluster for iso_label_1.2 with leiden
+Cluster for iso_label_1.4 with leiden
+Cluster for iso_label_1.6 with leiden
+Cluster for iso_label_1.8 with leiden
+Cluster for iso_label_2.0 with leiden
+Cluster for iso_label_0.2 with leiden
+Cluster for iso_label_0.4 with leiden
+Cluster for iso_label_0.6 with leiden
+Cluster for iso_label_0.8 with leiden
+Cluster for iso_label_1.0 with leiden
+Cluster for iso_label_1.2 with leiden
+Cluster for iso_label_1.4 with leiden
+Cluster for iso_label_1.6 with leiden
+Cluster for iso_label_1.8 with leiden
+Cluster for iso_label_2.0 with leiden
+Isolated labels ASW...
+Graph connectivity...
+                   PCA: fit=  11.4s  infer=  0.1s  metrics=323.0s  rss=  454MB  gpu=     8MB  bio=+0.464  batch=+0.876  composite=+0.629
+                 NMF: fitting...
+/usr/local/lib/python3.11/dist-packages/sklearn/decomposition/_nmf.py:1720: ConvergenceWarning: Maximum number of iterations 500 reached. Increase it to improve convergence.
+  warnings.warn(
+Cluster for cluster_0.2 with leiden
+resolution: 0.2, nmi: 0.3795695953691233
+Cluster for cluster_0.4 with leiden
+resolution: 0.4, nmi: 0.3744561489226863
+Cluster for cluster_0.6 with leiden
+resolution: 0.6, nmi: 0.4109951890907629
+Cluster for cluster_0.8 with leiden
+resolution: 0.8, nmi: 0.40117640467142934
+Cluster for cluster_1.0 with leiden
+resolution: 1.0, nmi: 0.40745813598972747
+Cluster for cluster_1.2 with leiden
+resolution: 1.2, nmi: 0.40699488755949587
+Cluster for cluster_1.4 with leiden
+resolution: 1.4, nmi: 0.41415345969969825
+Cluster for cluster_1.6 with leiden
+resolution: 1.6, nmi: 0.406429923661039
+Cluster for cluster_1.8 with leiden
+resolution: 1.8, nmi: 0.4113055365897772
+Cluster for cluster_2.0 with leiden
+resolution: 2.0, nmi: 0.4062458590200236
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_0.2 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_0.4 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_0.6 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_0.8 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.0 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.2 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.4 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.6 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.8 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_2.0 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/metrics.py:293: UserWarning: Overwriting existing key cluster in adata.obs
+  res_max, nmi_max, nmi_all = cluster_optimal_resolution(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/isolated_labels.py:311: FutureWarning: The default of observed=False is deprecated and will be changed to True in a future version of pandas. Pass observed=False to retain current behavior or observed=True to adopt the future default and silence this warning.
+  batch_per_lab = tmp.groupby(label_key).agg({batch_key: "count"})
+/usr/local/lib/python3.11/dist-packages/scib/metrics/isolated_labels.py:311: FutureWarning: The default of observed=False is deprecated and will be changed to True in a future version of pandas. Pass observed=False to retain current behavior or observed=True to adopt the future default and silence this warning.
+  batch_per_lab = tmp.groupby(label_key).agg({batch_key: "count"})
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+optimised clustering against final_annotation
+optimal cluster resolution: 1.4
+optimal score: 0.41415345969969825
+Cluster for cluster_0.2 with leiden
+Cluster for cluster_0.4 with leiden
+Cluster for cluster_0.6 with leiden
+Cluster for cluster_0.8 with leiden
+Cluster for cluster_1.0 with leiden
+Cluster for cluster_1.2 with leiden
+Cluster for cluster_1.4 with leiden
+Cluster for cluster_1.6 with leiden
+Cluster for cluster_1.8 with leiden
+Cluster for cluster_2.0 with leiden
+NMI...
+ARI...
+Silhouette score...
+Isolated labels F1...
+Cluster for iso_label_0.2 with leiden
+Cluster for iso_label_0.4 with leiden
+Cluster for iso_label_0.6 with leiden
+Cluster for iso_label_0.8 with leiden
+Cluster for iso_label_1.0 with leiden
+Cluster for iso_label_1.2 with leiden
+Cluster for iso_label_1.4 with leiden
+Cluster for iso_label_1.6 with leiden
+Cluster for iso_label_1.8 with leiden
+Cluster for iso_label_2.0 with leiden
+Cluster for iso_label_0.2 with leiden
+Cluster for iso_label_0.4 with leiden
+Cluster for iso_label_0.6 with leiden
+Cluster for iso_label_0.8 with leiden
+Cluster for iso_label_1.0 with leiden
+Cluster for iso_label_1.2 with leiden
+Cluster for iso_label_1.4 with leiden
+Cluster for iso_label_1.6 with leiden
+Cluster for iso_label_1.8 with leiden
+Cluster for iso_label_2.0 with leiden
+Cluster for iso_label_0.2 with leiden
+Cluster for iso_label_0.4 with leiden
+Cluster for iso_label_0.6 with leiden
+Cluster for iso_label_0.8 with leiden
+Cluster for iso_label_1.0 with leiden
+Cluster for iso_label_1.2 with leiden
+Cluster for iso_label_1.4 with leiden
+Cluster for iso_label_1.6 with leiden
+Cluster for iso_label_1.8 with leiden
+Cluster for iso_label_2.0 with leiden
+Cluster for iso_label_0.2 with leiden
+Cluster for iso_label_0.4 with leiden
+Cluster for iso_label_0.6 with leiden
+Cluster for iso_label_0.8 with leiden
+Cluster for iso_label_1.0 with leiden
+Cluster for iso_label_1.2 with leiden
+Cluster for iso_label_1.4 with leiden
+Cluster for iso_label_1.6 with leiden
+Cluster for iso_label_1.8 with leiden
+Cluster for iso_label_2.0 with leiden
+Isolated labels ASW...
+Graph connectivity...
+                   NMF: fit= 259.1s  infer=  5.6s  metrics=353.6s  rss=    0MB  gpu=     8MB  bio=+0.356  batch=+0.818  composite=+0.541
+           sparseNMF: fitting...
+Cluster for cluster_0.2 with leiden
+resolution: 0.2, nmi: 0.5607153232657116
+Cluster for cluster_0.4 with leiden
+resolution: 0.4, nmi: 0.6424913908186969
+Cluster for cluster_0.6 with leiden
+resolution: 0.6, nmi: 0.6423882694034811
+Cluster for cluster_0.8 with leiden
+resolution: 0.8, nmi: 0.640165212399335
+Cluster for cluster_1.0 with leiden
+resolution: 1.0, nmi: 0.6455468386209813
+Cluster for cluster_1.2 with leiden
+resolution: 1.2, nmi: 0.6410717436122411
+Cluster for cluster_1.4 with leiden
+resolution: 1.4, nmi: 0.631919640165537
+Cluster for cluster_1.6 with leiden
+resolution: 1.6, nmi: 0.631673787367532
+Cluster for cluster_1.8 with leiden
+resolution: 1.8, nmi: 0.6313163985553231
+Cluster for cluster_2.0 with leiden
+resolution: 2.0, nmi: 0.6281759576929122
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_0.2 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_0.4 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_0.6 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_0.8 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.0 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.2 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.4 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.6 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_1.8 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/clustering.py:123: UserWarning: Overwriting existing key cluster_2.0 in adata.obs
+  call_cluster_function(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/metrics.py:293: UserWarning: Overwriting existing key cluster in adata.obs
+  res_max, nmi_max, nmi_all = cluster_optimal_resolution(
+/usr/local/lib/python3.11/dist-packages/scib/metrics/isolated_labels.py:311: FutureWarning: The default of observed=False is deprecated and will be changed to True in a future version of pandas. Pass observed=False to retain current behavior or observed=True to adopt the future default and silence this warning.
+  batch_per_lab = tmp.groupby(label_key).agg({batch_key: "count"})
+/usr/local/lib/python3.11/dist-packages/scib/metrics/isolated_labels.py:311: FutureWarning: The default of observed=False is deprecated and will be changed to True in a future version of pandas. Pass observed=False to retain current behavior or observed=True to adopt the future default and silence this warning.
+  batch_per_lab = tmp.groupby(label_key).agg({batch_key: "count"})
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+/usr/local/lib/python3.11/dist-packages/scib/metrics/graph_connectivity.py:56: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(labels)
+optimised clustering against final_annotation
+optimal cluster resolution: 1.0
+optimal score: 0.6455468386209813
+Cluster for cluster_0.2 with leiden
+Cluster for cluster_0.4 with leiden
+Cluster for cluster_0.6 with leiden
+Cluster for cluster_0.8 with leiden
+Cluster for cluster_1.0 with leiden
+Cluster for cluster_1.2 with leiden
+Cluster for cluster_1.4 with leiden
+Cluster for cluster_1.6 with leiden
+Cluster for cluster_1.8 with leiden
+Cluster for cluster_2.0 with leiden
+NMI...
+ARI...
+Silhouette score...
+Isolated labels F1...
+Cluster for iso_label_0.2 with leiden
+Cluster for iso_label_0.4 with leiden
+Cluster for iso_label_0.6 with leiden
+Cluster for iso_label_0.8 with leiden
+Cluster for iso_label_1.0 with leiden
+Cluster for iso_label_1.2 with leiden
+Cluster for iso_label_1.4 with leiden
+Cluster for iso_label_1.6 with leiden
+Cluster for iso_label_1.8 with leiden
+Cluster for iso_label_2.0 with leiden
+Cluster for iso_label_0.2 with leiden
+Cluster for iso_label_0.4 with leiden
+Cluster for iso_label_0.6 with leiden
+Cluster for iso_label_0.8 with leiden
+Cluster for iso_label_1.0 with leiden
+Cluster for iso_label_1.2 with leiden
+Cluster for iso_label_1.4 with leiden
+Cluster for iso_label_1.6 with leiden
+Cluster for iso_label_1.8 with leiden
+Cluster for iso_label_2.0 with leiden
+Cluster for iso_label_0.2 with leiden
+Cluster for iso_label_0.4 with leiden
+Cluster for iso_label_0.6 with leiden
+Cluster for iso_label_0.8 with leiden
+Cluster for iso_label_1.0 with leiden
+Cluster for iso_label_1.2 with leiden
+Cluster for iso_label_1.4 with leiden
+Cluster for iso_label_1.6 with leiden
+Cluster for iso_label_1.8 with leiden
+Cluster for iso_label_2.0 with leiden
+Cluster for iso_label_0.2 with leiden
+Cluster for iso_label_0.4 with leiden
+Cluster for iso_label_0.6 with leiden
+Cluster for iso_label_0.8 with leiden
+Cluster for iso_label_1.0 with leiden
+Cluster for iso_label_1.2 with leiden
+Cluster for iso_label_1.4 with leiden
+Cluster for iso_label_1.6 with leiden
+Cluster for iso_label_1.8 with leiden
+Cluster for iso_label_2.0 with leiden
+Isolated labels ASW...
+Graph connectivity...
+             sparseNMF: fit= 538.8s  infer=  N/A  metrics=345.0s  rss=    0MB  gpu=  2191MB  bio=+0.611  batch=+0.920  composite=+0.735
+   sparseNMF+nonzero: fitting...
