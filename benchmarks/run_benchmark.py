@@ -53,7 +53,7 @@ METHOD_MODULES: dict[str, str] = {
     "NMF": "benchmarks.methods.nmf",
     "sparseNMF": "benchmarks.methods.sparse_nmf",
     "sparseNMF+nonzero": "benchmarks.methods.sparse_nmf_nonzero",
-    "sparseNMF+batch": "benchmarks.methods.sparse_nmf_batch",
+    "sparseNMF_supervised": "benchmarks.methods.sparse_nmf_batch",
     "Harmony": "benchmarks.methods.harmony",
     "scVI": "benchmarks.methods.scvi",
 }

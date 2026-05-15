@@ -77,6 +77,24 @@ def method_palette(methods: list[str]) -> dict[str, str]:
     return {name: _SET1[i % len(_SET1)] for i, name in enumerate(methods)}
 
 
+# Display-name overrides for method labels in plot legends / titles.
+# Internal/CSV name stays plain ASCII (greppable, file-system safe);
+# plots get LaTeX-styled mathtext when the name has a meaningful
+# subscript role.
+_METHOD_DISPLAY_NAME: dict[str, str] = {
+    "sparseNMF_supervised": r"sparseNMF$_{\mathrm{supervised}}$",
+    # Legacy alias from earlier runs — kept so old CSVs still render.
+    "sparseNMF+batch": r"sparseNMF$_{\mathrm{supervised}}$",
+    "sparseNMF+nonzero": r"sparseNMF$_{\mathrm{nonzero}}$",
+}
+
+
+def _display_name(method: str) -> str:
+    """Map an internal method name to the legend-ready string. Falls
+    through to the raw name when no override exists."""
+    return _METHOD_DISPLAY_NAME.get(method, method)
+
+
 def _agg_scatter_xy(df: pd.DataFrame, x_col: str, y_col: str) -> pd.DataFrame:
     """Group by (method, dataset) and compute mean+std on x_col, y_col.
 
@@ -188,7 +206,7 @@ def plot_composite_summary(
             vals,
             width,
             yerr=yerr,
-            label=method,
+            label=_display_name(method),
             color=palette[method],
             edgecolor="black",
             linewidth=0.5,
@@ -295,7 +313,7 @@ def plot_per_task_bars(
                 color=palette[method],
                 edgecolor="black",
                 linewidth=0.3,
-                label=method if i == 0 else None,
+                label=(_display_name(method) if i == 0 else None),
                 error_kw={"elinewidth": 0.6, "capsize": 0, "ecolor": "black"},
             )
         ax.set_xticks(x)
@@ -399,7 +417,7 @@ def plot_score_vs_time(
     # method colours on top, dataset markers below.
     method_handles = [
         plt.Line2D([], [], marker="o", color="w", markerfacecolor=palette[m],
-                   markeredgecolor="black", markersize=8, label=m)
+                   markeredgecolor="black", markersize=8, label=_display_name(m))
         for m in methods
     ]
     ds_handles = [
@@ -507,7 +525,7 @@ def plot_bio_vs_batch_tradeoff(
     # Legends: methods (color) + datasets (marker).
     method_handles = [
         plt.Line2D([], [], marker="o", color="w", markerfacecolor=palette[m],
-                   markeredgecolor="black", markersize=8, label=m)
+                   markeredgecolor="black", markersize=8, label=_display_name(m))
         for m in methods
     ]
     ds_handles = [
