@@ -77,6 +77,57 @@ def method_palette(methods: list[str]) -> dict[str, str]:
     return {name: _SET1[i % len(_SET1)] for i, name in enumerate(methods)}
 
 
+def _agg_scatter_xy(df: pd.DataFrame, x_col: str, y_col: str) -> pd.DataFrame:
+    """Group by (method, dataset) and compute mean+std on x_col, y_col.
+
+    Multi-seed (multiple rows per cell) → real stds; single-rep → NaN
+    stds (which downstream callers convert to 0 for error-bar drawing
+    and use as a 'no hull' signal where appropriate).
+    """
+    return (
+        df.dropna(subset=[x_col, y_col])
+        .groupby(["method", "dataset"])
+        .agg(
+            x_mean=(x_col, "mean"),
+            x_std=(x_col, "std"),
+            y_mean=(y_col, "mean"),
+            y_std=(y_col, "std"),
+        )
+        .reset_index()
+    )
+
+
+def _draw_method_hull(ax, xs, ys, color: str, *, alpha: float = 0.15) -> None:
+    """Draw a translucent convex-hull polygon over a method's points.
+
+    Falls back to a connecting line for 2 points; nothing for 1 point
+    (a hull on 1 cell is meaningless). The hull's role is to make
+    each method's "area of operation" across datasets immediately
+    visible — same color as the scatter markers."""
+    xs = np.asarray(xs, dtype=float)
+    ys = np.asarray(ys, dtype=float)
+    n = len(xs)
+    if n < 2:
+        return
+    if n == 2:
+        ax.plot(xs, ys, color=color, alpha=alpha * 2, linewidth=1.0)
+        return
+    try:
+        from scipy.spatial import ConvexHull
+        from scipy.spatial.qhull import QhullError
+    except ImportError:
+        return
+    pts = np.column_stack([xs, ys])
+    try:
+        hull = ConvexHull(pts)
+    except QhullError:
+        # Collinear points or other degenerate input → fall back to line.
+        ax.plot(xs, ys, color=color, alpha=alpha * 2, linewidth=1.0)
+        return
+    poly = pts[hull.vertices]
+    ax.fill(poly[:, 0], poly[:, 1], color=color, alpha=alpha, linewidth=0)
+
+
 def _metric_cols(df: pd.DataFrame) -> list[str]:
     """Return the per-metric (non-aggregate, non-timing) columns."""
     return [c for c in df.columns if c not in _NON_METRIC_COLS]
@@ -91,40 +142,66 @@ def plot_composite_summary(
     """Grouped bar chart: composite Total per (dataset, method).
 
     Datasets on x-axis (one cluster each), bars within each cluster
-    are methods coloured by the shared palette."""
+    are methods coloured by the shared palette.
+
+    Multi-seed aware: if ``df`` has multiple rows per (dataset, method)
+    — e.g. a ``seed`` column with values {0,1,2} — bars show mean
+    and ``yerr`` shows the standard deviation across seeds. With a
+    single row per cell the std is 0 / NaN and no error bar is drawn.
+    """
     import matplotlib.pyplot as plt
 
     out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     methods = sorted(df["method"].unique())
-    pivot = (
-        df.pivot(index="dataset", columns="method", values="Total")
+    # Aggregate across seeds (or any other replicate axis). With one
+    # row per cell, mean == that value and std is NaN.
+    grouped = df.groupby(["dataset", "method"])["Total"].agg(["mean", "std"]).reset_index()
+    pivot_mean = (
+        grouped.pivot(index="dataset", columns="method", values="mean")
         .reindex(columns=methods)
     )
-    datasets = list(pivot.index)
+    pivot_std = (
+        grouped.pivot(index="dataset", columns="method", values="std")
+        .reindex(columns=methods)
+    )
+    datasets = list(pivot_mean.index)
     palette = method_palette(methods)
+    n_seeds = (
+        df.groupby(["dataset", "method"]).size().max()
+        if len(df) > 0 else 1
+    )
 
     fig, ax = plt.subplots(figsize=(1.0 * max(len(datasets), 3) + 2.4, 4.0))
     x = np.arange(len(datasets))
     width = 0.8 / max(len(methods), 1)
     for i, method in enumerate(methods):
-        vals = pivot[method].values
+        vals = pivot_mean[method].values
+        stds = pivot_std[method].values
+        # matplotlib's yerr is happy with NaN — single-rep cells just
+        # don't draw error bars. Convert NaN std to 0 to avoid a
+        # FutureWarning from matplotlib's error-bar handling.
+        yerr = np.nan_to_num(stds, nan=0.0)
         bars = ax.bar(
             x + i * width - 0.4 + width / 2,
             vals,
             width,
+            yerr=yerr,
             label=method,
             color=palette[method],
             edgecolor="black",
             linewidth=0.5,
+            error_kw={"elinewidth": 0.8, "capsize": 2.5, "ecolor": "black"},
         )
-        for b, v in zip(bars, vals, strict=True):
+        for b, v, s in zip(bars, vals, stds, strict=True):
             if np.isnan(v):
                 continue
+            # Position the label above any error-bar cap.
+            cap = s if not np.isnan(s) else 0.0
             ax.text(
                 b.get_x() + b.get_width() / 2,
-                v + 0.005,
+                v + cap + 0.005,
                 f"{v:.2f}",
                 ha="center",
                 va="bottom",
@@ -134,10 +211,19 @@ def plot_composite_summary(
     ax.set_xticklabels(datasets, fontsize=10)
     ax.set_ylabel("scIB composite (Total)")
     ax.axhline(0, color="gray", linewidth=0.5, linestyle="--")
-    finite = pivot.values[~np.isnan(pivot.values)]
+    finite = pivot_mean.values[~np.isnan(pivot_mean.values)]
     if finite.size:
-        ax.set_ylim(min(0.0, float(finite.min()) - 0.05), max(float(finite.max()) + 0.08, 1.0))
-    ax.set_title(title or "scIB composite score per dataset × method")
+        # Pad top to make room for error bars + value labels.
+        top_pad = float(np.nanmax(np.nan_to_num(pivot_std.values, nan=0.0))) + 0.10
+        ax.set_ylim(
+            min(0.0, float(finite.min()) - 0.05),
+            max(float(finite.max()) + top_pad, 1.0),
+        )
+    if n_seeds > 1:
+        title = (title or "scIB composite score per dataset × method") + f"  (mean ± std, n={n_seeds} seeds)"
+    else:
+        title = title or "scIB composite score per dataset × method"
+    ax.set_title(title)
     # Legend OUTSIDE the axes on the right, vertical (one column).
     handles, labels = ax.get_legend_handles_labels()
     ax.legend(
@@ -258,15 +344,33 @@ def plot_score_vs_time(
     palette = method_palette(methods)
     ds_marker = {d: m for d, m in zip(datasets, "ovsP^D*X", strict=False)}
 
+    agg = _agg_scatter_xy(df, x_col="fit_seconds", y_col="Total")
+
     fig, ax = plt.subplots(figsize=(7.5, 6.0))
     for method in methods:
-        sub = df[df["method"] == method].dropna(subset=["Total", "fit_seconds"])
+        sub = agg[agg["method"] == method]
         if sub.empty:
             continue
+        xs = sub["x_mean"].values
+        ys = sub["y_mean"].values
+        xerr = np.nan_to_num(sub["x_std"].values, nan=0.0)
+        yerr = np.nan_to_num(sub["y_std"].values, nan=0.0)
+
+        # Translucent convex hull behind the markers (paint first so
+        # the dots and error bars stay legible on top).
+        _draw_method_hull(ax, xs, ys, palette[method])
+
+        # Error bars: no caps, just thin lines on both axes.
+        ax.errorbar(
+            xs, ys, xerr=xerr, yerr=yerr,
+            fmt="none", ecolor=palette[method],
+            elinewidth=0.8, capsize=0, alpha=0.6,
+        )
+
+        # Per-dataset markers (so dataset identity stays visible).
         for _, row in sub.iterrows():
             ax.scatter(
-                row["fit_seconds"],
-                row["Total"],
+                row["x_mean"], row["y_mean"],
                 color=palette[method],
                 marker=ds_marker.get(row["dataset"], "o"),
                 s=85,
@@ -330,23 +434,32 @@ def plot_bio_vs_batch_tradeoff(
     palette = method_palette(methods)
     ds_marker = {d: m for d, m in zip(datasets, "ovsP^D*X", strict=False)}
 
+    agg = _agg_scatter_xy(df, x_col="Batch correction", y_col="Bio conservation")
+
     fig, ax = plt.subplots(figsize=(7.5, 6.0))
     for method in methods:
-        sub = df[df["method"] == method].dropna(subset=["Bio conservation", "Batch correction"])
+        sub = agg[agg["method"] == method]
         if sub.empty:
             continue
-        # Connect this method's points across datasets with a thin line.
-        ax.plot(
-            sub["Batch correction"],
-            sub["Bio conservation"],
-            color=palette[method],
-            linewidth=0.7,
-            alpha=0.4,
+        xs = sub["x_mean"].values
+        ys = sub["y_mean"].values
+        xerr = np.nan_to_num(sub["x_std"].values, nan=0.0)
+        yerr = np.nan_to_num(sub["y_std"].values, nan=0.0)
+
+        # Translucent convex hull = method's "area of operation"
+        # across datasets. Drawn first so markers/error bars overlay it.
+        _draw_method_hull(ax, xs, ys, palette[method])
+
+        # Error bars: no caps, just thin lines on both axes.
+        ax.errorbar(
+            xs, ys, xerr=xerr, yerr=yerr,
+            fmt="none", ecolor=palette[method],
+            elinewidth=0.8, capsize=0, alpha=0.6,
         )
+
         for _, row in sub.iterrows():
             ax.scatter(
-                row["Batch correction"],
-                row["Bio conservation"],
+                row["x_mean"], row["y_mean"],
                 color=palette[method],
                 marker=ds_marker.get(row["dataset"], "o"),
                 s=85,

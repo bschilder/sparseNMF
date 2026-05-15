@@ -1,1224 +1,0 @@
-
-=== pancreas :: embed phase ===
-
->>> PCA / pancreas: /usr/bin/python -m benchmarks.methods.pca --dataset pancreas --out-dir /workspace/runs/v1 --method-name PCA --k 30 --seed 0 --cells-per-cohort 200 --n-hvg 2000
-  PCA: loading pancreas...
-Downloading https://ndownloader.figshare.com/files/24539828 → /root/.cache/sparse-nmf/human_pancreas_norm_complexBatch.h5ad
-  ... 0% (0 / 316 MB)
-  ... 10% (32 / 316 MB)
-  ... 20% (63 / 316 MB)
-  ... 30% (95 / 316 MB)
-  ... 40% (126 / 316 MB)
-  ... 50% (158 / 316 MB)
-  ... 60% (190 / 316 MB)
-  ... 70% (221 / 316 MB)
-  ... 80% (253 / 316 MB)
-  ... 90% (284 / 316 MB)
-  ... 100% (316 / 316 MB)
-  PCA: (8711, 2000)  fp=07b8780d6a3910f4  batches=9  labels=14
-  PCA: fitting...
-    PCA: fit=0.8s  infer=0.01s  wall=3.4s  rss=0MB  gpu=0MB
-
->>> NMF / pancreas: /usr/bin/python -m benchmarks.methods.nmf --dataset pancreas --out-dir /workspace/runs/v1 --method-name NMF --k 30 --seed 0 --cells-per-cohort 200 --n-hvg 2000
-  NMF: loading pancreas...
-  NMF: (8711, 2000)  fp=07b8780d6a3910f4  batches=9  labels=14
-  NMF: fitting...
-/usr/local/lib/python3.11/dist-packages/sklearn/decomposition/_nmf.py:1720: ConvergenceWarning: Maximum number of iterations 500 reached. Increase it to improve convergence.
-  warnings.warn(
-    NMF: fit=26.9s  infer=0.71s  wall=29.5s  rss=0MB  gpu=0MB
-
->>> sparseNMF / pancreas: /usr/bin/python -m benchmarks.methods.sparse_nmf --dataset pancreas --out-dir /workspace/runs/v1 --method-name sparseNMF --k 30 --seed 0 --cells-per-cohort 200 --n-hvg 2000
-  sparseNMF: loading pancreas...
-  sparseNMF: (8711, 2000)  fp=07b8780d6a3910f4  batches=9  labels=14
-  sparseNMF: fitting...
-    sparseNMF: fit=78.6s  infer=—  wall=80.7s  rss=0MB  gpu=445MB
-
->>> Harmony / pancreas: /usr/bin/python -m benchmarks.methods.harmony --dataset pancreas --out-dir /workspace/runs/v1 --method-name Harmony --k 30 --seed 0 --cells-per-cohort 200 --n-hvg 2000
-  Harmony: loading pancreas...
-  Harmony: (8711, 2000)  fp=07b8780d6a3910f4  batches=9  labels=14
-  Harmony: fitting...
-2026-05-15 14:15:25,784 - harmonypy - INFO - Running Harmony
-2026-05-15 14:15:25,784 - harmonypy - INFO -   Parameters:
-2026-05-15 14:15:25,784 - harmonypy - INFO -     max_iter_harmony: 20
-2026-05-15 14:15:25,784 - harmonypy - INFO -     max_iter_kmeans: 4
-2026-05-15 14:15:25,785 - harmonypy - INFO -     epsilon_cluster: 0.001
-2026-05-15 14:15:25,785 - harmonypy - INFO -     epsilon_harmony: 0.01
-2026-05-15 14:15:25,785 - harmonypy - INFO -     nclust: 100
-2026-05-15 14:15:25,785 - harmonypy - INFO -     block_size: 0.05
-2026-05-15 14:15:25,785 - harmonypy - INFO -     lamb: dynamic (alpha=0.2)
-2026-05-15 14:15:25,785 - harmonypy - INFO -     theta: [2. 2. 2. 2. 2. 2. 2. 2. 2.]
-2026-05-15 14:15:25,786 - harmonypy - INFO -     sigma: [0.1 0.1 0.1 0.1 0.1]...
-2026-05-15 14:15:25,786 - harmonypy - INFO -     verbose: True
-2026-05-15 14:15:25,786 - harmonypy - INFO -     random_state: 0
-2026-05-15 14:15:25,786 - harmonypy - INFO -   Data: 30 PCs × 8711 cells
-2026-05-15 14:15:25,786 - harmonypy - INFO -   Batch variables: ['tech']
-2026-05-15 14:15:25,797 - harmonypy - INFO - Computing initial centroids...
-2026-05-15 14:15:26,006 - harmonypy - INFO - Initialization complete.
-2026-05-15 14:15:26,006 - harmonypy - INFO - Iteration 1 of 20
-2026-05-15 14:15:26,199 - harmonypy - INFO - Iteration 2 of 20
-2026-05-15 14:15:26,401 - harmonypy - INFO - Iteration 3 of 20
-2026-05-15 14:15:26,604 - harmonypy - INFO - Iteration 4 of 20
-2026-05-15 14:15:26,808 - harmonypy - INFO - Iteration 5 of 20
-2026-05-15 14:15:27,012 - harmonypy - INFO - Iteration 6 of 20
-2026-05-15 14:15:27,215 - harmonypy - INFO - Iteration 7 of 20
-2026-05-15 14:15:27,418 - harmonypy - INFO - Iteration 8 of 20
-2026-05-15 14:15:27,621 - harmonypy - INFO - Iteration 9 of 20
-2026-05-15 14:15:27,823 - harmonypy - INFO - Converged after 9 iterations
-    Harmony: fit=2.9s  infer=—  wall=4.9s  rss=0MB  gpu=0MB
-
->>> scVI / pancreas: /usr/bin/python -m benchmarks.methods.scvi --dataset pancreas --out-dir /workspace/runs/v1 --method-name scVI --k 30 --seed 0 --cells-per-cohort 200 --n-hvg 2000
-  scVI: loading pancreas...
-  scVI: (8711, 2000)  fp=07b8780d6a3910f4  batches=9  labels=14
-  scVI: fitting...
-/usr/local/lib/python3.11/dist-packages/scvi/data/fields/_base_field.py:63: UserWarning: adata.X does not contain unnormalized count data. Are you sure this is what you want?
-  self.validate_field(adata)
-GPU available: True (cuda), used: True
-TPU available: False, using: 0 TPU cores
-💡 Tip: For seamless cloud logging and experiment tracking, try installing [litlogger](https://pypi.org/project/litlogger/) to enable LitLogger, which logs metrics and artifacts automatically to the Lightning Experiments platform.
-You are using a CUDA device ('NVIDIA RTX A4000') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
-LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
-/usr/local/lib/python3.11/dist-packages/lightning/pytorch/trainer/connectors/data_connector.py:434: The 'train_dataloader' does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` to `num_workers=127` in the `DataLoader` to improve performance.
-Training:   0%|          | 0/100 [00:00<?, ?it/s]Epoch 1/100:   0%|          | 0/100 [00:00<?, ?it/s]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 1/100:   1%|          | 1/100 [00:02<03:36,  2.18s/it]Epoch 1/100:   1%|          | 1/100 [00:02<03:36,  2.18s/it, v_num=1, train_loss=2.46e+3]Epoch 2/100:   1%|          | 1/100 [00:02<03:36,  2.18s/it, v_num=1, train_loss=2.46e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 2/100:   2%|▏         | 2/100 [00:02<02:05,  1.28s/it, v_num=1, train_loss=2.46e+3]Epoch 2/100:   2%|▏         | 2/100 [00:02<02:05,  1.28s/it, v_num=1, train_loss=1.9e+3] Epoch 3/100:   2%|▏         | 2/100 [00:02<02:05,  1.28s/it, v_num=1, train_loss=1.9e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 3/100:   3%|▎         | 3/100 [00:03<01:35,  1.02it/s, v_num=1, train_loss=1.9e+3]Epoch 3/100:   3%|▎         | 3/100 [00:03<01:35,  1.02it/s, v_num=1, train_loss=1.81e+3]Epoch 4/100:   3%|▎         | 3/100 [00:03<01:35,  1.02it/s, v_num=1, train_loss=1.81e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 4/100:   4%|▍         | 4/100 [00:04<01:21,  1.18it/s, v_num=1, train_loss=1.81e+3]Epoch 4/100:   4%|▍         | 4/100 [00:04<01:21,  1.18it/s, v_num=1, train_loss=1.76e+3]Epoch 5/100:   4%|▍         | 4/100 [00:04<01:21,  1.18it/s, v_num=1, train_loss=1.76e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 5/100:   5%|▌         | 5/100 [00:04<01:13,  1.30it/s, v_num=1, train_loss=1.76e+3]Epoch 5/100:   5%|▌         | 5/100 [00:04<01:13,  1.30it/s, v_num=1, train_loss=1.73e+3]Epoch 6/100:   5%|▌         | 5/100 [00:04<01:13,  1.30it/s, v_num=1, train_loss=1.73e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 6/100:   6%|▌         | 6/100 [00:05<01:08,  1.38it/s, v_num=1, train_loss=1.73e+3]Epoch 6/100:   6%|▌         | 6/100 [00:05<01:08,  1.38it/s, v_num=1, train_loss=1.7e+3] Epoch 7/100:   6%|▌         | 6/100 [00:05<01:08,  1.38it/s, v_num=1, train_loss=1.7e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 7/100:   7%|▋         | 7/100 [00:05<01:04,  1.44it/s, v_num=1, train_loss=1.7e+3]Epoch 7/100:   7%|▋         | 7/100 [00:05<01:04,  1.44it/s, v_num=1, train_loss=1.68e+3]Epoch 8/100:   7%|▋         | 7/100 [00:06<01:04,  1.44it/s, v_num=1, train_loss=1.68e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 8/100:   8%|▊         | 8/100 [00:06<01:02,  1.48it/s, v_num=1, train_loss=1.68e+3]Epoch 8/100:   8%|▊         | 8/100 [00:06<01:02,  1.48it/s, v_num=1, train_loss=1.67e+3]Epoch 9/100:   8%|▊         | 8/100 [00:06<01:02,  1.48it/s, v_num=1, train_loss=1.67e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 9/100:   9%|▉         | 9/100 [00:07<01:00,  1.51it/s, v_num=1, train_loss=1.67e+3]Epoch 9/100:   9%|▉         | 9/100 [00:07<01:00,  1.51it/s, v_num=1, train_loss=1.66e+3]Epoch 10/100:   9%|▉         | 9/100 [00:07<01:00,  1.51it/s, v_num=1, train_loss=1.66e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 10/100:  10%|█         | 10/100 [00:07<00:58,  1.55it/s, v_num=1, train_loss=1.66e+3]Epoch 10/100:  10%|█         | 10/100 [00:07<00:58,  1.55it/s, v_num=1, train_loss=1.64e+3]Epoch 11/100:  10%|█         | 10/100 [00:07<00:58,  1.55it/s, v_num=1, train_loss=1.64e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 11/100:  11%|█         | 11/100 [00:08<00:56,  1.57it/s, v_num=1, train_loss=1.64e+3]Epoch 11/100:  11%|█         | 11/100 [00:08<00:56,  1.57it/s, v_num=1, train_loss=1.63e+3]Epoch 12/100:  11%|█         | 11/100 [00:08<00:56,  1.57it/s, v_num=1, train_loss=1.63e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 12/100:  12%|█▏        | 12/100 [00:09<00:55,  1.59it/s, v_num=1, train_loss=1.63e+3]Epoch 12/100:  12%|█▏        | 12/100 [00:09<00:55,  1.59it/s, v_num=1, train_loss=1.63e+3]Epoch 13/100:  12%|█▏        | 12/100 [00:09<00:55,  1.59it/s, v_num=1, train_loss=1.63e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 13/100:  13%|█▎        | 13/100 [00:09<00:54,  1.60it/s, v_num=1, train_loss=1.63e+3]Epoch 13/100:  13%|█▎        | 13/100 [00:09<00:54,  1.60it/s, v_num=1, train_loss=1.62e+3]Epoch 14/100:  13%|█▎        | 13/100 [00:09<00:54,  1.60it/s, v_num=1, train_loss=1.62e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 14/100:  14%|█▍        | 14/100 [00:10<00:53,  1.61it/s, v_num=1, train_loss=1.62e+3]Epoch 14/100:  14%|█▍        | 14/100 [00:10<00:53,  1.61it/s, v_num=1, train_loss=1.61e+3]Epoch 15/100:  14%|█▍        | 14/100 [00:10<00:53,  1.61it/s, v_num=1, train_loss=1.61e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 15/100:  15%|█▌        | 15/100 [00:10<00:52,  1.62it/s, v_num=1, train_loss=1.61e+3]Epoch 15/100:  15%|█▌        | 15/100 [00:10<00:52,  1.62it/s, v_num=1, train_loss=1.61e+3]Epoch 16/100:  15%|█▌        | 15/100 [00:10<00:52,  1.62it/s, v_num=1, train_loss=1.61e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 16/100:  16%|█▌        | 16/100 [00:11<00:51,  1.62it/s, v_num=1, train_loss=1.61e+3]Epoch 16/100:  16%|█▌        | 16/100 [00:11<00:51,  1.62it/s, v_num=1, train_loss=1.6e+3] Epoch 17/100:  16%|█▌        | 16/100 [00:11<00:51,  1.62it/s, v_num=1, train_loss=1.6e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 17/100:  17%|█▋        | 17/100 [00:12<00:51,  1.63it/s, v_num=1, train_loss=1.6e+3]Epoch 17/100:  17%|█▋        | 17/100 [00:12<00:51,  1.63it/s, v_num=1, train_loss=1.6e+3]Epoch 18/100:  17%|█▋        | 17/100 [00:12<00:51,  1.63it/s, v_num=1, train_loss=1.6e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 18/100:  18%|█▊        | 18/100 [00:12<00:50,  1.62it/s, v_num=1, train_loss=1.6e+3]Epoch 18/100:  18%|█▊        | 18/100 [00:12<00:50,  1.62it/s, v_num=1, train_loss=1.59e+3]Epoch 19/100:  18%|█▊        | 18/100 [00:12<00:50,  1.62it/s, v_num=1, train_loss=1.59e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 19/100:  19%|█▉        | 19/100 [00:13<00:49,  1.62it/s, v_num=1, train_loss=1.59e+3]Epoch 19/100:  19%|█▉        | 19/100 [00:13<00:49,  1.62it/s, v_num=1, train_loss=1.59e+3]Epoch 20/100:  19%|█▉        | 19/100 [00:13<00:49,  1.62it/s, v_num=1, train_loss=1.59e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 20/100:  20%|██        | 20/100 [00:14<00:49,  1.63it/s, v_num=1, train_loss=1.59e+3]Epoch 20/100:  20%|██        | 20/100 [00:14<00:49,  1.63it/s, v_num=1, train_loss=1.59e+3]Epoch 21/100:  20%|██        | 20/100 [00:14<00:49,  1.63it/s, v_num=1, train_loss=1.59e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 21/100:  21%|██        | 21/100 [00:14<00:48,  1.63it/s, v_num=1, train_loss=1.59e+3]Epoch 21/100:  21%|██        | 21/100 [00:14<00:48,  1.63it/s, v_num=1, train_loss=1.58e+3]Epoch 22/100:  21%|██        | 21/100 [00:14<00:48,  1.63it/s, v_num=1, train_loss=1.58e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 22/100:  22%|██▏       | 22/100 [00:15<00:47,  1.63it/s, v_num=1, train_loss=1.58e+3]Epoch 22/100:  22%|██▏       | 22/100 [00:15<00:47,  1.63it/s, v_num=1, train_loss=1.58e+3]Epoch 23/100:  22%|██▏       | 22/100 [00:15<00:47,  1.63it/s, v_num=1, train_loss=1.58e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 23/100:  23%|██▎       | 23/100 [00:15<00:47,  1.63it/s, v_num=1, train_loss=1.58e+3]Epoch 23/100:  23%|██▎       | 23/100 [00:15<00:47,  1.63it/s, v_num=1, train_loss=1.57e+3]Epoch 24/100:  23%|██▎       | 23/100 [00:15<00:47,  1.63it/s, v_num=1, train_loss=1.57e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 24/100:  24%|██▍       | 24/100 [00:16<00:46,  1.64it/s, v_num=1, train_loss=1.57e+3]Epoch 24/100:  24%|██▍       | 24/100 [00:16<00:46,  1.64it/s, v_num=1, train_loss=1.57e+3]Epoch 25/100:  24%|██▍       | 24/100 [00:16<00:46,  1.64it/s, v_num=1, train_loss=1.57e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 25/100:  25%|██▌       | 25/100 [00:17<00:45,  1.63it/s, v_num=1, train_loss=1.57e+3]Epoch 25/100:  25%|██▌       | 25/100 [00:17<00:45,  1.63it/s, v_num=1, train_loss=1.57e+3]Epoch 26/100:  25%|██▌       | 25/100 [00:17<00:45,  1.63it/s, v_num=1, train_loss=1.57e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 26/100:  26%|██▌       | 26/100 [00:17<00:45,  1.62it/s, v_num=1, train_loss=1.57e+3]Epoch 26/100:  26%|██▌       | 26/100 [00:17<00:45,  1.62it/s, v_num=1, train_loss=1.57e+3]Epoch 27/100:  26%|██▌       | 26/100 [00:17<00:45,  1.62it/s, v_num=1, train_loss=1.57e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 27/100:  27%|██▋       | 27/100 [00:18<00:44,  1.65it/s, v_num=1, train_loss=1.57e+3]Epoch 27/100:  27%|██▋       | 27/100 [00:18<00:44,  1.65it/s, v_num=1, train_loss=1.57e+3]Epoch 28/100:  27%|██▋       | 27/100 [00:18<00:44,  1.65it/s, v_num=1, train_loss=1.57e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 28/100:  28%|██▊       | 28/100 [00:18<00:41,  1.72it/s, v_num=1, train_loss=1.57e+3]Epoch 28/100:  28%|██▊       | 28/100 [00:18<00:41,  1.72it/s, v_num=1, train_loss=1.56e+3]Epoch 29/100:  28%|██▊       | 28/100 [00:18<00:41,  1.72it/s, v_num=1, train_loss=1.56e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 29/100:  29%|██▉       | 29/100 [00:19<00:40,  1.77it/s, v_num=1, train_loss=1.56e+3]Epoch 29/100:  29%|██▉       | 29/100 [00:19<00:40,  1.77it/s, v_num=1, train_loss=1.56e+3]Epoch 30/100:  29%|██▉       | 29/100 [00:19<00:40,  1.77it/s, v_num=1, train_loss=1.56e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 30/100:  30%|███       | 30/100 [00:19<00:38,  1.81it/s, v_num=1, train_loss=1.56e+3]Epoch 30/100:  30%|███       | 30/100 [00:19<00:38,  1.81it/s, v_num=1, train_loss=1.56e+3]Epoch 31/100:  30%|███       | 30/100 [00:19<00:38,  1.81it/s, v_num=1, train_loss=1.56e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 31/100:  31%|███       | 31/100 [00:20<00:37,  1.84it/s, v_num=1, train_loss=1.56e+3]Epoch 31/100:  31%|███       | 31/100 [00:20<00:37,  1.84it/s, v_num=1, train_loss=1.56e+3]Epoch 32/100:  31%|███       | 31/100 [00:20<00:37,  1.84it/s, v_num=1, train_loss=1.56e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 32/100:  32%|███▏      | 32/100 [00:20<00:37,  1.80it/s, v_num=1, train_loss=1.56e+3]Epoch 32/100:  32%|███▏      | 32/100 [00:20<00:37,  1.80it/s, v_num=1, train_loss=1.55e+3]Epoch 33/100:  32%|███▏      | 32/100 [00:20<00:37,  1.80it/s, v_num=1, train_loss=1.55e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 33/100:  33%|███▎      | 33/100 [00:21<00:38,  1.75it/s, v_num=1, train_loss=1.55e+3]Epoch 33/100:  33%|███▎      | 33/100 [00:21<00:38,  1.75it/s, v_num=1, train_loss=1.55e+3]Epoch 34/100:  33%|███▎      | 33/100 [00:21<00:38,  1.75it/s, v_num=1, train_loss=1.55e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 34/100:  34%|███▍      | 34/100 [00:22<00:38,  1.71it/s, v_num=1, train_loss=1.55e+3]Epoch 34/100:  34%|███▍      | 34/100 [00:22<00:38,  1.71it/s, v_num=1, train_loss=1.55e+3]Epoch 35/100:  34%|███▍      | 34/100 [00:22<00:38,  1.71it/s, v_num=1, train_loss=1.55e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 35/100:  35%|███▌      | 35/100 [00:22<00:38,  1.69it/s, v_num=1, train_loss=1.55e+3]Epoch 35/100:  35%|███▌      | 35/100 [00:22<00:38,  1.69it/s, v_num=1, train_loss=1.55e+3]Epoch 36/100:  35%|███▌      | 35/100 [00:22<00:38,  1.69it/s, v_num=1, train_loss=1.55e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 36/100:  36%|███▌      | 36/100 [00:23<00:38,  1.67it/s, v_num=1, train_loss=1.55e+3]Epoch 36/100:  36%|███▌      | 36/100 [00:23<00:38,  1.67it/s, v_num=1, train_loss=1.55e+3]Epoch 37/100:  36%|███▌      | 36/100 [00:23<00:38,  1.67it/s, v_num=1, train_loss=1.55e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 37/100:  37%|███▋      | 37/100 [00:24<00:38,  1.64it/s, v_num=1, train_loss=1.55e+3]Epoch 37/100:  37%|███▋      | 37/100 [00:24<00:38,  1.64it/s, v_num=1, train_loss=1.55e+3]Epoch 38/100:  37%|███▋      | 37/100 [00:24<00:38,  1.64it/s, v_num=1, train_loss=1.55e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 38/100:  38%|███▊      | 38/100 [00:24<00:38,  1.62it/s, v_num=1, train_loss=1.55e+3]Epoch 38/100:  38%|███▊      | 38/100 [00:24<00:38,  1.62it/s, v_num=1, train_loss=1.55e+3]Epoch 39/100:  38%|███▊      | 38/100 [00:24<00:38,  1.62it/s, v_num=1, train_loss=1.55e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 39/100:  39%|███▉      | 39/100 [00:25<00:39,  1.53it/s, v_num=1, train_loss=1.55e+3]Epoch 39/100:  39%|███▉      | 39/100 [00:25<00:39,  1.53it/s, v_num=1, train_loss=1.54e+3]Epoch 40/100:  39%|███▉      | 39/100 [00:25<00:39,  1.53it/s, v_num=1, train_loss=1.54e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 40/100:  40%|████      | 40/100 [00:26<00:39,  1.52it/s, v_num=1, train_loss=1.54e+3]Epoch 40/100:  40%|████      | 40/100 [00:26<00:39,  1.52it/s, v_num=1, train_loss=1.54e+3]Epoch 41/100:  40%|████      | 40/100 [00:26<00:39,  1.52it/s, v_num=1, train_loss=1.54e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 41/100:  41%|████      | 41/100 [00:26<00:37,  1.55it/s, v_num=1, train_loss=1.54e+3]Epoch 41/100:  41%|████      | 41/100 [00:26<00:37,  1.55it/s, v_num=1, train_loss=1.54e+3]Epoch 42/100:  41%|████      | 41/100 [00:26<00:37,  1.55it/s, v_num=1, train_loss=1.54e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 42/100:  42%|████▏     | 42/100 [00:27<00:36,  1.58it/s, v_num=1, train_loss=1.54e+3]Epoch 42/100:  42%|████▏     | 42/100 [00:27<00:36,  1.58it/s, v_num=1, train_loss=1.54e+3]Epoch 43/100:  42%|████▏     | 42/100 [00:27<00:36,  1.58it/s, v_num=1, train_loss=1.54e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 43/100:  43%|████▎     | 43/100 [00:27<00:35,  1.59it/s, v_num=1, train_loss=1.54e+3]Epoch 43/100:  43%|████▎     | 43/100 [00:27<00:35,  1.59it/s, v_num=1, train_loss=1.54e+3]Epoch 44/100:  43%|████▎     | 43/100 [00:27<00:35,  1.59it/s, v_num=1, train_loss=1.54e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 44/100:  44%|████▍     | 44/100 [00:28<00:34,  1.60it/s, v_num=1, train_loss=1.54e+3]Epoch 44/100:  44%|████▍     | 44/100 [00:28<00:34,  1.60it/s, v_num=1, train_loss=1.54e+3]Epoch 45/100:  44%|████▍     | 44/100 [00:28<00:34,  1.60it/s, v_num=1, train_loss=1.54e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 45/100:  45%|████▌     | 45/100 [00:29<00:34,  1.61it/s, v_num=1, train_loss=1.54e+3]Epoch 45/100:  45%|████▌     | 45/100 [00:29<00:34,  1.61it/s, v_num=1, train_loss=1.54e+3]Epoch 46/100:  45%|████▌     | 45/100 [00:29<00:34,  1.61it/s, v_num=1, train_loss=1.54e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 46/100:  46%|████▌     | 46/100 [00:29<00:33,  1.62it/s, v_num=1, train_loss=1.54e+3]Epoch 46/100:  46%|████▌     | 46/100 [00:29<00:33,  1.62it/s, v_num=1, train_loss=1.54e+3]Epoch 47/100:  46%|████▌     | 46/100 [00:29<00:33,  1.62it/s, v_num=1, train_loss=1.54e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 47/100:  47%|████▋     | 47/100 [00:30<00:32,  1.62it/s, v_num=1, train_loss=1.54e+3]Epoch 47/100:  47%|████▋     | 47/100 [00:30<00:32,  1.62it/s, v_num=1, train_loss=1.54e+3]Epoch 48/100:  47%|████▋     | 47/100 [00:30<00:32,  1.62it/s, v_num=1, train_loss=1.54e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 48/100:  48%|████▊     | 48/100 [00:30<00:32,  1.62it/s, v_num=1, train_loss=1.54e+3]Epoch 48/100:  48%|████▊     | 48/100 [00:30<00:32,  1.62it/s, v_num=1, train_loss=1.54e+3]Epoch 49/100:  48%|████▊     | 48/100 [00:30<00:32,  1.62it/s, v_num=1, train_loss=1.54e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 49/100:  49%|████▉     | 49/100 [00:31<00:31,  1.63it/s, v_num=1, train_loss=1.54e+3]Epoch 49/100:  49%|████▉     | 49/100 [00:31<00:31,  1.63it/s, v_num=1, train_loss=1.54e+3]Epoch 50/100:  49%|████▉     | 49/100 [00:31<00:31,  1.63it/s, v_num=1, train_loss=1.54e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 50/100:  50%|█████     | 50/100 [00:32<00:30,  1.63it/s, v_num=1, train_loss=1.54e+3]Epoch 50/100:  50%|█████     | 50/100 [00:32<00:30,  1.63it/s, v_num=1, train_loss=1.53e+3]Epoch 51/100:  50%|█████     | 50/100 [00:32<00:30,  1.63it/s, v_num=1, train_loss=1.53e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 51/100:  51%|█████     | 51/100 [00:32<00:30,  1.63it/s, v_num=1, train_loss=1.53e+3]Epoch 51/100:  51%|█████     | 51/100 [00:32<00:30,  1.63it/s, v_num=1, train_loss=1.53e+3]Epoch 52/100:  51%|█████     | 51/100 [00:32<00:30,  1.63it/s, v_num=1, train_loss=1.53e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 52/100:  52%|█████▏    | 52/100 [00:33<00:29,  1.62it/s, v_num=1, train_loss=1.53e+3]Epoch 52/100:  52%|█████▏    | 52/100 [00:33<00:29,  1.62it/s, v_num=1, train_loss=1.53e+3]Epoch 53/100:  52%|█████▏    | 52/100 [00:33<00:29,  1.62it/s, v_num=1, train_loss=1.53e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 53/100:  53%|█████▎    | 53/100 [00:34<00:28,  1.63it/s, v_num=1, train_loss=1.53e+3]Epoch 53/100:  53%|█████▎    | 53/100 [00:34<00:28,  1.63it/s, v_num=1, train_loss=1.53e+3]Epoch 54/100:  53%|█████▎    | 53/100 [00:34<00:28,  1.63it/s, v_num=1, train_loss=1.53e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 54/100:  54%|█████▍    | 54/100 [00:34<00:28,  1.62it/s, v_num=1, train_loss=1.53e+3]Epoch 54/100:  54%|█████▍    | 54/100 [00:34<00:28,  1.62it/s, v_num=1, train_loss=1.53e+3]Epoch 55/100:  54%|█████▍    | 54/100 [00:34<00:28,  1.62it/s, v_num=1, train_loss=1.53e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 55/100:  55%|█████▌    | 55/100 [00:35<00:27,  1.63it/s, v_num=1, train_loss=1.53e+3]Epoch 55/100:  55%|█████▌    | 55/100 [00:35<00:27,  1.63it/s, v_num=1, train_loss=1.53e+3]Epoch 56/100:  55%|█████▌    | 55/100 [00:35<00:27,  1.63it/s, v_num=1, train_loss=1.53e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 56/100:  56%|█████▌    | 56/100 [00:35<00:27,  1.62it/s, v_num=1, train_loss=1.53e+3]Epoch 56/100:  56%|█████▌    | 56/100 [00:35<00:27,  1.62it/s, v_num=1, train_loss=1.53e+3]Epoch 57/100:  56%|█████▌    | 56/100 [00:35<00:27,  1.62it/s, v_num=1, train_loss=1.53e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 57/100:  57%|█████▋    | 57/100 [00:36<00:26,  1.62it/s, v_num=1, train_loss=1.53e+3]Epoch 57/100:  57%|█████▋    | 57/100 [00:36<00:26,  1.62it/s, v_num=1, train_loss=1.53e+3]Epoch 58/100:  57%|█████▋    | 57/100 [00:36<00:26,  1.62it/s, v_num=1, train_loss=1.53e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 58/100:  58%|█████▊    | 58/100 [00:37<00:25,  1.62it/s, v_num=1, train_loss=1.53e+3]Epoch 58/100:  58%|█████▊    | 58/100 [00:37<00:25,  1.62it/s, v_num=1, train_loss=1.53e+3]Epoch 59/100:  58%|█████▊    | 58/100 [00:37<00:25,  1.62it/s, v_num=1, train_loss=1.53e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 59/100:  59%|█████▉    | 59/100 [00:37<00:25,  1.63it/s, v_num=1, train_loss=1.53e+3]Epoch 59/100:  59%|█████▉    | 59/100 [00:37<00:25,  1.63it/s, v_num=1, train_loss=1.53e+3]Epoch 60/100:  59%|█████▉    | 59/100 [00:37<00:25,  1.63it/s, v_num=1, train_loss=1.53e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 60/100:  60%|██████    | 60/100 [00:38<00:24,  1.63it/s, v_num=1, train_loss=1.53e+3]Epoch 60/100:  60%|██████    | 60/100 [00:38<00:24,  1.63it/s, v_num=1, train_loss=1.53e+3]Epoch 61/100:  60%|██████    | 60/100 [00:38<00:24,  1.63it/s, v_num=1, train_loss=1.53e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 61/100:  61%|██████    | 61/100 [00:38<00:23,  1.63it/s, v_num=1, train_loss=1.53e+3]Epoch 61/100:  61%|██████    | 61/100 [00:38<00:23,  1.63it/s, v_num=1, train_loss=1.53e+3]Epoch 62/100:  61%|██████    | 61/100 [00:38<00:23,  1.63it/s, v_num=1, train_loss=1.53e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 62/100:  62%|██████▏   | 62/100 [00:39<00:23,  1.63it/s, v_num=1, train_loss=1.53e+3]Epoch 62/100:  62%|██████▏   | 62/100 [00:39<00:23,  1.63it/s, v_num=1, train_loss=1.53e+3]Epoch 63/100:  62%|██████▏   | 62/100 [00:39<00:23,  1.63it/s, v_num=1, train_loss=1.53e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 63/100:  63%|██████▎   | 63/100 [00:40<00:22,  1.63it/s, v_num=1, train_loss=1.53e+3]Epoch 63/100:  63%|██████▎   | 63/100 [00:40<00:22,  1.63it/s, v_num=1, train_loss=1.53e+3]Epoch 64/100:  63%|██████▎   | 63/100 [00:40<00:22,  1.63it/s, v_num=1, train_loss=1.53e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 64/100:  64%|██████▍   | 64/100 [00:40<00:22,  1.63it/s, v_num=1, train_loss=1.53e+3]Epoch 64/100:  64%|██████▍   | 64/100 [00:40<00:22,  1.63it/s, v_num=1, train_loss=1.53e+3]Epoch 65/100:  64%|██████▍   | 64/100 [00:40<00:22,  1.63it/s, v_num=1, train_loss=1.53e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 65/100:  65%|██████▌   | 65/100 [00:41<00:21,  1.63it/s, v_num=1, train_loss=1.53e+3]Epoch 65/100:  65%|██████▌   | 65/100 [00:41<00:21,  1.63it/s, v_num=1, train_loss=1.53e+3]Epoch 66/100:  65%|██████▌   | 65/100 [00:41<00:21,  1.63it/s, v_num=1, train_loss=1.53e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 66/100:  66%|██████▌   | 66/100 [00:42<00:20,  1.63it/s, v_num=1, train_loss=1.53e+3]Epoch 66/100:  66%|██████▌   | 66/100 [00:42<00:20,  1.63it/s, v_num=1, train_loss=1.53e+3]Epoch 67/100:  66%|██████▌   | 66/100 [00:42<00:20,  1.63it/s, v_num=1, train_loss=1.53e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 67/100:  67%|██████▋   | 67/100 [00:42<00:20,  1.63it/s, v_num=1, train_loss=1.53e+3]Epoch 67/100:  67%|██████▋   | 67/100 [00:42<00:20,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 68/100:  67%|██████▋   | 67/100 [00:42<00:20,  1.63it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 68/100:  68%|██████▊   | 68/100 [00:43<00:19,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 68/100:  68%|██████▊   | 68/100 [00:43<00:19,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 69/100:  68%|██████▊   | 68/100 [00:43<00:19,  1.63it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 69/100:  69%|██████▉   | 69/100 [00:43<00:19,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 69/100:  69%|██████▉   | 69/100 [00:43<00:19,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 70/100:  69%|██████▉   | 69/100 [00:43<00:19,  1.63it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 70/100:  70%|███████   | 70/100 [00:44<00:18,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 70/100:  70%|███████   | 70/100 [00:44<00:18,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 71/100:  70%|███████   | 70/100 [00:44<00:18,  1.63it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 71/100:  71%|███████   | 71/100 [00:45<00:17,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 71/100:  71%|███████   | 71/100 [00:45<00:17,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 72/100:  71%|███████   | 71/100 [00:45<00:17,  1.63it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 72/100:  72%|███████▏  | 72/100 [00:45<00:17,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 72/100:  72%|███████▏  | 72/100 [00:45<00:17,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 73/100:  72%|███████▏  | 72/100 [00:45<00:17,  1.63it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 73/100:  73%|███████▎  | 73/100 [00:46<00:16,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 73/100:  73%|███████▎  | 73/100 [00:46<00:16,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 74/100:  73%|███████▎  | 73/100 [00:46<00:16,  1.63it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 74/100:  74%|███████▍  | 74/100 [00:46<00:15,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 74/100:  74%|███████▍  | 74/100 [00:46<00:15,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 75/100:  74%|███████▍  | 74/100 [00:46<00:15,  1.63it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 75/100:  75%|███████▌  | 75/100 [00:47<00:15,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 75/100:  75%|███████▌  | 75/100 [00:47<00:15,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 76/100:  75%|███████▌  | 75/100 [00:47<00:15,  1.63it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 76/100:  76%|███████▌  | 76/100 [00:48<00:14,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 76/100:  76%|███████▌  | 76/100 [00:48<00:14,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 77/100:  76%|███████▌  | 76/100 [00:48<00:14,  1.63it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 77/100:  77%|███████▋  | 77/100 [00:48<00:14,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 77/100:  77%|███████▋  | 77/100 [00:48<00:14,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 78/100:  77%|███████▋  | 77/100 [00:48<00:14,  1.63it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 78/100:  78%|███████▊  | 78/100 [00:49<00:13,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 78/100:  78%|███████▊  | 78/100 [00:49<00:13,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 79/100:  78%|███████▊  | 78/100 [00:49<00:13,  1.63it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 79/100:  79%|███████▉  | 79/100 [00:50<00:12,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 79/100:  79%|███████▉  | 79/100 [00:50<00:12,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 80/100:  79%|███████▉  | 79/100 [00:50<00:12,  1.63it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 80/100:  80%|████████  | 80/100 [00:50<00:12,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 80/100:  80%|████████  | 80/100 [00:50<00:12,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 81/100:  80%|████████  | 80/100 [00:50<00:12,  1.63it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 81/100:  81%|████████  | 81/100 [00:51<00:11,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 81/100:  81%|████████  | 81/100 [00:51<00:11,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 82/100:  81%|████████  | 81/100 [00:51<00:11,  1.63it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 82/100:  82%|████████▏ | 82/100 [00:51<00:11,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 82/100:  82%|████████▏ | 82/100 [00:51<00:11,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 83/100:  82%|████████▏ | 82/100 [00:51<00:11,  1.63it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 83/100:  83%|████████▎ | 83/100 [00:52<00:10,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 83/100:  83%|████████▎ | 83/100 [00:52<00:10,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 84/100:  83%|████████▎ | 83/100 [00:52<00:10,  1.63it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 84/100:  84%|████████▍ | 84/100 [00:53<00:09,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 84/100:  84%|████████▍ | 84/100 [00:53<00:09,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 85/100:  84%|████████▍ | 84/100 [00:53<00:09,  1.63it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 85/100:  85%|████████▌ | 85/100 [00:53<00:09,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 85/100:  85%|████████▌ | 85/100 [00:53<00:09,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 86/100:  85%|████████▌ | 85/100 [00:53<00:09,  1.63it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 86/100:  86%|████████▌ | 86/100 [00:54<00:08,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 86/100:  86%|████████▌ | 86/100 [00:54<00:08,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 87/100:  86%|████████▌ | 86/100 [00:54<00:08,  1.63it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 87/100:  87%|████████▋ | 87/100 [00:54<00:07,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 87/100:  87%|████████▋ | 87/100 [00:54<00:07,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 88/100:  87%|████████▋ | 87/100 [00:54<00:07,  1.63it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 88/100:  88%|████████▊ | 88/100 [00:55<00:07,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 88/100:  88%|████████▊ | 88/100 [00:55<00:07,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 89/100:  88%|████████▊ | 88/100 [00:55<00:07,  1.63it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 89/100:  89%|████████▉ | 89/100 [00:56<00:06,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 89/100:  89%|████████▉ | 89/100 [00:56<00:06,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 90/100:  89%|████████▉ | 89/100 [00:56<00:06,  1.63it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 90/100:  90%|█████████ | 90/100 [00:56<00:06,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 90/100:  90%|█████████ | 90/100 [00:56<00:06,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 91/100:  90%|█████████ | 90/100 [00:56<00:06,  1.63it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 91/100:  91%|█████████ | 91/100 [00:57<00:05,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 91/100:  91%|█████████ | 91/100 [00:57<00:05,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 92/100:  91%|█████████ | 91/100 [00:57<00:05,  1.63it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 92/100:  92%|█████████▏| 92/100 [00:58<00:04,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 92/100:  92%|█████████▏| 92/100 [00:58<00:04,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 93/100:  92%|█████████▏| 92/100 [00:58<00:04,  1.63it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 93/100:  93%|█████████▎| 93/100 [00:58<00:04,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 93/100:  93%|█████████▎| 93/100 [00:58<00:04,  1.63it/s, v_num=1, train_loss=1.52e+3]Epoch 94/100:  93%|█████████▎| 93/100 [00:58<00:04,  1.63it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 94/100:  94%|█████████▍| 94/100 [00:59<00:03,  1.62it/s, v_num=1, train_loss=1.52e+3]Epoch 94/100:  94%|█████████▍| 94/100 [00:59<00:03,  1.62it/s, v_num=1, train_loss=1.52e+3]Epoch 95/100:  94%|█████████▍| 94/100 [00:59<00:03,  1.62it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 95/100:  95%|█████████▌| 95/100 [00:59<00:03,  1.61it/s, v_num=1, train_loss=1.52e+3]Epoch 95/100:  95%|█████████▌| 95/100 [00:59<00:03,  1.61it/s, v_num=1, train_loss=1.52e+3]Epoch 96/100:  95%|█████████▌| 95/100 [00:59<00:03,  1.61it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 96/100:  96%|█████████▌| 96/100 [01:00<00:02,  1.61it/s, v_num=1, train_loss=1.52e+3]Epoch 96/100:  96%|█████████▌| 96/100 [01:00<00:02,  1.61it/s, v_num=1, train_loss=1.52e+3]Epoch 97/100:  96%|█████████▌| 96/100 [01:00<00:02,  1.61it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 97/100:  97%|█████████▋| 97/100 [01:01<00:01,  1.62it/s, v_num=1, train_loss=1.52e+3]Epoch 97/100:  97%|█████████▋| 97/100 [01:01<00:01,  1.62it/s, v_num=1, train_loss=1.52e+3]Epoch 98/100:  97%|█████████▋| 97/100 [01:01<00:01,  1.62it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 98/100:  98%|█████████▊| 98/100 [01:01<00:01,  1.62it/s, v_num=1, train_loss=1.52e+3]Epoch 98/100:  98%|█████████▊| 98/100 [01:01<00:01,  1.62it/s, v_num=1, train_loss=1.52e+3]Epoch 99/100:  98%|█████████▊| 98/100 [01:01<00:01,  1.62it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 99/100:  99%|█████████▉| 99/100 [01:02<00:00,  1.62it/s, v_num=1, train_loss=1.52e+3]Epoch 99/100:  99%|█████████▉| 99/100 [01:02<00:00,  1.62it/s, v_num=1, train_loss=1.52e+3]Epoch 100/100:  99%|█████████▉| 99/100 [01:02<00:00,  1.62it/s, v_num=1, train_loss=1.52e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 100/100: 100%|██████████| 100/100 [01:02<00:00,  1.62it/s, v_num=1, train_loss=1.52e+3]Epoch 100/100: 100%|██████████| 100/100 [01:02<00:00,  1.62it/s, v_num=1, train_loss=1.52e+3]`Trainer.fit` stopped: `max_epochs=100` reached.
-Epoch 100/100: 100%|██████████| 100/100 [01:02<00:00,  1.59it/s, v_num=1, train_loss=1.52e+3]
-    scVI: fit=63.2s  infer=0.07s  wall=66.8s  rss=0MB  gpu=52MB
-
-=== immune :: embed phase ===
-
->>> PCA / immune: /usr/bin/python -m benchmarks.methods.pca --dataset immune --out-dir /workspace/runs/v1 --method-name PCA --k 30 --seed 0 --cells-per-cohort 200 --n-hvg 2000
-  PCA: loading immune...
-Downloading https://ndownloader.figshare.com/files/25717328 → /root/.cache/sparse-nmf/Immune_ALL_human.h5ad
-  ... 0% (0 / 2065 MB)
-  ... 10% (206 / 2065 MB)
-  ... 20% (413 / 2065 MB)
-  ... 30% (619 / 2065 MB)
-  ... 40% (826 / 2065 MB)
-  ... 50% (1032 / 2065 MB)
-  ... 60% (1239 / 2065 MB)
-  ... 70% (1445 / 2065 MB)
-  ... 80% (1652 / 2065 MB)
-  ... 90% (1858 / 2065 MB)
-  ... 100% (2065 / 2065 MB)
-  PCA: (13080, 2000)  fp=49e075610ad5813e  batches=10  labels=16
-  PCA: fitting...
-/usr/lib/python3.11/functools.py:909: UserWarning: zero-centering a sparse array/matrix densifies it.
-  return dispatch(args[0].__class__)(*args, **kw)
-    PCA: fit=1.1s  infer=0.01s  wall=3.7s  rss=0MB  gpu=0MB
-
->>> NMF / immune: /usr/bin/python -m benchmarks.methods.nmf --dataset immune --out-dir /workspace/runs/v1 --method-name NMF --k 30 --seed 0 --cells-per-cohort 200 --n-hvg 2000
-  NMF: loading immune...
-  NMF: (13080, 2000)  fp=49e075610ad5813e  batches=10  labels=16
-  NMF: fitting...
-/usr/local/lib/python3.11/dist-packages/sklearn/decomposition/_nmf.py:1720: ConvergenceWarning: Maximum number of iterations 500 reached. Increase it to improve convergence.
-  warnings.warn(
-    NMF: fit=31.2s  infer=1.21s  wall=34.3s  rss=0MB  gpu=0MB
-
->>> sparseNMF / immune: /usr/bin/python -m benchmarks.methods.sparse_nmf --dataset immune --out-dir /workspace/runs/v1 --method-name sparseNMF --k 30 --seed 0 --cells-per-cohort 200 --n-hvg 2000
-  sparseNMF: loading immune...
-  sparseNMF: (13080, 2000)  fp=49e075610ad5813e  batches=10  labels=16
-  sparseNMF: fitting...
-    sparseNMF: fit=121.8s  infer=—  wall=123.6s  rss=0MB  gpu=374MB
-
->>> Harmony / immune: /usr/bin/python -m benchmarks.methods.harmony --dataset immune --out-dir /workspace/runs/v1 --method-name Harmony --k 30 --seed 0 --cells-per-cohort 200 --n-hvg 2000
-  Harmony: loading immune...
-  Harmony: (13080, 2000)  fp=49e075610ad5813e  batches=10  labels=16
-  Harmony: fitting...
-/usr/lib/python3.11/functools.py:909: UserWarning: zero-centering a sparse array/matrix densifies it.
-  return dispatch(args[0].__class__)(*args, **kw)
-2026-05-15 14:20:22,802 - harmonypy - INFO - Running Harmony
-2026-05-15 14:20:22,802 - harmonypy - INFO -   Parameters:
-2026-05-15 14:20:22,803 - harmonypy - INFO -     max_iter_harmony: 20
-2026-05-15 14:20:22,803 - harmonypy - INFO -     max_iter_kmeans: 4
-2026-05-15 14:20:22,803 - harmonypy - INFO -     epsilon_cluster: 0.001
-2026-05-15 14:20:22,803 - harmonypy - INFO -     epsilon_harmony: 0.01
-2026-05-15 14:20:22,803 - harmonypy - INFO -     nclust: 100
-2026-05-15 14:20:22,804 - harmonypy - INFO -     block_size: 0.05
-2026-05-15 14:20:22,804 - harmonypy - INFO -     lamb: dynamic (alpha=0.2)
-2026-05-15 14:20:22,804 - harmonypy - INFO -     theta: [2. 2. 2. 2. 2. 2. 2. 2. 2. 2.]
-2026-05-15 14:20:22,804 - harmonypy - INFO -     sigma: [0.1 0.1 0.1 0.1 0.1]...
-2026-05-15 14:20:22,804 - harmonypy - INFO -     verbose: True
-2026-05-15 14:20:22,804 - harmonypy - INFO -     random_state: 0
-2026-05-15 14:20:22,805 - harmonypy - INFO -   Data: 30 PCs × 13080 cells
-2026-05-15 14:20:22,805 - harmonypy - INFO -   Batch variables: ['batch']
-2026-05-15 14:20:22,820 - harmonypy - INFO - Computing initial centroids...
-2026-05-15 14:20:23,127 - harmonypy - INFO - Initialization complete.
-2026-05-15 14:20:23,127 - harmonypy - INFO - Iteration 1 of 20
-2026-05-15 14:20:23,393 - harmonypy - INFO - Iteration 2 of 20
-2026-05-15 14:20:23,675 - harmonypy - INFO - Iteration 3 of 20
-2026-05-15 14:20:23,960 - harmonypy - INFO - Iteration 4 of 20
-2026-05-15 14:20:24,247 - harmonypy - INFO - Iteration 5 of 20
-2026-05-15 14:20:24,536 - harmonypy - INFO - Converged after 5 iterations
-    Harmony: fit=2.9s  infer=—  wall=5.1s  rss=0MB  gpu=0MB
-
->>> scVI / immune: /usr/bin/python -m benchmarks.methods.scvi --dataset immune --out-dir /workspace/runs/v1 --method-name scVI --k 30 --seed 0 --cells-per-cohort 200 --n-hvg 2000
-  scVI: loading immune...
-  scVI: (13080, 2000)  fp=49e075610ad5813e  batches=10  labels=16
-  scVI: fitting...
-/usr/local/lib/python3.11/dist-packages/scvi/data/fields/_base_field.py:63: UserWarning: adata.X does not contain unnormalized count data. Are you sure this is what you want?
-  self.validate_field(adata)
-GPU available: True (cuda), used: True
-TPU available: False, using: 0 TPU cores
-💡 Tip: For seamless cloud logging and experiment tracking, try installing [litlogger](https://pypi.org/project/litlogger/) to enable LitLogger, which logs metrics and artifacts automatically to the Lightning Experiments platform.
-You are using a CUDA device ('NVIDIA RTX A4000') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
-LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
-/usr/local/lib/python3.11/dist-packages/lightning/pytorch/trainer/connectors/data_connector.py:434: The 'train_dataloader' does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` to `num_workers=127` in the `DataLoader` to improve performance.
-Training:   0%|          | 0/100 [00:00<?, ?it/s]Epoch 1/100:   0%|          | 0/100 [00:00<?, ?it/s]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 1/100:   1%|          | 1/100 [00:01<02:23,  1.45s/it]Epoch 1/100:   1%|          | 1/100 [00:01<02:23,  1.45s/it, v_num=1, train_loss=1.16e+3]Epoch 2/100:   1%|          | 1/100 [00:01<02:23,  1.45s/it, v_num=1, train_loss=1.16e+3]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 2/100:   2%|▏         | 2/100 [00:02<01:53,  1.16s/it, v_num=1, train_loss=1.16e+3]Epoch 2/100:   2%|▏         | 2/100 [00:02<01:53,  1.16s/it, v_num=1, train_loss=998]    Epoch 3/100:   2%|▏         | 2/100 [00:02<01:53,  1.16s/it, v_num=1, train_loss=998]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 3/100:   3%|▎         | 3/100 [00:03<01:42,  1.06s/it, v_num=1, train_loss=998]Epoch 3/100:   3%|▎         | 3/100 [00:03<01:42,  1.06s/it, v_num=1, train_loss=964]Epoch 4/100:   3%|▎         | 3/100 [00:03<01:42,  1.06s/it, v_num=1, train_loss=964]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 4/100:   4%|▍         | 4/100 [00:04<01:37,  1.02s/it, v_num=1, train_loss=964]Epoch 4/100:   4%|▍         | 4/100 [00:04<01:37,  1.02s/it, v_num=1, train_loss=948]Epoch 5/100:   4%|▍         | 4/100 [00:04<01:37,  1.02s/it, v_num=1, train_loss=948]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 5/100:   5%|▌         | 5/100 [00:05<01:35,  1.00s/it, v_num=1, train_loss=948]Epoch 5/100:   5%|▌         | 5/100 [00:05<01:35,  1.00s/it, v_num=1, train_loss=938]Epoch 6/100:   5%|▌         | 5/100 [00:05<01:35,  1.00s/it, v_num=1, train_loss=938]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 6/100:   6%|▌         | 6/100 [00:06<01:39,  1.06s/it, v_num=1, train_loss=938]Epoch 6/100:   6%|▌         | 6/100 [00:06<01:39,  1.06s/it, v_num=1, train_loss=931]Epoch 7/100:   6%|▌         | 6/100 [00:06<01:39,  1.06s/it, v_num=1, train_loss=931]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 7/100:   7%|▋         | 7/100 [00:07<01:34,  1.02s/it, v_num=1, train_loss=931]Epoch 7/100:   7%|▋         | 7/100 [00:07<01:34,  1.02s/it, v_num=1, train_loss=925]Epoch 8/100:   7%|▋         | 7/100 [00:07<01:34,  1.02s/it, v_num=1, train_loss=925]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 8/100:   8%|▊         | 8/100 [00:08<01:31,  1.01it/s, v_num=1, train_loss=925]Epoch 8/100:   8%|▊         | 8/100 [00:08<01:31,  1.01it/s, v_num=1, train_loss=919]Epoch 9/100:   8%|▊         | 8/100 [00:08<01:31,  1.01it/s, v_num=1, train_loss=919]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 9/100:   9%|▉         | 9/100 [00:09<01:28,  1.02it/s, v_num=1, train_loss=919]Epoch 9/100:   9%|▉         | 9/100 [00:09<01:28,  1.02it/s, v_num=1, train_loss=915]Epoch 10/100:   9%|▉         | 9/100 [00:09<01:28,  1.02it/s, v_num=1, train_loss=915]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 10/100:  10%|█         | 10/100 [00:10<01:27,  1.03it/s, v_num=1, train_loss=915]Epoch 10/100:  10%|█         | 10/100 [00:10<01:27,  1.03it/s, v_num=1, train_loss=912]Epoch 11/100:  10%|█         | 10/100 [00:10<01:27,  1.03it/s, v_num=1, train_loss=912]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 11/100:  11%|█         | 11/100 [00:11<01:25,  1.04it/s, v_num=1, train_loss=912]Epoch 11/100:  11%|█         | 11/100 [00:11<01:25,  1.04it/s, v_num=1, train_loss=909]Epoch 12/100:  11%|█         | 11/100 [00:11<01:25,  1.04it/s, v_num=1, train_loss=909]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 12/100:  12%|█▏        | 12/100 [00:12<01:23,  1.05it/s, v_num=1, train_loss=909]Epoch 12/100:  12%|█▏        | 12/100 [00:12<01:23,  1.05it/s, v_num=1, train_loss=906]Epoch 13/100:  12%|█▏        | 12/100 [00:12<01:23,  1.05it/s, v_num=1, train_loss=906]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 13/100:  13%|█▎        | 13/100 [00:13<01:22,  1.05it/s, v_num=1, train_loss=906]Epoch 13/100:  13%|█▎        | 13/100 [00:13<01:22,  1.05it/s, v_num=1, train_loss=904]Epoch 14/100:  13%|█▎        | 13/100 [00:13<01:22,  1.05it/s, v_num=1, train_loss=904]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 14/100:  14%|█▍        | 14/100 [00:13<01:21,  1.06it/s, v_num=1, train_loss=904]Epoch 14/100:  14%|█▍        | 14/100 [00:13<01:21,  1.06it/s, v_num=1, train_loss=901]Epoch 15/100:  14%|█▍        | 14/100 [00:13<01:21,  1.06it/s, v_num=1, train_loss=901]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 15/100:  15%|█▌        | 15/100 [00:14<01:20,  1.06it/s, v_num=1, train_loss=901]Epoch 15/100:  15%|█▌        | 15/100 [00:14<01:20,  1.06it/s, v_num=1, train_loss=899]Epoch 16/100:  15%|█▌        | 15/100 [00:14<01:20,  1.06it/s, v_num=1, train_loss=899]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 16/100:  16%|█▌        | 16/100 [00:15<01:19,  1.06it/s, v_num=1, train_loss=899]Epoch 16/100:  16%|█▌        | 16/100 [00:15<01:19,  1.06it/s, v_num=1, train_loss=897]Epoch 17/100:  16%|█▌        | 16/100 [00:15<01:19,  1.06it/s, v_num=1, train_loss=897]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 17/100:  17%|█▋        | 17/100 [00:16<01:18,  1.06it/s, v_num=1, train_loss=897]Epoch 17/100:  17%|█▋        | 17/100 [00:16<01:18,  1.06it/s, v_num=1, train_loss=896]Epoch 18/100:  17%|█▋        | 17/100 [00:16<01:18,  1.06it/s, v_num=1, train_loss=896]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 18/100:  18%|█▊        | 18/100 [00:17<01:17,  1.06it/s, v_num=1, train_loss=896]Epoch 18/100:  18%|█▊        | 18/100 [00:17<01:17,  1.06it/s, v_num=1, train_loss=894]Epoch 19/100:  18%|█▊        | 18/100 [00:17<01:17,  1.06it/s, v_num=1, train_loss=894]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 19/100:  19%|█▉        | 19/100 [00:18<01:16,  1.06it/s, v_num=1, train_loss=894]Epoch 19/100:  19%|█▉        | 19/100 [00:18<01:16,  1.06it/s, v_num=1, train_loss=892]Epoch 20/100:  19%|█▉        | 19/100 [00:18<01:16,  1.06it/s, v_num=1, train_loss=892]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 20/100:  20%|██        | 20/100 [00:19<01:15,  1.06it/s, v_num=1, train_loss=892]Epoch 20/100:  20%|██        | 20/100 [00:19<01:15,  1.06it/s, v_num=1, train_loss=891]Epoch 21/100:  20%|██        | 20/100 [00:19<01:15,  1.06it/s, v_num=1, train_loss=891]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 21/100:  21%|██        | 21/100 [00:20<01:14,  1.06it/s, v_num=1, train_loss=891]Epoch 21/100:  21%|██        | 21/100 [00:20<01:14,  1.06it/s, v_num=1, train_loss=890]Epoch 22/100:  21%|██        | 21/100 [00:20<01:14,  1.06it/s, v_num=1, train_loss=890]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 22/100:  22%|██▏       | 22/100 [00:21<01:13,  1.06it/s, v_num=1, train_loss=890]Epoch 22/100:  22%|██▏       | 22/100 [00:21<01:13,  1.06it/s, v_num=1, train_loss=888]Epoch 23/100:  22%|██▏       | 22/100 [00:21<01:13,  1.06it/s, v_num=1, train_loss=888]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 23/100:  23%|██▎       | 23/100 [00:22<01:12,  1.06it/s, v_num=1, train_loss=888]Epoch 23/100:  23%|██▎       | 23/100 [00:22<01:12,  1.06it/s, v_num=1, train_loss=887]Epoch 24/100:  23%|██▎       | 23/100 [00:22<01:12,  1.06it/s, v_num=1, train_loss=887]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 24/100:  24%|██▍       | 24/100 [00:23<01:12,  1.05it/s, v_num=1, train_loss=887]Epoch 24/100:  24%|██▍       | 24/100 [00:23<01:12,  1.05it/s, v_num=1, train_loss=887]Epoch 25/100:  24%|██▍       | 24/100 [00:23<01:12,  1.05it/s, v_num=1, train_loss=887]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 25/100:  25%|██▌       | 25/100 [00:24<01:11,  1.05it/s, v_num=1, train_loss=887]Epoch 25/100:  25%|██▌       | 25/100 [00:24<01:11,  1.05it/s, v_num=1, train_loss=885]Epoch 26/100:  25%|██▌       | 25/100 [00:24<01:11,  1.05it/s, v_num=1, train_loss=885]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 26/100:  26%|██▌       | 26/100 [00:25<01:10,  1.05it/s, v_num=1, train_loss=885]Epoch 26/100:  26%|██▌       | 26/100 [00:25<01:10,  1.05it/s, v_num=1, train_loss=884]Epoch 27/100:  26%|██▌       | 26/100 [00:25<01:10,  1.05it/s, v_num=1, train_loss=884]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 27/100:  27%|██▋       | 27/100 [00:26<01:09,  1.05it/s, v_num=1, train_loss=884]Epoch 27/100:  27%|██▋       | 27/100 [00:26<01:09,  1.05it/s, v_num=1, train_loss=884]Epoch 28/100:  27%|██▋       | 27/100 [00:26<01:09,  1.05it/s, v_num=1, train_loss=884]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 28/100:  28%|██▊       | 28/100 [00:27<01:08,  1.05it/s, v_num=1, train_loss=884]Epoch 28/100:  28%|██▊       | 28/100 [00:27<01:08,  1.05it/s, v_num=1, train_loss=883]Epoch 29/100:  28%|██▊       | 28/100 [00:27<01:08,  1.05it/s, v_num=1, train_loss=883]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 29/100:  29%|██▉       | 29/100 [00:28<01:07,  1.05it/s, v_num=1, train_loss=883]Epoch 29/100:  29%|██▉       | 29/100 [00:28<01:07,  1.05it/s, v_num=1, train_loss=882]Epoch 30/100:  29%|██▉       | 29/100 [00:28<01:07,  1.05it/s, v_num=1, train_loss=882]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 30/100:  30%|███       | 30/100 [00:29<01:06,  1.05it/s, v_num=1, train_loss=882]Epoch 30/100:  30%|███       | 30/100 [00:29<01:06,  1.05it/s, v_num=1, train_loss=882]Epoch 31/100:  30%|███       | 30/100 [00:29<01:06,  1.05it/s, v_num=1, train_loss=882]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 31/100:  31%|███       | 31/100 [00:30<01:05,  1.05it/s, v_num=1, train_loss=882]Epoch 31/100:  31%|███       | 31/100 [00:30<01:05,  1.05it/s, v_num=1, train_loss=881]Epoch 32/100:  31%|███       | 31/100 [00:30<01:05,  1.05it/s, v_num=1, train_loss=881]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 32/100:  32%|███▏      | 32/100 [00:31<01:04,  1.05it/s, v_num=1, train_loss=881]Epoch 32/100:  32%|███▏      | 32/100 [00:31<01:04,  1.05it/s, v_num=1, train_loss=880]Epoch 33/100:  32%|███▏      | 32/100 [00:31<01:04,  1.05it/s, v_num=1, train_loss=880]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 33/100:  33%|███▎      | 33/100 [00:31<01:03,  1.05it/s, v_num=1, train_loss=880]Epoch 33/100:  33%|███▎      | 33/100 [00:31<01:03,  1.05it/s, v_num=1, train_loss=880]Epoch 34/100:  33%|███▎      | 33/100 [00:31<01:03,  1.05it/s, v_num=1, train_loss=880]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 34/100:  34%|███▍      | 34/100 [00:32<01:02,  1.05it/s, v_num=1, train_loss=880]Epoch 34/100:  34%|███▍      | 34/100 [00:32<01:02,  1.05it/s, v_num=1, train_loss=879]Epoch 35/100:  34%|███▍      | 34/100 [00:32<01:02,  1.05it/s, v_num=1, train_loss=879]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 35/100:  35%|███▌      | 35/100 [00:33<01:01,  1.06it/s, v_num=1, train_loss=879]Epoch 35/100:  35%|███▌      | 35/100 [00:33<01:01,  1.06it/s, v_num=1, train_loss=879]Epoch 36/100:  35%|███▌      | 35/100 [00:33<01:01,  1.06it/s, v_num=1, train_loss=879]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 36/100:  36%|███▌      | 36/100 [00:34<01:00,  1.07it/s, v_num=1, train_loss=879]Epoch 36/100:  36%|███▌      | 36/100 [00:34<01:00,  1.07it/s, v_num=1, train_loss=878]Epoch 37/100:  36%|███▌      | 36/100 [00:34<01:00,  1.07it/s, v_num=1, train_loss=878]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 37/100:  37%|███▋      | 37/100 [00:35<00:58,  1.07it/s, v_num=1, train_loss=878]Epoch 37/100:  37%|███▋      | 37/100 [00:35<00:58,  1.07it/s, v_num=1, train_loss=878]Epoch 38/100:  37%|███▋      | 37/100 [00:35<00:58,  1.07it/s, v_num=1, train_loss=878]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 38/100:  38%|███▊      | 38/100 [00:36<00:57,  1.08it/s, v_num=1, train_loss=878]Epoch 38/100:  38%|███▊      | 38/100 [00:36<00:57,  1.08it/s, v_num=1, train_loss=877]Epoch 39/100:  38%|███▊      | 38/100 [00:36<00:57,  1.08it/s, v_num=1, train_loss=877]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 39/100:  39%|███▉      | 39/100 [00:37<00:56,  1.08it/s, v_num=1, train_loss=877]Epoch 39/100:  39%|███▉      | 39/100 [00:37<00:56,  1.08it/s, v_num=1, train_loss=877]Epoch 40/100:  39%|███▉      | 39/100 [00:37<00:56,  1.08it/s, v_num=1, train_loss=877]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 40/100:  40%|████      | 40/100 [00:38<00:55,  1.08it/s, v_num=1, train_loss=877]Epoch 40/100:  40%|████      | 40/100 [00:38<00:55,  1.08it/s, v_num=1, train_loss=877]Epoch 41/100:  40%|████      | 40/100 [00:38<00:55,  1.08it/s, v_num=1, train_loss=877]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 41/100:  41%|████      | 41/100 [00:39<00:54,  1.08it/s, v_num=1, train_loss=877]Epoch 41/100:  41%|████      | 41/100 [00:39<00:54,  1.08it/s, v_num=1, train_loss=876]Epoch 42/100:  41%|████      | 41/100 [00:39<00:54,  1.08it/s, v_num=1, train_loss=876]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 42/100:  42%|████▏     | 42/100 [00:40<00:54,  1.07it/s, v_num=1, train_loss=876]Epoch 42/100:  42%|████▏     | 42/100 [00:40<00:54,  1.07it/s, v_num=1, train_loss=875]Epoch 43/100:  42%|████▏     | 42/100 [00:40<00:54,  1.07it/s, v_num=1, train_loss=875]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 43/100:  43%|████▎     | 43/100 [00:41<00:53,  1.07it/s, v_num=1, train_loss=875]Epoch 43/100:  43%|████▎     | 43/100 [00:41<00:53,  1.07it/s, v_num=1, train_loss=875]Epoch 44/100:  43%|████▎     | 43/100 [00:41<00:53,  1.07it/s, v_num=1, train_loss=875]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 44/100:  44%|████▍     | 44/100 [00:42<00:52,  1.08it/s, v_num=1, train_loss=875]Epoch 44/100:  44%|████▍     | 44/100 [00:42<00:52,  1.08it/s, v_num=1, train_loss=875]Epoch 45/100:  44%|████▍     | 44/100 [00:42<00:52,  1.08it/s, v_num=1, train_loss=875]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 45/100:  45%|████▌     | 45/100 [00:43<00:51,  1.08it/s, v_num=1, train_loss=875]Epoch 45/100:  45%|████▌     | 45/100 [00:43<00:51,  1.08it/s, v_num=1, train_loss=875]Epoch 46/100:  45%|████▌     | 45/100 [00:43<00:51,  1.08it/s, v_num=1, train_loss=875]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 46/100:  46%|████▌     | 46/100 [00:44<00:50,  1.08it/s, v_num=1, train_loss=875]Epoch 46/100:  46%|████▌     | 46/100 [00:44<00:50,  1.08it/s, v_num=1, train_loss=874]Epoch 47/100:  46%|████▌     | 46/100 [00:44<00:50,  1.08it/s, v_num=1, train_loss=874]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 47/100:  47%|████▋     | 47/100 [00:44<00:49,  1.08it/s, v_num=1, train_loss=874]Epoch 47/100:  47%|████▋     | 47/100 [00:44<00:49,  1.08it/s, v_num=1, train_loss=874]Epoch 48/100:  47%|████▋     | 47/100 [00:44<00:49,  1.08it/s, v_num=1, train_loss=874]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 48/100:  48%|████▊     | 48/100 [00:45<00:48,  1.08it/s, v_num=1, train_loss=874]Epoch 48/100:  48%|████▊     | 48/100 [00:45<00:48,  1.08it/s, v_num=1, train_loss=874]Epoch 49/100:  48%|████▊     | 48/100 [00:45<00:48,  1.08it/s, v_num=1, train_loss=874]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 49/100:  49%|████▉     | 49/100 [00:46<00:47,  1.08it/s, v_num=1, train_loss=874]Epoch 49/100:  49%|████▉     | 49/100 [00:46<00:47,  1.08it/s, v_num=1, train_loss=874]Epoch 50/100:  49%|████▉     | 49/100 [00:46<00:47,  1.08it/s, v_num=1, train_loss=874]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 50/100:  50%|█████     | 50/100 [00:47<00:46,  1.08it/s, v_num=1, train_loss=874]Epoch 50/100:  50%|█████     | 50/100 [00:47<00:46,  1.08it/s, v_num=1, train_loss=873]Epoch 51/100:  50%|█████     | 50/100 [00:47<00:46,  1.08it/s, v_num=1, train_loss=873]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 51/100:  51%|█████     | 51/100 [00:48<00:45,  1.08it/s, v_num=1, train_loss=873]Epoch 51/100:  51%|█████     | 51/100 [00:48<00:45,  1.08it/s, v_num=1, train_loss=873]Epoch 52/100:  51%|█████     | 51/100 [00:48<00:45,  1.08it/s, v_num=1, train_loss=873]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 52/100:  52%|█████▏    | 52/100 [00:49<00:44,  1.08it/s, v_num=1, train_loss=873]Epoch 52/100:  52%|█████▏    | 52/100 [00:49<00:44,  1.08it/s, v_num=1, train_loss=873]Epoch 53/100:  52%|█████▏    | 52/100 [00:49<00:44,  1.08it/s, v_num=1, train_loss=873]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 53/100:  53%|█████▎    | 53/100 [00:50<00:43,  1.08it/s, v_num=1, train_loss=873]Epoch 53/100:  53%|█████▎    | 53/100 [00:50<00:43,  1.08it/s, v_num=1, train_loss=872]Epoch 54/100:  53%|█████▎    | 53/100 [00:50<00:43,  1.08it/s, v_num=1, train_loss=872]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 54/100:  54%|█████▍    | 54/100 [00:51<00:42,  1.08it/s, v_num=1, train_loss=872]Epoch 54/100:  54%|█████▍    | 54/100 [00:51<00:42,  1.08it/s, v_num=1, train_loss=873]Epoch 55/100:  54%|█████▍    | 54/100 [00:51<00:42,  1.08it/s, v_num=1, train_loss=873]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 55/100:  55%|█████▌    | 55/100 [00:52<00:41,  1.08it/s, v_num=1, train_loss=873]Epoch 55/100:  55%|█████▌    | 55/100 [00:52<00:41,  1.08it/s, v_num=1, train_loss=872]Epoch 56/100:  55%|█████▌    | 55/100 [00:52<00:41,  1.08it/s, v_num=1, train_loss=872]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 56/100:  56%|█████▌    | 56/100 [00:53<00:40,  1.08it/s, v_num=1, train_loss=872]Epoch 56/100:  56%|█████▌    | 56/100 [00:53<00:40,  1.08it/s, v_num=1, train_loss=872]Epoch 57/100:  56%|█████▌    | 56/100 [00:53<00:40,  1.08it/s, v_num=1, train_loss=872]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 57/100:  57%|█████▋    | 57/100 [00:54<00:39,  1.08it/s, v_num=1, train_loss=872]Epoch 57/100:  57%|█████▋    | 57/100 [00:54<00:39,  1.08it/s, v_num=1, train_loss=872]Epoch 58/100:  57%|█████▋    | 57/100 [00:54<00:39,  1.08it/s, v_num=1, train_loss=872]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 58/100:  58%|█████▊    | 58/100 [00:55<00:39,  1.08it/s, v_num=1, train_loss=872]Epoch 58/100:  58%|█████▊    | 58/100 [00:55<00:39,  1.08it/s, v_num=1, train_loss=872]Epoch 59/100:  58%|█████▊    | 58/100 [00:55<00:39,  1.08it/s, v_num=1, train_loss=872]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 59/100:  59%|█████▉    | 59/100 [00:56<00:38,  1.08it/s, v_num=1, train_loss=872]Epoch 59/100:  59%|█████▉    | 59/100 [00:56<00:38,  1.08it/s, v_num=1, train_loss=872]Epoch 60/100:  59%|█████▉    | 59/100 [00:56<00:38,  1.08it/s, v_num=1, train_loss=872]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 60/100:  60%|██████    | 60/100 [00:57<00:37,  1.08it/s, v_num=1, train_loss=872]Epoch 60/100:  60%|██████    | 60/100 [00:57<00:37,  1.08it/s, v_num=1, train_loss=872]Epoch 61/100:  60%|██████    | 60/100 [00:57<00:37,  1.08it/s, v_num=1, train_loss=872]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 61/100:  61%|██████    | 61/100 [00:57<00:36,  1.08it/s, v_num=1, train_loss=872]Epoch 61/100:  61%|██████    | 61/100 [00:57<00:36,  1.08it/s, v_num=1, train_loss=871]Epoch 62/100:  61%|██████    | 61/100 [00:57<00:36,  1.08it/s, v_num=1, train_loss=871]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 62/100:  62%|██████▏   | 62/100 [00:58<00:35,  1.08it/s, v_num=1, train_loss=871]Epoch 62/100:  62%|██████▏   | 62/100 [00:58<00:35,  1.08it/s, v_num=1, train_loss=871]Epoch 63/100:  62%|██████▏   | 62/100 [00:58<00:35,  1.08it/s, v_num=1, train_loss=871]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 63/100:  63%|██████▎   | 63/100 [00:59<00:34,  1.08it/s, v_num=1, train_loss=871]Epoch 63/100:  63%|██████▎   | 63/100 [00:59<00:34,  1.08it/s, v_num=1, train_loss=871]Epoch 64/100:  63%|██████▎   | 63/100 [00:59<00:34,  1.08it/s, v_num=1, train_loss=871]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 64/100:  64%|██████▍   | 64/100 [01:00<00:33,  1.08it/s, v_num=1, train_loss=871]Epoch 64/100:  64%|██████▍   | 64/100 [01:00<00:33,  1.08it/s, v_num=1, train_loss=871]Epoch 65/100:  64%|██████▍   | 64/100 [01:00<00:33,  1.08it/s, v_num=1, train_loss=871]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 65/100:  65%|██████▌   | 65/100 [01:01<00:32,  1.08it/s, v_num=1, train_loss=871]Epoch 65/100:  65%|██████▌   | 65/100 [01:01<00:32,  1.08it/s, v_num=1, train_loss=871]Epoch 66/100:  65%|██████▌   | 65/100 [01:01<00:32,  1.08it/s, v_num=1, train_loss=871]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 66/100:  66%|██████▌   | 66/100 [01:02<00:31,  1.08it/s, v_num=1, train_loss=871]Epoch 66/100:  66%|██████▌   | 66/100 [01:02<00:31,  1.08it/s, v_num=1, train_loss=871]Epoch 67/100:  66%|██████▌   | 66/100 [01:02<00:31,  1.08it/s, v_num=1, train_loss=871]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 67/100:  67%|██████▋   | 67/100 [01:03<00:30,  1.08it/s, v_num=1, train_loss=871]Epoch 67/100:  67%|██████▋   | 67/100 [01:03<00:30,  1.08it/s, v_num=1, train_loss=871]Epoch 68/100:  67%|██████▋   | 67/100 [01:03<00:30,  1.08it/s, v_num=1, train_loss=871]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 68/100:  68%|██████▊   | 68/100 [01:04<00:29,  1.08it/s, v_num=1, train_loss=871]Epoch 68/100:  68%|██████▊   | 68/100 [01:04<00:29,  1.08it/s, v_num=1, train_loss=870]Epoch 69/100:  68%|██████▊   | 68/100 [01:04<00:29,  1.08it/s, v_num=1, train_loss=870]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 69/100:  69%|██████▉   | 69/100 [01:05<00:29,  1.07it/s, v_num=1, train_loss=870]Epoch 69/100:  69%|██████▉   | 69/100 [01:05<00:29,  1.07it/s, v_num=1, train_loss=870]Epoch 70/100:  69%|██████▉   | 69/100 [01:05<00:29,  1.07it/s, v_num=1, train_loss=870]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 70/100:  70%|███████   | 70/100 [01:06<00:28,  1.07it/s, v_num=1, train_loss=870]Epoch 70/100:  70%|███████   | 70/100 [01:06<00:28,  1.07it/s, v_num=1, train_loss=871]Epoch 71/100:  70%|███████   | 70/100 [01:06<00:28,  1.07it/s, v_num=1, train_loss=871]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 71/100:  71%|███████   | 71/100 [01:07<00:27,  1.06it/s, v_num=1, train_loss=871]Epoch 71/100:  71%|███████   | 71/100 [01:07<00:27,  1.06it/s, v_num=1, train_loss=870]Epoch 72/100:  71%|███████   | 71/100 [01:07<00:27,  1.06it/s, v_num=1, train_loss=870]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 72/100:  72%|███████▏  | 72/100 [01:08<00:26,  1.06it/s, v_num=1, train_loss=870]Epoch 72/100:  72%|███████▏  | 72/100 [01:08<00:26,  1.06it/s, v_num=1, train_loss=870]Epoch 73/100:  72%|███████▏  | 72/100 [01:08<00:26,  1.06it/s, v_num=1, train_loss=870]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 73/100:  73%|███████▎  | 73/100 [01:09<00:25,  1.07it/s, v_num=1, train_loss=870]Epoch 73/100:  73%|███████▎  | 73/100 [01:09<00:25,  1.07it/s, v_num=1, train_loss=870]Epoch 74/100:  73%|███████▎  | 73/100 [01:09<00:25,  1.07it/s, v_num=1, train_loss=870]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 74/100:  74%|███████▍  | 74/100 [01:10<00:24,  1.07it/s, v_num=1, train_loss=870]Epoch 74/100:  74%|███████▍  | 74/100 [01:10<00:24,  1.07it/s, v_num=1, train_loss=871]Epoch 75/100:  74%|███████▍  | 74/100 [01:10<00:24,  1.07it/s, v_num=1, train_loss=871]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 75/100:  75%|███████▌  | 75/100 [01:11<00:23,  1.06it/s, v_num=1, train_loss=871]Epoch 75/100:  75%|███████▌  | 75/100 [01:11<00:23,  1.06it/s, v_num=1, train_loss=870]Epoch 76/100:  75%|███████▌  | 75/100 [01:11<00:23,  1.06it/s, v_num=1, train_loss=870]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 76/100:  76%|███████▌  | 76/100 [01:12<00:22,  1.06it/s, v_num=1, train_loss=870]Epoch 76/100:  76%|███████▌  | 76/100 [01:12<00:22,  1.06it/s, v_num=1, train_loss=870]Epoch 77/100:  76%|███████▌  | 76/100 [01:12<00:22,  1.06it/s, v_num=1, train_loss=870]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 77/100:  77%|███████▋  | 77/100 [01:12<00:21,  1.06it/s, v_num=1, train_loss=870]Epoch 77/100:  77%|███████▋  | 77/100 [01:12<00:21,  1.06it/s, v_num=1, train_loss=870]Epoch 78/100:  77%|███████▋  | 77/100 [01:12<00:21,  1.06it/s, v_num=1, train_loss=870]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 78/100:  78%|███████▊  | 78/100 [01:13<00:20,  1.05it/s, v_num=1, train_loss=870]Epoch 78/100:  78%|███████▊  | 78/100 [01:13<00:20,  1.05it/s, v_num=1, train_loss=870]Epoch 79/100:  78%|███████▊  | 78/100 [01:13<00:20,  1.05it/s, v_num=1, train_loss=870]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 79/100:  79%|███████▉  | 79/100 [01:14<00:19,  1.06it/s, v_num=1, train_loss=870]Epoch 79/100:  79%|███████▉  | 79/100 [01:14<00:19,  1.06it/s, v_num=1, train_loss=870]Epoch 80/100:  79%|███████▉  | 79/100 [01:14<00:19,  1.06it/s, v_num=1, train_loss=870]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 80/100:  80%|████████  | 80/100 [01:15<00:18,  1.06it/s, v_num=1, train_loss=870]Epoch 80/100:  80%|████████  | 80/100 [01:15<00:18,  1.06it/s, v_num=1, train_loss=870]Epoch 81/100:  80%|████████  | 80/100 [01:15<00:18,  1.06it/s, v_num=1, train_loss=870]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 81/100:  81%|████████  | 81/100 [01:16<00:17,  1.06it/s, v_num=1, train_loss=870]Epoch 81/100:  81%|████████  | 81/100 [01:16<00:17,  1.06it/s, v_num=1, train_loss=870]Epoch 82/100:  81%|████████  | 81/100 [01:16<00:17,  1.06it/s, v_num=1, train_loss=870]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 82/100:  82%|████████▏ | 82/100 [01:17<00:17,  1.06it/s, v_num=1, train_loss=870]Epoch 82/100:  82%|████████▏ | 82/100 [01:17<00:17,  1.06it/s, v_num=1, train_loss=870]Epoch 83/100:  82%|████████▏ | 82/100 [01:17<00:17,  1.06it/s, v_num=1, train_loss=870]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 83/100:  83%|████████▎ | 83/100 [01:18<00:16,  1.06it/s, v_num=1, train_loss=870]Epoch 83/100:  83%|████████▎ | 83/100 [01:18<00:16,  1.06it/s, v_num=1, train_loss=870]Epoch 84/100:  83%|████████▎ | 83/100 [01:18<00:16,  1.06it/s, v_num=1, train_loss=870]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 84/100:  84%|████████▍ | 84/100 [01:19<00:15,  1.06it/s, v_num=1, train_loss=870]Epoch 84/100:  84%|████████▍ | 84/100 [01:19<00:15,  1.06it/s, v_num=1, train_loss=870]Epoch 85/100:  84%|████████▍ | 84/100 [01:19<00:15,  1.06it/s, v_num=1, train_loss=870]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 85/100:  85%|████████▌ | 85/100 [01:20<00:14,  1.05it/s, v_num=1, train_loss=870]Epoch 85/100:  85%|████████▌ | 85/100 [01:20<00:14,  1.05it/s, v_num=1, train_loss=870]Epoch 86/100:  85%|████████▌ | 85/100 [01:20<00:14,  1.05it/s, v_num=1, train_loss=870]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 86/100:  86%|████████▌ | 86/100 [01:21<00:13,  1.06it/s, v_num=1, train_loss=870]Epoch 86/100:  86%|████████▌ | 86/100 [01:21<00:13,  1.06it/s, v_num=1, train_loss=870]Epoch 87/100:  86%|████████▌ | 86/100 [01:21<00:13,  1.06it/s, v_num=1, train_loss=870]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 87/100:  87%|████████▋ | 87/100 [01:22<00:12,  1.06it/s, v_num=1, train_loss=870]Epoch 87/100:  87%|████████▋ | 87/100 [01:22<00:12,  1.06it/s, v_num=1, train_loss=870]Epoch 88/100:  87%|████████▋ | 87/100 [01:22<00:12,  1.06it/s, v_num=1, train_loss=870]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 88/100:  88%|████████▊ | 88/100 [01:23<00:11,  1.05it/s, v_num=1, train_loss=870]Epoch 88/100:  88%|████████▊ | 88/100 [01:23<00:11,  1.05it/s, v_num=1, train_loss=870]Epoch 89/100:  88%|████████▊ | 88/100 [01:23<00:11,  1.05it/s, v_num=1, train_loss=870]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 89/100:  89%|████████▉ | 89/100 [01:24<00:10,  1.05it/s, v_num=1, train_loss=870]Epoch 89/100:  89%|████████▉ | 89/100 [01:24<00:10,  1.05it/s, v_num=1, train_loss=870]Epoch 90/100:  89%|████████▉ | 89/100 [01:24<00:10,  1.05it/s, v_num=1, train_loss=870]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 90/100:  90%|█████████ | 90/100 [01:25<00:09,  1.05it/s, v_num=1, train_loss=870]Epoch 90/100:  90%|█████████ | 90/100 [01:25<00:09,  1.05it/s, v_num=1, train_loss=869]Epoch 91/100:  90%|█████████ | 90/100 [01:25<00:09,  1.05it/s, v_num=1, train_loss=869]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 91/100:  91%|█████████ | 91/100 [01:26<00:08,  1.05it/s, v_num=1, train_loss=869]Epoch 91/100:  91%|█████████ | 91/100 [01:26<00:08,  1.05it/s, v_num=1, train_loss=869]Epoch 92/100:  91%|█████████ | 91/100 [01:26<00:08,  1.05it/s, v_num=1, train_loss=869]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 92/100:  92%|█████████▏| 92/100 [01:27<00:07,  1.06it/s, v_num=1, train_loss=869]Epoch 92/100:  92%|█████████▏| 92/100 [01:27<00:07,  1.06it/s, v_num=1, train_loss=869]Epoch 93/100:  92%|█████████▏| 92/100 [01:27<00:07,  1.06it/s, v_num=1, train_loss=869]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 93/100:  93%|█████████▎| 93/100 [01:28<00:06,  1.05it/s, v_num=1, train_loss=869]Epoch 93/100:  93%|█████████▎| 93/100 [01:28<00:06,  1.05it/s, v_num=1, train_loss=869]Epoch 94/100:  93%|█████████▎| 93/100 [01:28<00:06,  1.05it/s, v_num=1, train_loss=869]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 94/100:  94%|█████████▍| 94/100 [01:29<00:05,  1.06it/s, v_num=1, train_loss=869]Epoch 94/100:  94%|█████████▍| 94/100 [01:29<00:05,  1.06it/s, v_num=1, train_loss=869]Epoch 95/100:  94%|█████████▍| 94/100 [01:29<00:05,  1.06it/s, v_num=1, train_loss=869]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 95/100:  95%|█████████▌| 95/100 [01:30<00:04,  1.06it/s, v_num=1, train_loss=869]Epoch 95/100:  95%|█████████▌| 95/100 [01:30<00:04,  1.06it/s, v_num=1, train_loss=870]Epoch 96/100:  95%|█████████▌| 95/100 [01:30<00:04,  1.06it/s, v_num=1, train_loss=870]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 96/100:  96%|█████████▌| 96/100 [01:30<00:03,  1.06it/s, v_num=1, train_loss=870]Epoch 96/100:  96%|█████████▌| 96/100 [01:30<00:03,  1.06it/s, v_num=1, train_loss=870]Epoch 97/100:  96%|█████████▌| 96/100 [01:30<00:03,  1.06it/s, v_num=1, train_loss=870]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 97/100:  97%|█████████▋| 97/100 [01:31<00:02,  1.06it/s, v_num=1, train_loss=870]Epoch 97/100:  97%|█████████▋| 97/100 [01:31<00:02,  1.06it/s, v_num=1, train_loss=870]Epoch 98/100:  97%|█████████▋| 97/100 [01:31<00:02,  1.06it/s, v_num=1, train_loss=870]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 98/100:  98%|█████████▊| 98/100 [01:32<00:01,  1.06it/s, v_num=1, train_loss=870]Epoch 98/100:  98%|█████████▊| 98/100 [01:32<00:01,  1.06it/s, v_num=1, train_loss=870]Epoch 99/100:  98%|█████████▊| 98/100 [01:32<00:01,  1.06it/s, v_num=1, train_loss=870]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 99/100:  99%|█████████▉| 99/100 [01:33<00:00,  1.06it/s, v_num=1, train_loss=870]Epoch 99/100:  99%|█████████▉| 99/100 [01:33<00:00,  1.06it/s, v_num=1, train_loss=870]Epoch 100/100:  99%|█████████▉| 99/100 [01:33<00:00,  1.06it/s, v_num=1, train_loss=870]/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-/usr/local/lib/python3.11/dist-packages/scvi/module/_vae.py:573: UserWarning: The value argument must be within the support of the distribution
-  reconst_loss = -generative_outputs[MODULE_KEYS.PX_KEY].log_prob(x).sum(-1)
-Epoch 100/100: 100%|██████████| 100/100 [01:34<00:00,  1.06it/s, v_num=1, train_loss=870]Epoch 100/100: 100%|██████████| 100/100 [01:34<00:00,  1.06it/s, v_num=1, train_loss=870]`Trainer.fit` stopped: `max_epochs=100` reached.
-Epoch 100/100: 100%|██████████| 100/100 [01:34<00:00,  1.06it/s, v_num=1, train_loss=870]
-    scVI: fit=95.0s  infer=0.10s  wall=98.4s  rss=0MB  gpu=52MB
-
-=== pancreas :: metrics phase (scib_yosef) ===
-
->>> metrics(scib_yosef) / pancreas: /usr/bin/python -m benchmarks.metrics.scib_yosef --dataset pancreas --out-dir /workspace/runs/v1 --methods PCA NMF sparseNMF Harmony scVI --seed 0 --cells-per-cohort 200 --n-hvg 2000
-  metrics(yosef): loading pancreas...
-  metrics(yosef): (8711, 2000)  fp=07b8780d6a3910f4
-    PCA: scoring (n=8711, k=30)...
-/usr/local/lib/python3.11/dist-packages/scanpy/preprocessing/_pca/__init__.py:226: FutureWarning: Argument `use_highly_variable` is deprecated, consider using the mask argument. Use_highly_variable=True can be called through mask_var="highly_variable". Use_highly_variable=False can be called through mask_var=None
-  mask_var_param, mask_var = _handle_mask_var(
-Computing neighbors:   0%|          | 0/1 [00:00<?, ?it/s]Computing neighbors: 100%|██████████| 1/1 [00:21<00:00, 21.62s/it]Computing neighbors: 100%|██████████| 1/1 [00:21<00:00, 21.62s/it]
-Embeddings:   0%|[32m          [0m| 0/1 [00:00<?, ?it/s]
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s][A
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:02<00:21,  2.38s/it, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:02<00:21,  2.38s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:07<00:32,  4.06s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:08<00:32,  4.06s/it, Bio conservation: silhouette_label]             [A
-Metrics:  30%|[34m███       [0m| 3/10 [00:08<00:17,  2.51s/it, Bio conservation: silhouette_label][A
-Metrics:  30%|[34m███       [0m| 3/10 [00:08<00:17,  2.51s/it, Bio conservation: clisi_knn]       [A
-Metrics:  40%|[34m████      [0m| 4/10 [00:10<00:13,  2.33s/it, Bio conservation: clisi_knn][A
-Metrics:  40%|[34m████      [0m| 4/10 [00:10<00:13,  2.33s/it, Batch correction: bras]     [A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:31<00:45,  9.13s/it, Batch correction: bras][A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:31<00:45,  9.13s/it, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:32<00:24,  6.21s/it, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:32<00:24,  6.21s/it, Batch correction: graph_connectivity][A/usr/local/lib/python3.11/dist-packages/scib_metrics/metrics/_graph_connectivity.py:32: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
-  tab = pd.value_counts(comps)
-
-Metrics:  70%|[34m███████   [0m| 7/10 [00:32<00:13,  4.34s/it, Batch correction: graph_connectivity][AEmbeddings: 100%|[32m██████████[0m| 1/1 [00:32<00:00, 32.80s/it]Embeddings: 100%|[32m██████████[0m| 1/1 [00:32<00:00, 32.80s/it]
-
-                                                                                             [A      PCA: bio=+0.753  batch=+0.470  composite=+0.640  (70.1s)
-    NMF: scoring (n=8711, k=30)...
-/usr/local/lib/python3.11/dist-packages/scanpy/preprocessing/_pca/__init__.py:226: FutureWarning: Argument `use_highly_variable` is deprecated, consider using the mask argument. Use_highly_variable=True can be called through mask_var="highly_variable". Use_highly_variable=False can be called through mask_var=None
-  mask_var_param, mask_var = _handle_mask_var(
-Computing neighbors:   0%|          | 0/1 [00:00<?, ?it/s]Computing neighbors: 100%|██████████| 1/1 [00:07<00:00,  7.15s/it]Computing neighbors: 100%|██████████| 1/1 [00:07<00:00,  7.20s/it]
-Embeddings:   0%|[32m          [0m| 0/1 [00:00<?, ?it/s]
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s][A
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:00<00:03,  2.33it/s, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:00<00:03,  2.33it/s, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:02<00:11,  1.44s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:03<00:11,  1.44s/it, Bio conservation: silhouette_label]             [A
-Metrics:  30%|[34m███       [0m| 3/10 [00:03<00:07,  1.08s/it, Bio conservation: silhouette_label][A
-Metrics:  30%|[34m███       [0m| 3/10 [00:03<00:07,  1.08s/it, Bio conservation: clisi_knn]       [A
-Metrics:  40%|[34m████      [0m| 4/10 [00:03<00:04,  1.28it/s, Bio conservation: clisi_knn][A
-Metrics:  40%|[34m████      [0m| 4/10 [00:03<00:04,  1.28it/s, Batch correction: bras]     [A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:03<00:03,  1.61it/s, Batch correction: bras][A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:04<00:03,  1.61it/s, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:04<00:02,  1.93it/s, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:04<00:02,  1.93it/s, Batch correction: graph_connectivity][A/usr/local/lib/python3.11/dist-packages/scib_metrics/metrics/_graph_connectivity.py:32: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
-  tab = pd.value_counts(comps)
-
-Metrics:  70%|[34m███████   [0m| 7/10 [00:04<00:01,  1.96it/s, Batch correction: graph_connectivity][AEmbeddings: 100%|[32m██████████[0m| 1/1 [00:04<00:00,  4.94s/it]Embeddings: 100%|[32m██████████[0m| 1/1 [00:04<00:00,  4.94s/it]
-
-                                                                                             [A      NMF: bio=+0.709  batch=+0.446  composite=+0.604  (13.2s)
-    sparseNMF: scoring (n=8711, k=30)...
-/usr/local/lib/python3.11/dist-packages/scanpy/preprocessing/_pca/__init__.py:226: FutureWarning: Argument `use_highly_variable` is deprecated, consider using the mask argument. Use_highly_variable=True can be called through mask_var="highly_variable". Use_highly_variable=False can be called through mask_var=None
-  mask_var_param, mask_var = _handle_mask_var(
-Computing neighbors:   0%|          | 0/1 [00:00<?, ?it/s]Computing neighbors: 100%|██████████| 1/1 [00:05<00:00,  5.63s/it]Computing neighbors: 100%|██████████| 1/1 [00:05<00:00,  5.63s/it]
-Embeddings:   0%|[32m          [0m| 0/1 [00:00<?, ?it/s]
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s][A
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:00<00:04,  1.94it/s, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:00<00:04,  1.94it/s, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:02<00:11,  1.42s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:03<00:11,  1.42s/it, Bio conservation: silhouette_label]             [A
-Metrics:  30%|[34m███       [0m| 3/10 [00:03<00:07,  1.11s/it, Bio conservation: silhouette_label][A
-Metrics:  30%|[34m███       [0m| 3/10 [00:03<00:07,  1.11s/it, Bio conservation: clisi_knn]       [A
-Metrics:  40%|[34m████      [0m| 4/10 [00:03<00:04,  1.23it/s, Bio conservation: clisi_knn][A
-Metrics:  40%|[34m████      [0m| 4/10 [00:03<00:04,  1.23it/s, Batch correction: bras]     [A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:04<00:03,  1.54it/s, Batch correction: bras][A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:04<00:03,  1.54it/s, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:04<00:02,  1.84it/s, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:04<00:02,  1.84it/s, Batch correction: graph_connectivity][A/usr/local/lib/python3.11/dist-packages/scib_metrics/metrics/_graph_connectivity.py:32: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
-  tab = pd.value_counts(comps)
-
-Metrics:  70%|[34m███████   [0m| 7/10 [00:04<00:01,  1.89it/s, Batch correction: graph_connectivity][AEmbeddings: 100%|[32m██████████[0m| 1/1 [00:05<00:00,  5.10s/it]Embeddings: 100%|[32m██████████[0m| 1/1 [00:05<00:00,  5.10s/it]
-
-                                                                                             [A      sparseNMF: bio=+0.765  batch=+0.575  composite=+0.689  (11.8s)
-    Harmony: scoring (n=8711, k=30)...
-/usr/local/lib/python3.11/dist-packages/scanpy/preprocessing/_pca/__init__.py:226: FutureWarning: Argument `use_highly_variable` is deprecated, consider using the mask argument. Use_highly_variable=True can be called through mask_var="highly_variable". Use_highly_variable=False can be called through mask_var=None
-  mask_var_param, mask_var = _handle_mask_var(
-Computing neighbors:   0%|          | 0/1 [00:00<?, ?it/s]Computing neighbors: 100%|██████████| 1/1 [00:04<00:00,  4.59s/it]Computing neighbors: 100%|██████████| 1/1 [00:04<00:00,  4.59s/it]
-Embeddings:   0%|[32m          [0m| 0/1 [00:00<?, ?it/s]
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s][A
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:00<00:04,  1.80it/s, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:00<00:04,  1.80it/s, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:03<00:13,  1.69s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:03<00:13,  1.69s/it, Bio conservation: silhouette_label]             [A
-Metrics:  30%|[34m███       [0m| 3/10 [00:03<00:08,  1.26s/it, Bio conservation: silhouette_label][A
-Metrics:  30%|[34m███       [0m| 3/10 [00:04<00:08,  1.26s/it, Bio conservation: clisi_knn]       [A
-Metrics:  40%|[34m████      [0m| 4/10 [00:04<00:05,  1.13it/s, Bio conservation: clisi_knn][A
-Metrics:  40%|[34m████      [0m| 4/10 [00:04<00:05,  1.13it/s, Batch correction: bras]     [A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:04<00:03,  1.45it/s, Batch correction: bras][A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:04<00:03,  1.45it/s, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:04<00:02,  1.80it/s, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:05<00:02,  1.80it/s, Batch correction: graph_connectivity][A/usr/local/lib/python3.11/dist-packages/scib_metrics/metrics/_graph_connectivity.py:32: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
-  tab = pd.value_counts(comps)
-
-Metrics:  70%|[34m███████   [0m| 7/10 [00:05<00:01,  1.88it/s, Batch correction: graph_connectivity][AEmbeddings: 100%|[32m██████████[0m| 1/1 [00:05<00:00,  5.46s/it]Embeddings: 100%|[32m██████████[0m| 1/1 [00:05<00:00,  5.46s/it]
-
-                                                                                             [A      Harmony: bio=+0.860  batch=+0.689  composite=+0.792  (11.1s)
-    scVI: scoring (n=8711, k=30)...
-/usr/local/lib/python3.11/dist-packages/scanpy/preprocessing/_pca/__init__.py:226: FutureWarning: Argument `use_highly_variable` is deprecated, consider using the mask argument. Use_highly_variable=True can be called through mask_var="highly_variable". Use_highly_variable=False can be called through mask_var=None
-  mask_var_param, mask_var = _handle_mask_var(
-Computing neighbors:   0%|          | 0/1 [00:00<?, ?it/s]Computing neighbors: 100%|██████████| 1/1 [00:05<00:00,  5.41s/it]Computing neighbors: 100%|██████████| 1/1 [00:05<00:00,  5.41s/it]
-Embeddings:   0%|[32m          [0m| 0/1 [00:00<?, ?it/s]
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s][A
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:00<00:04,  1.86it/s, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:00<00:04,  1.86it/s, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:02<00:13,  1.67s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:03<00:13,  1.67s/it, Bio conservation: silhouette_label]             [A
-Metrics:  30%|[34m███       [0m| 3/10 [00:03<00:08,  1.25s/it, Bio conservation: silhouette_label][A
-Metrics:  30%|[34m███       [0m| 3/10 [00:04<00:08,  1.25s/it, Bio conservation: clisi_knn]       [A
-Metrics:  40%|[34m████      [0m| 4/10 [00:04<00:05,  1.12it/s, Bio conservation: clisi_knn][A
-Metrics:  40%|[34m████      [0m| 4/10 [00:04<00:05,  1.12it/s, Batch correction: bras]     [A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:04<00:03,  1.45it/s, Batch correction: bras][A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:04<00:03,  1.45it/s, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:04<00:02,  1.79it/s, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:05<00:02,  1.79it/s, Batch correction: graph_connectivity][A/usr/local/lib/python3.11/dist-packages/scib_metrics/metrics/_graph_connectivity.py:32: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
-  tab = pd.value_counts(comps)
-
-Metrics:  70%|[34m███████   [0m| 7/10 [00:05<00:01,  1.87it/s, Batch correction: graph_connectivity][AEmbeddings: 100%|[32m██████████[0m| 1/1 [00:05<00:00,  5.44s/it]Embeddings: 100%|[32m██████████[0m| 1/1 [00:05<00:00,  5.44s/it]
-
-                                                                                             [A      scVI: bio=+0.843  batch=+0.565  composite=+0.731  (12.0s)
-
-=== immune :: metrics phase (scib_yosef) ===
-
->>> metrics(scib_yosef) / immune: /usr/bin/python -m benchmarks.metrics.scib_yosef --dataset immune --out-dir /workspace/runs/v1 --methods PCA NMF sparseNMF Harmony scVI --seed 0 --cells-per-cohort 200 --n-hvg 2000
-  metrics(yosef): loading immune...
-  metrics(yosef): (13080, 2000)  fp=49e075610ad5813e
-    PCA: scoring (n=13080, k=30)...
-/usr/local/lib/python3.11/dist-packages/scanpy/preprocessing/_pca/__init__.py:226: FutureWarning: Argument `use_highly_variable` is deprecated, consider using the mask argument. Use_highly_variable=True can be called through mask_var="highly_variable". Use_highly_variable=False can be called through mask_var=None
-  mask_var_param, mask_var = _handle_mask_var(
-Computing neighbors:   0%|          | 0/1 [00:00<?, ?it/s]Computing neighbors: 100%|██████████| 1/1 [00:23<00:00, 23.32s/it]Computing neighbors: 100%|██████████| 1/1 [00:23<00:00, 23.32s/it]
-Embeddings:   0%|[32m          [0m| 0/1 [00:00<?, ?it/s]
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s][A
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:02<00:23,  2.65s/it, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:02<00:23,  2.65s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:09<00:40,  5.03s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:09<00:40,  5.03s/it, Bio conservation: silhouette_label]             [A
-Metrics:  30%|[34m███       [0m| 3/10 [00:10<00:21,  3.11s/it, Bio conservation: silhouette_label][A
-Metrics:  30%|[34m███       [0m| 3/10 [00:10<00:21,  3.11s/it, Bio conservation: clisi_knn]       [A
-Metrics:  40%|[34m████      [0m| 4/10 [00:12<00:15,  2.63s/it, Bio conservation: clisi_knn][A
-Metrics:  40%|[34m████      [0m| 4/10 [00:12<00:15,  2.63s/it, Batch correction: bras]     [A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:38<00:55, 11.18s/it, Batch correction: bras][A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:38<00:55, 11.18s/it, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:38<00:30,  7.55s/it, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:39<00:30,  7.55s/it, Batch correction: graph_connectivity][A/usr/local/lib/python3.11/dist-packages/scib_metrics/metrics/_graph_connectivity.py:32: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
-  tab = pd.value_counts(comps)
-
-Metrics:  70%|[34m███████   [0m| 7/10 [00:39<00:15,  5.25s/it, Batch correction: graph_connectivity][AEmbeddings: 100%|[32m██████████[0m| 1/1 [00:39<00:00, 39.66s/it]Embeddings: 100%|[32m██████████[0m| 1/1 [00:39<00:00, 39.66s/it]
-
-                                                                                             [A      PCA: bio=+0.668  batch=+0.436  composite=+0.575  (75.0s)
-    NMF: scoring (n=13080, k=30)...
-/usr/local/lib/python3.11/dist-packages/scanpy/preprocessing/_pca/__init__.py:226: FutureWarning: Argument `use_highly_variable` is deprecated, consider using the mask argument. Use_highly_variable=True can be called through mask_var="highly_variable". Use_highly_variable=False can be called through mask_var=None
-  mask_var_param, mask_var = _handle_mask_var(
-Computing neighbors:   0%|          | 0/1 [00:00<?, ?it/s]Computing neighbors: 100%|██████████| 1/1 [00:07<00:00,  7.87s/it]Computing neighbors: 100%|██████████| 1/1 [00:07<00:00,  7.87s/it]
-Embeddings:   0%|[32m          [0m| 0/1 [00:00<?, ?it/s]
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s][A
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:00<00:06,  1.32it/s, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:01<00:06,  1.32it/s, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:03<00:17,  2.20s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:04<00:17,  2.20s/it, Bio conservation: silhouette_label]             [A
-Metrics:  30%|[34m███       [0m| 3/10 [00:05<00:11,  1.67s/it, Bio conservation: silhouette_label][A
-Metrics:  30%|[34m███       [0m| 3/10 [00:05<00:11,  1.67s/it, Bio conservation: clisi_knn]       [A
-Metrics:  40%|[34m████      [0m| 4/10 [00:05<00:06,  1.15s/it, Bio conservation: clisi_knn][A
-Metrics:  40%|[34m████      [0m| 4/10 [00:05<00:06,  1.15s/it, Batch correction: bras]     [A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:05<00:04,  1.13it/s, Batch correction: bras][A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:06<00:04,  1.13it/s, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:06<00:02,  1.43it/s, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:06<00:02,  1.43it/s, Batch correction: graph_connectivity][A/usr/local/lib/python3.11/dist-packages/scib_metrics/metrics/_graph_connectivity.py:32: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
-  tab = pd.value_counts(comps)
-
-Metrics:  70%|[34m███████   [0m| 7/10 [00:06<00:01,  1.55it/s, Batch correction: graph_connectivity][AEmbeddings: 100%|[32m██████████[0m| 1/1 [00:06<00:00,  6.89s/it]Embeddings: 100%|[32m██████████[0m| 1/1 [00:06<00:00,  6.89s/it]
-
-                                                                                             [A      NMF: bio=+0.679  batch=+0.427  composite=+0.578  (16.7s)
-    sparseNMF: scoring (n=13080, k=30)...
-/usr/local/lib/python3.11/dist-packages/scanpy/preprocessing/_pca/__init__.py:226: FutureWarning: Argument `use_highly_variable` is deprecated, consider using the mask argument. Use_highly_variable=True can be called through mask_var="highly_variable". Use_highly_variable=False can be called through mask_var=None
-  mask_var_param, mask_var = _handle_mask_var(
-Computing neighbors:   0%|          | 0/1 [00:00<?, ?it/s]Computing neighbors: 100%|██████████| 1/1 [00:07<00:00,  7.38s/it]Computing neighbors: 100%|██████████| 1/1 [00:07<00:00,  7.38s/it]
-Embeddings:   0%|[32m          [0m| 0/1 [00:00<?, ?it/s]
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s][A
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:00<00:06,  1.30it/s, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:01<00:06,  1.30it/s, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:04<00:18,  2.28s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:04<00:18,  2.28s/it, Bio conservation: silhouette_label]             [A
-Metrics:  30%|[34m███       [0m| 3/10 [00:05<00:11,  1.67s/it, Bio conservation: silhouette_label][A
-Metrics:  30%|[34m███       [0m| 3/10 [00:05<00:11,  1.67s/it, Bio conservation: clisi_knn]       [A
-Metrics:  40%|[34m████      [0m| 4/10 [00:05<00:06,  1.16s/it, Bio conservation: clisi_knn][A
-Metrics:  40%|[34m████      [0m| 4/10 [00:05<00:06,  1.16s/it, Batch correction: bras]     [A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:05<00:04,  1.13it/s, Batch correction: bras][A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:06<00:04,  1.13it/s, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:06<00:02,  1.42it/s, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:06<00:02,  1.42it/s, Batch correction: graph_connectivity][A/usr/local/lib/python3.11/dist-packages/scib_metrics/metrics/_graph_connectivity.py:32: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
-  tab = pd.value_counts(comps)
-
-Metrics:  70%|[34m███████   [0m| 7/10 [00:06<00:01,  1.55it/s, Batch correction: graph_connectivity][AEmbeddings: 100%|[32m██████████[0m| 1/1 [00:06<00:00,  6.96s/it]Embeddings: 100%|[32m██████████[0m| 1/1 [00:06<00:00,  6.96s/it]
-
-                                                                                             [A      sparseNMF: bio=+0.694  batch=+0.518  composite=+0.623  (16.1s)
-    Harmony: scoring (n=13080, k=30)...
-/usr/local/lib/python3.11/dist-packages/scanpy/preprocessing/_pca/__init__.py:226: FutureWarning: Argument `use_highly_variable` is deprecated, consider using the mask argument. Use_highly_variable=True can be called through mask_var="highly_variable". Use_highly_variable=False can be called through mask_var=None
-  mask_var_param, mask_var = _handle_mask_var(
-Computing neighbors:   0%|          | 0/1 [00:00<?, ?it/s]Computing neighbors: 100%|██████████| 1/1 [00:07<00:00,  7.33s/it]Computing neighbors: 100%|██████████| 1/1 [00:07<00:00,  7.33s/it]
-Embeddings:   0%|[32m          [0m| 0/1 [00:00<?, ?it/s]
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s][A
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:00<00:07,  1.22it/s, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:01<00:07,  1.22it/s, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:04<00:19,  2.48s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:04<00:19,  2.48s/it, Bio conservation: silhouette_label]             [A
-Metrics:  30%|[34m███       [0m| 3/10 [00:05<00:13,  1.87s/it, Bio conservation: silhouette_label][A
-Metrics:  30%|[34m███       [0m| 3/10 [00:05<00:13,  1.87s/it, Bio conservation: clisi_knn]       [A
-Metrics:  40%|[34m████      [0m| 4/10 [00:06<00:07,  1.30s/it, Bio conservation: clisi_knn][A
-Metrics:  40%|[34m████      [0m| 4/10 [00:06<00:07,  1.30s/it, Batch correction: bras]     [A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:06<00:04,  1.03it/s, Batch correction: bras][A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:06<00:04,  1.03it/s, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:06<00:03,  1.28it/s, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:07<00:03,  1.28it/s, Batch correction: graph_connectivity][A/usr/local/lib/python3.11/dist-packages/scib_metrics/metrics/_graph_connectivity.py:32: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
-  tab = pd.value_counts(comps)
-
-Metrics:  70%|[34m███████   [0m| 7/10 [00:07<00:02,  1.43it/s, Batch correction: graph_connectivity][AEmbeddings: 100%|[32m██████████[0m| 1/1 [00:07<00:00,  7.61s/it]Embeddings: 100%|[32m██████████[0m| 1/1 [00:07<00:00,  7.61s/it]
-
-                                                                                             [A      Harmony: bio=+0.749  batch=+0.578  composite=+0.680  (16.9s)
-    scVI: scoring (n=13080, k=30)...
-/usr/local/lib/python3.11/dist-packages/scanpy/preprocessing/_pca/__init__.py:226: FutureWarning: Argument `use_highly_variable` is deprecated, consider using the mask argument. Use_highly_variable=True can be called through mask_var="highly_variable". Use_highly_variable=False can be called through mask_var=None
-  mask_var_param, mask_var = _handle_mask_var(
-Computing neighbors:   0%|          | 0/1 [00:00<?, ?it/s]Computing neighbors: 100%|██████████| 1/1 [00:06<00:00,  6.92s/it]Computing neighbors: 100%|██████████| 1/1 [00:06<00:00,  6.92s/it]
-Embeddings:   0%|[32m          [0m| 0/1 [00:00<?, ?it/s]
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s][A
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:00<00:06,  1.48it/s, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:00<00:06,  1.48it/s, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:04<00:19,  2.41s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:04<00:19,  2.41s/it, Bio conservation: silhouette_label]             [A
-Metrics:  30%|[34m███       [0m| 3/10 [00:05<00:12,  1.74s/it, Bio conservation: silhouette_label][A
-Metrics:  30%|[34m███       [0m| 3/10 [00:05<00:12,  1.74s/it, Bio conservation: clisi_knn]       [A
-Metrics:  40%|[34m████      [0m| 4/10 [00:05<00:07,  1.19s/it, Bio conservation: clisi_knn][A
-Metrics:  40%|[34m████      [0m| 4/10 [00:05<00:07,  1.19s/it, Batch correction: bras]     [A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:05<00:04,  1.11it/s, Batch correction: bras][A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:06<00:04,  1.11it/s, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:06<00:02,  1.41it/s, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:06<00:02,  1.41it/s, Batch correction: graph_connectivity][A/usr/local/lib/python3.11/dist-packages/scib_metrics/metrics/_graph_connectivity.py:32: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
-  tab = pd.value_counts(comps)
-
-Metrics:  70%|[34m███████   [0m| 7/10 [00:06<00:01,  1.54it/s, Batch correction: graph_connectivity][AEmbeddings: 100%|[32m██████████[0m| 1/1 [00:07<00:00,  7.09s/it]Embeddings: 100%|[32m██████████[0m| 1/1 [00:07<00:00,  7.09s/it]
-
-                                                                                             [A      scVI: bio=+0.754  batch=+0.619  composite=+0.700  (15.9s)
-Wrote /workspace/runs/v1/figures/composite_summary.png  (composite)
-Wrote /workspace/runs/v1/figures/per_task_bars.png  (per_task)
-Wrote /workspace/runs/v1/figures/bio_vs_batch_tradeoff.png  (tradeoff)
-Wrote /workspace/runs/v1/figures/score_vs_time.png  (speed_score)
-
-Total: 14.3m  (0 method failures)

@@ -21,11 +21,24 @@ variant to the method list.
 - **Immune** — 33k cells × 12k genes across ~10 donor/study batches.
   Heterogeneous PBMC + BMMC data. ~16 cell types.
 
-Both are auto-fetched from figshare on first run; the benchmark
-code lives at `benchmarks/scib_benchmark.py
-<https://github.com/bschilder/sparseNMF/blob/main/benchmarks/scib_benchmark.py>`__
-and the driver at `benchmarks/run_benchmark.py
-<https://github.com/bschilder/sparseNMF/blob/main/benchmarks/run_benchmark.py>`__.
+Both are auto-fetched from figshare on first run. The benchmark
+is **subprocess-isolated**: each method runs in its own Python
+process so framework state (CUDA contexts, JAX devices, Lightning
+trainer globals) can't leak between methods. Layout:
+
+- `benchmarks/run_benchmark.py
+  <https://github.com/bschilder/sparseNMF/blob/main/benchmarks/run_benchmark.py>`__
+  — orchestrator (forks subprocesses, aggregates results)
+- `benchmarks/methods/
+  <https://github.com/bschilder/sparseNMF/tree/main/benchmarks/methods>`__
+  — one module per method (PCA, NMF, sparseNMF, Harmony, scVI)
+- `benchmarks/metrics/
+  <https://github.com/bschilder/sparseNMF/tree/main/benchmarks/metrics>`__
+  — two scoring impls: ``scib_yosef`` (JAX rewrite, default) and
+  ``scib_original`` (canonical Theis-lab)
+- `benchmarks/io.py
+  <https://github.com/bschilder/sparseNMF/blob/main/benchmarks/io.py>`__
+  — shared dataset loaders, preprocessing helpers, embedding I/O
 
 **Methods**
 
@@ -70,20 +83,35 @@ Reproducing
 
 CPU pilot (fast — subsampled to 50 cells per batch × cell-type cohort)::
 
-    pip install "sparse-nmf[viz]" harmonypy scvi-tools scib
+    pip install "sparse-nmf[viz]" harmonypy scvi-tools scib-metrics
     python -m benchmarks.run_benchmark --no-lisi   # arm64 Macs need --no-lisi
 
 Full run on Linux x86_64 GPU (scIB papers' setup; ~1 hr total)::
 
     python -m benchmarks.run_benchmark --full
 
+Pick the metrics implementation::
+
+    # YosefLab JAX rewrite (default; works without compiled binaries)
+    python -m benchmarks.run_benchmark --metrics-impl scib_yosef
+
+    # Original Theis-lab impl (canonical; needs a one-shot rebuild
+    # of scib's LISI binary against host glibc)
+    pip install scib
+    bash benchmarks/scripts/rebuild_scib_lisi.sh
+    python -m benchmarks.run_benchmark --metrics-impl scib_original
+
 Notes
 ~~~~~
 
-- The scIB LISI metric ships as a pre-compiled x86_64 .o binary; it
-  does *not* load on arm64 (Apple Silicon). The driver has a
-  ``--no-lisi`` flag that skips it and runs the rest of the suite.
-  Full-suite numbers are only available from a Linux x86_64 run.
+- The scIB LISI metric (``scib_original``) ships as a precompiled
+  binary requiring glibc 2.38+. ``benchmarks/scripts/rebuild_scib_lisi.sh``
+  recompiles it against the host glibc — works on Ubuntu 22.04
+  (glibc 2.35) and macOS provided a C++11 toolchain is present.
+- ``--metrics-impl scib_yosef`` (default) avoids the compiled-binary
+  dance entirely. Composite aggregation differs from ``scib_original``
+  by ~hundredths; do not compare composites across impls without
+  recalibrating.
 - kBET / PCR / HVG-conservation / cell-cycle / trajectory metrics
   are off by default — they need either R (kBET) or counts-layer
   references / cycle genes / pseudotime inputs that aren't always

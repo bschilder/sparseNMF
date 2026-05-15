@@ -49,7 +49,68 @@ SCIB_DATASETS = {
         "label_key": "final_annotation",
         "counts_layer": "counts",
     },
+    "lung": {
+        # Luecken 2022 lung atlas: 32k cells × 16 batches × 17 labels.
+        "url": "https://ndownloader.figshare.com/files/24539942",
+        "filename": "Lung_atlas_public.h5ad",
+        # The preprocessing notebook builds a "dataset" column from
+        # Dropseq_transplant / 10x_* tags as the batch grouping.
+        # Cell-type label survives as "cell_type" in the published file.
+        "batch_key": ["batch", "dataset"],
+        "label_key": ["cell_type", "celltype"],
+        "counts_layer": "counts",
+    },
+    "sim1": {
+        # Splatter simulation 1.1: different cell-type proportions
+        # and sequencing depth. 12k cells × 6 batches × 7 labels.
+        "url": "https://ndownloader.figshare.com/files/33798263",
+        "filename": "sim1_1_norm.h5ad",
+        # Splatter's R sim writes "Batch" / "Group" obs columns.
+        "batch_key": ["Batch", "batch"],
+        "label_key": ["Group", "cell_type", "celltype"],
+        "counts_layer": "counts",
+    },
+    "sim2": {
+        # Splatter simulation 2: nested batch effects.
+        # 19k cells × 16 batches × 4 labels.
+        "url": "https://ndownloader.figshare.com/files/33798764",
+        "filename": "sim2_norm.h5ad",
+        "batch_key": ["Batch", "batch"],
+        "label_key": ["Group", "cell_type", "celltype"],
+        "counts_layer": "counts",
+    },
 }
+
+
+def _resolve_key(adata, candidates, kind: str, dataset: str) -> str:
+    """Return the first non-degenerate candidate that exists in
+    ``adata.obs``, or raise with the actual obs columns when none
+    match. Lets a dataset config list multiple obs-column names —
+    useful when scIB datasets store the batch/label under different
+    names across files.
+
+    A column is *degenerate* if it has fewer than 2 unique non-null
+    values (i.e. trivially constant). Such columns satisfy "key
+    exists" but produce garbage downstream — single-batch scaling,
+    NaN ARI, etc. We skip past them so candidate fallback is
+    semantically richer than a name lookup."""
+    if isinstance(candidates, str):
+        candidates = [candidates]
+    skipped_degenerate: list[str] = []
+    for c in candidates:
+        if c not in adata.obs.columns:
+            continue
+        if adata.obs[c].nunique(dropna=True) < 2:
+            skipped_degenerate.append(c)
+            continue
+        return c
+    detail = (
+        f" (skipped degenerate: {skipped_degenerate})" if skipped_degenerate else ""
+    )
+    raise KeyError(
+        f"dataset={dataset!r}: no {kind} key in {candidates} matched "
+        f"adata.obs columns {list(adata.obs.columns)}{detail}"
+    )
 
 
 def cache_dir() -> Path:
@@ -94,10 +155,16 @@ def load_scib_dataset(
         _download_with_progress(spec["url"], cache)
     adata = ad.read_h5ad(cache)
 
+    # Resolve batch/label keys with candidate fallback — accommodates
+    # scIB datasets that store the same role under different column
+    # names (e.g. "batch" vs "dataset" vs "tech").
+    batch_key = _resolve_key(adata, spec["batch_key"], "batch", name)
+    label_key = _resolve_key(adata, spec["label_key"], "label", name)
+
     if cells_per_cohort is not None:
         rng = np.random.default_rng(seed)
-        batch = adata.obs[spec["batch_key"]].astype(str).values
-        label = adata.obs[spec["label_key"]].astype(str).values
+        batch = adata.obs[batch_key].astype(str).values
+        label = adata.obs[label_key].astype(str).values
         keep: list[np.ndarray] = []
         for b in np.unique(batch):
             for ll in np.unique(label):
@@ -113,13 +180,13 @@ def load_scib_dataset(
         sc.pp.highly_variable_genes(
             adata,
             n_top_genes=n_hvg,
-            batch_key=spec["batch_key"],
+            batch_key=batch_key,
             flavor="cell_ranger",
             n_bins=20,
         )
         adata = adata[:, adata.var["highly_variable"]].copy()
 
-    return adata, spec["batch_key"], spec["label_key"], spec["counts_layer"]
+    return adata, batch_key, label_key, spec["counts_layer"]
 
 
 def adata_fingerprint(adata) -> str:
@@ -163,30 +230,47 @@ def lognorm_X(adata) -> np.ndarray:
     return X.astype(np.float32)
 
 
-def scaled_X(adata, batch_key: str) -> np.ndarray:  # noqa: ARG001 - batch_key intentionally unused
-    """Zero-center + unit-variance scaling of the log1p .X.
+def scaled_X(adata, batch_key: str) -> np.ndarray:
+    """Per-batch zero-center + unit-variance scaling of the log1p .X.
     Used for PCA / Harmony. May contain negatives — not for NMF.
 
-    NOTE: This is **global** scaling, not per-batch scaling. The
-    canonical scIB recipe (Luecken 2022) scales per batch. We use
-    global scaling to match what the original ``scib_benchmark.py``
-    did so determinism comparisons against the canonical CSV hold.
-    See follow-up issue: implementing per-batch scaling correctly
-    requires the iterate-over-batches dance scanpy doesn't natively
-    expose; will be a separate PR with its own determinism baseline.
+    This matches the scIB-canonical recipe (Luecken 2022): each batch
+    is z-scored independently, then clipped to ±10 (matching scanpy's
+    default ``max_value``). Cells from different batches end up on
+    the same scale per gene, removing simple batch-level mean/variance
+    offsets before PCA / Harmony see the data.
 
-    ``batch_key`` is kept in the signature so callers don't break
-    when this is upgraded to per-batch.
+    For single-batch datasets, falls through to global scaling (the
+    per-batch and global paths produce identical output when there's
+    only one group).
     """
-    import scanpy as sc
     from scipy.sparse import issparse
 
-    a = adata.copy()
-    sc.pp.scale(a, max_value=10)
-    X = a.X
+    X = adata.X
     if issparse(X):
         X = X.toarray()
-    return X.astype(np.float32)
+    X = X.astype(np.float32, copy=True)
+
+    # scIB / sklearn convention: ddof=0, and constant-std columns are
+    # passed through unchanged (std=1 substitution) rather than scaled
+    # by an epsilon-floored divisor. The previous `std + 1e-6` form was
+    # biasing genuinely-small genuine-std genes; the `where` idiom only
+    # touches columns where the batch is literally constant.
+    batch = adata.obs[batch_key].values
+    unique_batches = np.unique(batch)
+    if unique_batches.size == 1:
+        mean = X.mean(axis=0)
+        std = X.std(axis=0)
+        std = np.where(std < 1e-8, 1.0, std)
+        X = (X - mean) / std
+    else:
+        for b in unique_batches:
+            mask = batch == b
+            mean = X[mask].mean(axis=0)
+            std = X[mask].std(axis=0)
+            std = np.where(std < 1e-8, 1.0, std)
+            X[mask] = (X[mask] - mean) / std
+    return np.clip(X, -10.0, 10.0)
 
 
 # ── Timing + memory instrumentation ────────────────────────────────

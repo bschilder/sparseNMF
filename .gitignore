@@ -22,6 +22,12 @@ htmlcov/
 docs/_build/
 docs/_autosummary/
 
+# Benchmark run logs (the orchestrator emits these into the run dir;
+# results.csv/json/md + figures are the artifacts we keep).
+benchmarks/*.log
+benchmarks/runs/*/orchestrator.log
+benchmarks/runs/*/*.log
+
 # IDE / OS
 .vscode/
 .idea/
@@ -42,3 +48,4 @@ artifacts/
 
 # coverage.py annotate output (stray artifacts when devs use --cov-report=annotate)
 *,cover
+.claude/
