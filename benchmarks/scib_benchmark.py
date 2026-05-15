@@ -331,14 +331,25 @@ def embed_scvi(adata, batch_key, label_key, counts_layer, k, seed):
     return emb, MethodTiming(fit_s, inf_s, peak_rss_mb=mem["peak_rss_mb"], gpu_peak_mb=mem["gpu_peak_mb"])
 
 
+# Methods active in the default benchmark. ``sparseNMF+nonzero`` is
+# defined above but kept out of the default set because the gradient-
+# descent path it triggers is much slower than the MU path (10-100x)
+# and not yet GPU-efficient at k=30 — it OOMs on a 16 GB GPU and is
+# CPU-bound elsewhere. Opt-in via ``--methods sparseNMF+nonzero`` if
+# you want to benchmark it specifically.
 METHODS: dict[str, Callable] = {
     "PCA": embed_pca,
     "NMF": embed_nmf,
     "sparseNMF": embed_sparse_nmf,
-    "sparseNMF+nonzero": embed_sparse_nmf_nonzero,
     "Harmony": embed_harmony,
     "scVI": embed_scvi,
 }
+
+# Available-but-not-in-default; addressable via --methods.
+EXTRA_METHODS: dict[str, Callable] = {
+    "sparseNMF+nonzero": embed_sparse_nmf_nonzero,
+}
+METHODS_ALL: dict[str, Callable] = {**METHODS, **EXTRA_METHODS}
 
 
 # ── Metrics ──────────────────────────────────────────────────────────
@@ -442,7 +453,7 @@ def run_dataset(
 
     results: list[MethodResult] = []
     for method_name in methods:
-        fn = METHODS[method_name]
+        fn = METHODS_ALL[method_name]
         print(f"  {method_name:>18s}: fitting...", flush=True)
         try:
             emb, timing = fn(adata, batch_key, label_key, counts_layer, k, seed)
