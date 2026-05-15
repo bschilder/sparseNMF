@@ -497,29 +497,42 @@ def plot_bio_vs_batch_tradeoff(
                 linewidth=0.6,
             )
 
+    # Dynamic zoom: integration benchmarks usually live in the
+    # [0.5, 1.0] corner, and an [0, 1] view wastes ~75% of the plot
+    # area on space the data never visits. Tighten BOTH lower limits
+    # to 0.5 when no data point on either axis falls below — keeping
+    # both bounds in sync preserves the square aspect. Falls back to
+    # 0 for both when any outlier method goes below 0.5 on either axis.
+    min_x = float(np.nanmin(df["Batch correction"].dropna())) if df["Batch correction"].notna().any() else 0.0
+    min_y = float(np.nanmin(df["Bio conservation"].dropna())) if df["Bio conservation"].notna().any() else 0.0
+    zoom_in = min_x >= 0.5 and min_y >= 0.5
+    x_lo = y_lo = 0.5 if zoom_in else 0.0
+
     # Faint diagonal iso-composite lines: total = 0.4*batch + 0.6*bio.
-    x_vals = np.linspace(0, 1, 100)
+    # Generate over [x_lo, 1] so annotations land inside the visible area.
+    x_vals = np.linspace(x_lo, 1, 100)
     for total in (0.4, 0.5, 0.6, 0.7, 0.8, 0.9):
         y_vals = (total - 0.4 * x_vals) / 0.6
-        mask = (y_vals >= 0) & (y_vals <= 1)
+        mask = (y_vals >= y_lo) & (y_vals <= 1)
+        if not mask.any():
+            continue
         ax.plot(
             x_vals[mask], y_vals[mask],
             color="gray", linewidth=0.4, linestyle=":", alpha=0.5,
         )
-        if mask.any():
-            ax.annotate(
-                f"Total={total:.1f}",
-                (x_vals[mask][-1], y_vals[mask][-1]),
-                fontsize=6, color="gray",
-                xytext=(-30, 4), textcoords="offset points",
-            )
+        ax.annotate(
+            f"Total={total:.1f}",
+            (x_vals[mask][-1], y_vals[mask][-1]),
+            fontsize=6, color="gray",
+            xytext=(-30, 4), textcoords="offset points",
+        )
 
     ax.set_xlabel("Batch correction (composite)")
     ax.set_ylabel("Bio conservation (composite)")
     ax.set_title(title or "Trade-off: bio conservation vs batch correction")
     ax.grid(True, linewidth=0.3, alpha=0.5)
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 1)
+    ax.set_xlim(x_lo, 1)
+    ax.set_ylim(y_lo, 1)
     ax.set_aspect("equal", adjustable="box")  # SQUARE plot area
 
     # Legends: methods (color) + datasets (marker).
