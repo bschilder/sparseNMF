@@ -387,8 +387,30 @@ def embed_scvi(adata, batch_key, label_key, counts_layer, k, seed):
     ``n_latent``. We measure training time and inference time
     (``get_latent_representation``) separately — these are typically
     *very* different (train: minutes; infer: seconds) and the split
-    matters for downstream cost forecasting."""
+    matters for downstream cost forecasting.
+
+    Uses the same CUDA-probe pattern as ``embed_sparse_nmf`` so a
+    wedged GPU doesn't take the benchmark down — if CUDA init fails
+    we explicitly pass ``accelerator='cpu'`` to scVI's trainer."""
     import scvi
+
+    # Probe CUDA the same way embed_sparse_nmf does.
+    accelerator = "cpu"
+    try:
+        import torch
+        if torch.cuda.is_available():
+            try:
+                torch.cuda.empty_cache()
+                torch.cuda.synchronize()
+                _ = torch.zeros(1, device="cuda")
+                del _
+                accelerator = "gpu"
+            except RuntimeError as e:
+                msg = str(e)[:80]
+                print(f"    (cuda probe failed: {msg} — scVI falling back to cpu)")
+                accelerator = "cpu"
+    except ImportError:
+        accelerator = "cpu"
 
     a = adata.copy()
     a.X = a.layers[counts_layer]  # scVI wants counts in .X by convention
@@ -396,7 +418,12 @@ def embed_scvi(adata, batch_key, label_key, counts_layer, k, seed):
         scvi.model.SCVI.setup_anndata(a, batch_key=batch_key)
         model = scvi.model.SCVI(a, n_latent=k)
         t0 = time.perf_counter()
-        model.train(max_epochs=100, accelerator="auto", devices=1, plan_kwargs={"lr": 1e-3})
+        model.train(
+            max_epochs=100,
+            accelerator=accelerator,
+            devices=1,
+            plan_kwargs={"lr": 1e-3},
+        )
         fit_s = time.perf_counter() - t0
         t1 = time.perf_counter()
         emb = model.get_latent_representation()
