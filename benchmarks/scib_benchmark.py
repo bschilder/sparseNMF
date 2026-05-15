@@ -25,14 +25,71 @@ complete in seconds-to-minutes on CPU.
 
 from __future__ import annotations
 
+import resource
+import sys
 import time
 import urllib.request
-from dataclasses import dataclass
+from collections.abc import Callable
+from contextlib import contextmanager
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Callable
 
 import numpy as np
 from scipy.sparse import csr_matrix, issparse
+
+# ── Timing + memory instrumentation ────────────────────────────────
+
+
+@dataclass
+class MethodTiming:
+    """Per-method resource usage. All durations in seconds."""
+
+    fit_seconds: float
+    infer_seconds: float | None  # None when fit and infer can't be separated
+    metric_seconds: float = 0.0
+    peak_rss_mb: float = 0.0  # delta RSS over the method's call
+    gpu_peak_mb: float | None = None  # peak CUDA allocator usage, if applicable
+
+    def total_seconds(self) -> float:
+        return self.fit_seconds + (self.infer_seconds or 0.0) + self.metric_seconds
+
+
+@contextmanager
+def _track_memory():
+    """Yield a dict that gets populated with peak RSS / GPU memory deltas
+    over the contextmanager's lifetime. RSS is in MB; GPU is in MB.
+
+    ``ru_maxrss`` is the *high-water mark since process start*, so we
+    snapshot before and after and report the delta — what the method
+    itself added on top of pre-existing memory."""
+    out: dict[str, float | None] = {"peak_rss_mb": 0.0, "gpu_peak_mb": None}
+    rss_before = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    gpu_before = None
+    try:
+        import torch
+
+        if torch.cuda.is_available():
+            torch.cuda.reset_peak_memory_stats()
+            gpu_before = 0
+    except ImportError:
+        pass
+    try:
+        yield out
+    finally:
+        rss_after = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        # ru_maxrss unit is platform-specific: bytes on macOS, kibibytes
+        # on Linux. Normalize to MiB.
+        if sys.platform == "darwin":
+            out["peak_rss_mb"] = max(0.0, (rss_after - rss_before) / (1024.0 * 1024.0))
+        else:
+            out["peak_rss_mb"] = max(0.0, (rss_after - rss_before) / 1024.0)
+        try:
+            import torch
+
+            if gpu_before is not None and torch.cuda.is_available():
+                out["gpu_peak_mb"] = torch.cuda.max_memory_allocated() / 1024.0 / 1024.0
+        except ImportError:
+            pass
 
 
 # ── Datasets ─────────────────────────────────────────────────────────
@@ -122,24 +179,47 @@ def embed_pca(adata, batch_key, label_key, counts_layer, k, seed):
     from sklearn.decomposition import PCA
 
     X = _counts(adata, counts_layer).toarray()
-    return PCA(n_components=k, random_state=seed).fit_transform(X)
+    with _track_memory() as mem:
+        pca = PCA(n_components=k, random_state=seed)
+        t0 = time.perf_counter()
+        pca.fit(X)
+        fit_s = time.perf_counter() - t0
+        t1 = time.perf_counter()
+        emb = pca.transform(X)
+        inf_s = time.perf_counter() - t1
+    return emb, MethodTiming(fit_s, inf_s, peak_rss_mb=mem["peak_rss_mb"], gpu_peak_mb=mem["gpu_peak_mb"])
 
 
 def embed_nmf(adata, batch_key, label_key, counts_layer, k, seed):
     from sklearn.decomposition import NMF
 
     X = _counts(adata, counts_layer)
-    return NMF(n_components=k, init="nndsvd", max_iter=500, random_state=seed).fit_transform(X)
+    with _track_memory() as mem:
+        nmf = NMF(n_components=k, init="nndsvd", max_iter=500, random_state=seed)
+        t0 = time.perf_counter()
+        nmf.fit(X)
+        fit_s = time.perf_counter() - t0
+        t1 = time.perf_counter()
+        emb = nmf.transform(X)
+        inf_s = time.perf_counter() - t1
+    return emb, MethodTiming(fit_s, inf_s, peak_rss_mb=mem["peak_rss_mb"], gpu_peak_mb=mem["gpu_peak_mb"])
 
 
 def embed_sparse_nmf(adata, batch_key, label_key, counts_layer, k, seed, **kwargs):
     from sparse_nmf import train_sparse_nmf
 
     X = _counts(adata, counts_layer)
-    W, _ = train_sparse_nmf(
-        X_sparse=X, n_components=k, device="cpu", random_state=seed, verbose=False, **kwargs
-    )
-    return W
+    with _track_memory() as mem:
+        # train_sparse_nmf returns W (the embedding) directly — fit and
+        # initial transform are fused. No separable infer step for this
+        # configuration.
+        t0 = time.perf_counter()
+        W, _ = train_sparse_nmf(
+            X_sparse=X, n_components=k, device="cpu", random_state=seed,
+            verbose=False, **kwargs,
+        )
+        fit_s = time.perf_counter() - t0
+    return W, MethodTiming(fit_s, None, peak_rss_mb=mem["peak_rss_mb"], gpu_peak_mb=mem["gpu_peak_mb"])
 
 
 def embed_sparse_nmf_nonzero(adata, batch_key, label_key, counts_layer, k, seed):
@@ -150,28 +230,46 @@ def embed_sparse_nmf_nonzero(adata, batch_key, label_key, counts_layer, k, seed)
 
 
 def embed_harmony(adata, batch_key, label_key, counts_layer, k, seed):
-    """PCA(k) then Harmony correction in PC space."""
+    """PCA(k) then Harmony correction in PC space. We split the timing
+    so the PCA stage isn't lumped into Harmony's runtime — Harmony's
+    cost is the iterative correction in PC space, not the PCA itself."""
     import harmonypy as hm
     from sklearn.decomposition import PCA
 
     X = _counts(adata, counts_layer).toarray()
-    pca = PCA(n_components=k, random_state=seed).fit_transform(X)
-    ho = hm.run_harmony(pca, adata.obs, batch_key, max_iter_harmony=20)
-    return np.asarray(ho.Z_corr).T
+    with _track_memory() as mem:
+        t0 = time.perf_counter()
+        pca = PCA(n_components=k, random_state=seed).fit_transform(X)
+        pca_s = time.perf_counter() - t0
+        t1 = time.perf_counter()
+        ho = hm.run_harmony(pca, adata.obs, batch_key, max_iter_harmony=20)
+        harm_s = time.perf_counter() - t1
+    emb = np.asarray(ho.Z_corr).T
+    # We bill PCA+Harmony as the "fit" since both are required to
+    # produce the embedding; "infer" stays None (no separable step).
+    return emb, MethodTiming(pca_s + harm_s, None, peak_rss_mb=mem["peak_rss_mb"], gpu_peak_mb=mem["gpu_peak_mb"])
 
 
 def embed_scvi(adata, batch_key, label_key, counts_layer, k, seed):
-    """scVI VAE — uses raw counts directly. ``k`` is mapped to
-    ``n_latent``. On GPU set ``accelerator='gpu'`` via env var (see
-    runner)."""
+    """scVI VAE — uses raw counts directly. ``k`` maps to
+    ``n_latent``. We measure training time and inference time
+    (``get_latent_representation``) separately — these are typically
+    *very* different (train: minutes; infer: seconds) and the split
+    matters for downstream cost forecasting."""
     import scvi
 
     a = adata.copy()
     a.X = a.layers[counts_layer]  # scVI wants counts in .X by convention
-    scvi.model.SCVI.setup_anndata(a, batch_key=batch_key)
-    model = scvi.model.SCVI(a, n_latent=k)
-    model.train(max_epochs=100, accelerator="auto", devices=1, plan_kwargs={"lr": 1e-3})
-    return model.get_latent_representation()
+    with _track_memory() as mem:
+        scvi.model.SCVI.setup_anndata(a, batch_key=batch_key)
+        model = scvi.model.SCVI(a, n_latent=k)
+        t0 = time.perf_counter()
+        model.train(max_epochs=100, accelerator="auto", devices=1, plan_kwargs={"lr": 1e-3})
+        fit_s = time.perf_counter() - t0
+        t1 = time.perf_counter()
+        emb = model.get_latent_representation()
+        inf_s = time.perf_counter() - t1
+    return emb, MethodTiming(fit_s, inf_s, peak_rss_mb=mem["peak_rss_mb"], gpu_peak_mb=mem["gpu_peak_mb"])
 
 
 METHODS: dict[str, Callable] = {
@@ -190,8 +288,13 @@ METHODS: dict[str, Callable] = {
 @dataclass
 class MethodResult:
     name: str
-    seconds: float
-    metrics: dict[str, float]
+    timing: MethodTiming
+    metrics: dict[str, float] = field(default_factory=dict)
+    error: str | None = None
+
+    @property
+    def total_seconds(self) -> float:
+        return self.timing.total_seconds()
 
 
 def evaluate(
@@ -279,22 +382,32 @@ def run_dataset(
     for method_name in methods:
         fn = METHODS[method_name]
         print(f"  {method_name:>18s}: fitting...", flush=True)
-        t0 = time.time()
         try:
-            emb = fn(adata, batch_key, label_key, counts_layer, k, seed)
+            emb, timing = fn(adata, batch_key, label_key, counts_layer, k, seed)
+            t0 = time.perf_counter()
             metrics = evaluate(adata, emb, batch_key, label_key, lisi=lisi)
-            elapsed = time.time() - t0
+            timing.metric_seconds = time.perf_counter() - t0
         except Exception as e:
-            print(f"    FAILED: {type(e).__name__}: {e}")
-            results.append(MethodResult(method_name, time.time() - t0, {"error": -1.0}))
+            err = f"{type(e).__name__}: {e}"
+            print(f"    FAILED: {err}")
+            results.append(MethodResult(
+                method_name,
+                MethodTiming(0.0, None),
+                error=err,
+            ))
             continue
         bio, batch, composite = composite_score(metrics)
         metrics["_bio"] = bio
         metrics["_batch"] = batch
         metrics["_composite"] = composite
-        results.append(MethodResult(method_name, elapsed, metrics))
+        results.append(MethodResult(method_name, timing, metrics))
+        infer_str = f"infer={timing.infer_seconds:5.1f}s" if timing.infer_seconds else "infer=  N/A"
+        gpu_str = f"gpu={timing.gpu_peak_mb:6.0f}MB" if timing.gpu_peak_mb else "gpu=     —"
         print(
-            f"    {method_name:>18s}: {elapsed:6.1f}s  "
+            f"    {method_name:>18s}: "
+            f"fit={timing.fit_seconds:6.1f}s  {infer_str}  "
+            f"metrics={timing.metric_seconds:5.1f}s  "
+            f"rss={timing.peak_rss_mb:5.0f}MB  {gpu_str}  "
             f"bio={bio:+.3f}  batch={batch:+.3f}  composite={composite:+.3f}"
         )
     return results
@@ -307,6 +420,17 @@ def results_to_dataframe(results_by_dataset: dict[str, list[MethodResult]]):
     rows = []
     for dataset, results in results_by_dataset.items():
         for r in results:
-            row = {"dataset": dataset, "method": r.name, "seconds": r.seconds, **r.metrics}
+            row = {
+                "dataset": dataset,
+                "method": r.name,
+                "fit_seconds": r.timing.fit_seconds,
+                "infer_seconds": r.timing.infer_seconds,
+                "metric_seconds": r.timing.metric_seconds,
+                "total_seconds": r.timing.total_seconds(),
+                "peak_rss_mb": r.timing.peak_rss_mb,
+                "gpu_peak_mb": r.timing.gpu_peak_mb,
+                "error": r.error,
+                **r.metrics,
+            }
             rows.append(row)
     return pd.DataFrame(rows)
