@@ -522,6 +522,65 @@ def plot_bio_vs_batch_tradeoff(
     return out_path
 
 
+def plot_k_sweep(
+    df: pd.DataFrame,
+    out_path: Path | str,
+    *,
+    method: str = "sparseNMF",
+    title: str | None = None,
+) -> Path:
+    """Composite score vs latent dim k, one line per dataset.
+
+    Expects ``df`` aggregated from per-k runs (each run produced via
+    ``run_benchmark --k K``). The function infers the k value from
+    each row's matrix dimensions if a ``k`` column isn't present —
+    so the aggregator can either inject it or leave it to inference.
+
+    Lines coloured by dataset (a separate palette from method colours);
+    markers at each measured k. Axes: x=k (log scale), y=composite Total.
+    """
+    import matplotlib.pyplot as plt
+
+    out_path = Path(out_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    sub = df[df["method"] == method].copy()
+    if "k" not in sub.columns:
+        raise ValueError(f"plot_k_sweep needs a 'k' column; got {list(df.columns)}")
+
+    datasets = sorted(sub["dataset"].unique())
+    # Reuse Set1 but reserve the first method-palette slot so dataset
+    # colours don't collide with the canonical method colours.
+    ds_colors = {d: _SET1[(i + 5) % len(_SET1)] for i, d in enumerate(datasets)}
+
+    fig, ax = plt.subplots(figsize=(7.0, 5.5))
+    for d in datasets:
+        ssub = sub[sub["dataset"] == d].dropna(subset=["k", "Total"]).sort_values("k")
+        if ssub.empty:
+            continue
+        # Aggregate over any replicates (seed × k → mean ± std).
+        grouped = ssub.groupby("k")["Total"].agg(["mean", "std"]).reset_index()
+        xs = grouped["k"].values
+        ys = grouped["mean"].values
+        yerr = np.nan_to_num(grouped["std"].values, nan=0.0)
+        ax.plot(xs, ys, "-o", color=ds_colors[d], label=d, linewidth=1.5, markersize=6,
+                markeredgecolor="black", markeredgewidth=0.5)
+        ax.errorbar(xs, ys, yerr=yerr, fmt="none", ecolor=ds_colors[d],
+                    elinewidth=0.8, capsize=0, alpha=0.6)
+
+    ax.set_xscale("log")
+    ax.set_xlabel("latent dim k (log scale)")
+    ax.set_ylabel("scIB composite (Total)")
+    ax.set_title(title or f"{method}: composite vs k")
+    ax.grid(True, which="both", linewidth=0.3, alpha=0.5)
+    ax.set_box_aspect(0.7)
+    ax.legend(title="dataset", loc="upper left", bbox_to_anchor=(1.02, 1.0),
+              frameon=False, fontsize=9, borderaxespad=0.0)
+    fig.savefig(out_path, dpi=160, bbox_inches="tight")
+    plt.close(fig)
+    return out_path
+
+
 def plot_all(df: pd.DataFrame, out_dir: Path | str) -> dict[str, Path]:
     """Render all four benchmark figures into ``out_dir``."""
     out_dir = Path(out_dir)
