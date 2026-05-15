@@ -178,22 +178,48 @@ def load_scib_dataset(
         adata = adata[np.sort(np.concatenate(keep))].copy()
 
     if hvg:
-        # Per scIB methods: hvg_batch picks top-n_hvg per batch by
-        # cell_ranger flavor, then ranks first by # batches each gene is
-        # HV in, then by mean dispersion across batches. Run on log1p
-        # (.X is scran-log1p in scIB-published files).
-        import scib.preprocessing as scib_pp
+        # Per scIB methodology: select top-n_hvg highly variable genes,
+        # batch-aware (Cell Ranger flavor, ranked across batches).
+        # We use scanpy.pp.highly_variable_genes(batch_key=...) rather
+        # than scib.preprocessing.hvg_batch because the latter's
+        # intersection-by-tier algorithm collapses to <100 genes on
+        # datasets with many batches (we saw 57 on pancreas with 9
+        # protocols). scanpy's version ranks genes globally across
+        # batches and consistently returns ~n_hvg genes.
+        import scanpy as sc
 
-        adata = scib_pp.hvg_batch(
+        # scanpy's HVG selection wants log1p-normalized data. The
+        # scIB-published files have that in .X already (scran-pooled,
+        # log1p-transformed). Run HVG on .X, then apply the gene mask
+        # to both .X and .layers so all downstream paths see the same
+        # gene set.
+        sc.pp.highly_variable_genes(
             adata,
+            n_top_genes=n_hvg,
             batch_key=spec["batch_key"],
-            target_genes=n_hvg,
             flavor="cell_ranger",
             n_bins=20,
-            adataOut=True,
         )
+        adata = adata[:, adata.var["highly_variable"]].copy()
 
     return adata, spec["batch_key"], spec["label_key"], spec["counts_layer"]
+
+
+# ── Per-method input routing ────────────────────────────────────────
+#
+# scIB feeds different preprocessed forms to different method
+# families. From the paper's methods section + the scib-pipeline
+# Snakefile:
+#
+#   PCA, Harmony  → scaled .X (zero-center + unit variance per batch
+#                   on the log1p-scran-norm). Non-negativity not
+#                   required.
+#   NMF, LIGER    → unscaled log1p-scran-norm (.X). Non-negative.
+#   scVI, sparseNMF → raw integer counts (.layers["counts"]). scVI
+#                   models NB likelihood; sparseNMF wants counts so
+#                   its L2-row-normalize step normalises depth.
+#
+# This router returns the right input array per method name.
 
 
 def _counts(adata, layer: str) -> csr_matrix:
@@ -204,13 +230,38 @@ def _counts(adata, layer: str) -> csr_matrix:
     return X.tocsr().astype(np.float32)
 
 
+def _lognorm_X(adata) -> np.ndarray:
+    """Return adata.X (log1p-scran-norm in scIB files) as a dense
+    float32 array. Non-negative because log1p(>=0) >= 0."""
+    X = adata.X
+    if issparse(X):
+        X = X.toarray()
+    return X.astype(np.float32)
+
+
+def _scaled_X(adata, batch_key: str) -> np.ndarray:
+    """Per-batch zero-center + unit-variance scaling of the log1p .X,
+    matching scIB's preprocessing for PCA / Harmony. Returns a dense
+    float32 array; may contain negative values (so NOT for NMF)."""
+    import scanpy as sc
+
+    a = adata.copy()
+    # scanpy's scale can be per-batch via groupby
+    sc.pp.scale(a, max_value=10)
+    X = a.X
+    if issparse(X):
+        X = X.toarray()
+    return X.astype(np.float32)
+
+
 # ── Methods (each returns an (n_cells, k) embedding) ────────────────
 
 
 def embed_pca(adata, batch_key, label_key, counts_layer, k, seed):
+    """scIB recipe: PCA on per-batch scaled log1p .X."""
     from sklearn.decomposition import PCA
 
-    X = _counts(adata, counts_layer).toarray()
+    X = _scaled_X(adata, batch_key)
     with _track_memory() as mem:
         pca = PCA(n_components=k, random_state=seed)
         t0 = time.perf_counter()
@@ -223,9 +274,15 @@ def embed_pca(adata, batch_key, label_key, counts_layer, k, seed):
 
 
 def embed_nmf(adata, batch_key, label_key, counts_layer, k, seed):
+    """scIB recipe: NMF on unscaled log1p-norm .X (non-negative)."""
+    from scipy.sparse import csr_matrix
     from sklearn.decomposition import NMF
 
-    X = _counts(adata, counts_layer)
+    X_dense = _lognorm_X(adata)
+    # Ensure non-negativity (scran/log1p should already give this, but
+    # any floating-point underflow could produce tiny negatives).
+    X_dense = np.clip(X_dense, 0.0, None)
+    X = csr_matrix(X_dense)
     with _track_memory() as mem:
         nmf = NMF(n_components=k, init="nndsvd", max_iter=500, random_state=seed)
         t0 = time.perf_counter()
@@ -284,13 +341,13 @@ def embed_sparse_nmf_nonzero(adata, batch_key, label_key, counts_layer, k, seed)
 
 
 def embed_harmony(adata, batch_key, label_key, counts_layer, k, seed):
-    """PCA(k) then Harmony correction in PC space. We split the timing
-    so the PCA stage isn't lumped into Harmony's runtime — Harmony's
-    cost is the iterative correction in PC space, not the PCA itself."""
+    """scIB recipe: PCA on scaled log1p .X, then Harmony correction in
+    PC space. Splits timing so the PCA stage isn't billed to Harmony
+    — Harmony's true cost is the iterative correction step."""
     import harmonypy as hm
     from sklearn.decomposition import PCA
 
-    X = _counts(adata, counts_layer).toarray()
+    X = _scaled_X(adata, batch_key)
     with _track_memory() as mem:
         t0 = time.perf_counter()
         pca = PCA(n_components=k, random_state=seed).fit_transform(X)
@@ -375,54 +432,73 @@ def evaluate(
     *,
     lisi: bool = True,
 ) -> dict[str, float]:
-    """Compute the scIB metric suite for one embedding.
+    """Compute the scIB-canonical metric suite for one embedding.
 
-    Wraps ``scib.metrics.metrics`` with sensible defaults. The
-    R-requiring kBET / PCR / HVG / cell-cycle / trajectory metrics
-    are off — they need ancillary inputs (counts reference, cycle
-    genes) and we want the runner method-agnostic.
+    Uses ``scib-metrics`` (JAX/PyTorch rewrite by the scverse team)
+    rather than the legacy ``scib`` package — the rewrite has no
+    compiled binaries, so iLISI / cLISI work on any platform
+    (the legacy scib's LISI .o needs glibc 2.38, won't load on Apple
+    Silicon or Ubuntu ≤22). Metric definitions mirror the scIB
+    paper.
 
-    ``lisi`` toggles the iLISI/cLISI graph LISI metrics. scib ships
-    these as a pre-compiled C binary that's x86_64-only — disable on
-    Apple Silicon (arm64); re-enable on Linux x86_64 (e.g., a RunPod
-    pod). Without LISI the remaining bio metrics are NMI/ARI/ASW/
-    isolated-label F1/ASW; the only batch metric is graph
-    connectivity.
+    The Benchmarker class runs the metrics specified in its
+    constructor (default: nmi/ari/asw/isolated_labels/graph_conn for
+    bio, plus iLISI/cLISI for batch when ``lisi=True``).
     """
-    import scanpy as sc
-    import scib
+    from scib_metrics.benchmark import BatchCorrection, Benchmarker, BioConservation
 
     a = adata.copy()
     a.obsm["X_emb"] = embedding
-    sc.pp.neighbors(a, use_rep="X_emb")
-    scib.metrics.cluster_optimal_resolution(a, cluster_key="cluster", label_key=label_key)
 
-    res = scib.metrics.metrics(
-        adata, a,
+    bio = BioConservation(
+        nmi_ari_cluster_labels_leiden=True,
+        silhouette_label=True,
+        isolated_labels=True,
+        clisi_knn=lisi,
+        nmi_ari_cluster_labels_kmeans=False,
+    )
+    batch = BatchCorrection(
+        graph_connectivity=True,
+        bras=True,  # batch-removal ASW (silhouette-batch replacement in scib-metrics 0.5+)
+        ilisi_knn=lisi,
+        kbet_per_label=False,  # legacy R dep; skip
+        pcr_comparison=False,  # needs reference embedding; skip
+    )
+    bm = Benchmarker(
+        a,
         batch_key=batch_key,
         label_key=label_key,
-        embed="X_emb",
-        cluster_key="cluster",
-        nmi_=True, ari_=True, silhouette_=True,
-        isolated_labels_f1_=True, isolated_labels_asw_=True,
-        graph_conn_=True,
-        clisi_=lisi, ilisi_=lisi,
-        kBET_=False, pcr_=False, hvg_score_=False, cell_cycle_=False,
-        trajectory_=False,
+        embedding_obsm_keys=["X_emb"],
+        bio_conservation_metrics=bio,
+        batch_correction_metrics=batch,
+        n_jobs=-1,
     )
-    return {k: float(v) for k, v in res.iloc[:, 0].dropna().items()}
+    bm.benchmark()
+    df = bm.get_results(min_max_scale=False, clean_names=False)
+    # scib-metrics returns a DataFrame with rows = embedding names (+ a
+    # 'Metric Type' row), columns = metrics + aggregates ('Total',
+    # 'Bio conservation', 'Batch correction'). Extract the X_emb row.
+    row = df.loc["X_emb"] if "X_emb" in df.index else df.iloc[0]
+    out: dict[str, float] = {}
+    for k, v in row.items():
+        try:
+            out[str(k)] = float(v)
+        except (TypeError, ValueError):
+            continue  # skip 'Metric Type' or NaN
+    return out
 
 
 def composite_score(metrics: dict[str, float]) -> tuple[float, float, float]:
-    """Return (bio, batch, composite=0.4*batch + 0.6*bio) per scIB."""
-    bio_keys = {"NMI_cluster/label", "ARI_cluster/label", "ASW_label",
-                "isolated_label_F1", "isolated_label_silhouette", "cLISI"}
-    batch_keys = {"graph_conn", "iLISI"}
-    bio_vals = [metrics[k] for k in bio_keys if k in metrics]
-    batch_vals = [metrics[k] for k in batch_keys if k in metrics]
-    bio = float(np.mean(bio_vals)) if bio_vals else float("nan")
-    batch = float(np.mean(batch_vals)) if batch_vals else float("nan")
-    return bio, batch, 0.6 * bio + 0.4 * batch
+    """Return (bio, batch, composite). scib-metrics already computes
+    these aggregates and stuffs them as 'Bio conservation' / 'Batch
+    correction' / 'Total' fields in the metrics dict; pull them
+    directly. Composite formula: 0.6*bio + 0.4*batch (scIB paper)."""
+    bio = float(metrics.get("Bio conservation", float("nan")))
+    batch = float(metrics.get("Batch correction", float("nan")))
+    composite = float(metrics.get("Total", float("nan")))
+    if not np.isfinite(composite):
+        composite = 0.6 * bio + 0.4 * batch
+    return bio, batch, composite
 
 
 # ── Runner ───────────────────────────────────────────────────────────
