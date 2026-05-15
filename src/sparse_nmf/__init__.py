@@ -39,6 +39,10 @@ from sparse_nmf._batch_aware import (
     BatchAwareResult,
     train_sparse_nmf_batch_aware,
 )
+from sparse_nmf._hyper_sweep import (
+    SweepResult,
+    sweep_hyperparameters,
+)
 from sparse_nmf._core import (
     SparseNMF,
     SparseNMF_Autoencoder,
@@ -58,6 +62,7 @@ __all__ = [
     "BatchAwareResult",
     "SparseNMF",
     "SparseNMF_Autoencoder",
+    "SweepResult",
     "compute_attention_correlation",
     "compute_joint_loss",
     "extract_and_aggregate_attention",
@@ -65,6 +70,7 @@ __all__ = [
     "l2_normalize",
     "plot_nmf_factor_distributions",
     "sparse_nmf",
+    "sweep_hyperparameters",
     "trace_attention_to_genes",
     "train_joint_model",
     "train_sparse_nmf",
