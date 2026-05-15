@@ -316,7 +316,8 @@ def embed_sparse_nmf(adata, batch_key, label_key, counts_layer, k, seed, **kwarg
                 del _
                 device = "cuda"
             except RuntimeError as e:
-                print(f"    (cuda probe failed: {e!s[:80]} — falling back to cpu)")
+                msg = str(e)[:80]
+                print(f"    (cuda probe failed: {msg} — falling back to cpu)")
                 device = "cpu"
     except ImportError:
         device = "cpu"
