@@ -100,11 +100,28 @@ For most single-cell users:
 
    W, model = train_sparse_nmf(
        X_sparse,
-       n_components=30,        # k=30 lands on the bio plateau
+       n_components=None,      # auto: clip(min(n_cells, n_genes)//8, 32, 1024)
        normalize_inputs=True,  # critical for depth-varying data
        max_iter=500,
        patience=10,
    )
+
+The ``n_components=None`` default uses sparseNMF's
+shape-dependent heuristic (``clip(min(n,p)//8, 32, 1024)``) — for
+a 16k-cell × 2k-HVG dataset that lands at k=250, well above the
+scIB-convention k=30 that batch-correcting methods use. The
+heuristic is appropriate when you don't yet know where the
+factor count sweet spot sits for your data.
+
+.. note::
+
+   The k-sweep figure above covers k ∈ {10, 20, 30, 50, 100} only.
+   sparseNMF has been validated up to k=1024 on larger datasets;
+   silhouette as the quality metric on this page is partially
+   confounded by latent dimensionality (cluster distances spread
+   in higher-dim space), so don't read it as "k=10 is universally
+   best." For dim-invariant cross-k comparisons see the scIB
+   results on :doc:`benchmark`.
 
 For datasets with strong batch effects (cross-protocol, cross-donor,
 multi-platform):
