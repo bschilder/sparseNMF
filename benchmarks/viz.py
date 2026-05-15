@@ -91,40 +91,66 @@ def plot_composite_summary(
     """Grouped bar chart: composite Total per (dataset, method).
 
     Datasets on x-axis (one cluster each), bars within each cluster
-    are methods coloured by the shared palette."""
+    are methods coloured by the shared palette.
+
+    Multi-seed aware: if ``df`` has multiple rows per (dataset, method)
+    — e.g. a ``seed`` column with values {0,1,2} — bars show mean
+    and ``yerr`` shows the standard deviation across seeds. With a
+    single row per cell the std is 0 / NaN and no error bar is drawn.
+    """
     import matplotlib.pyplot as plt
 
     out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     methods = sorted(df["method"].unique())
-    pivot = (
-        df.pivot(index="dataset", columns="method", values="Total")
+    # Aggregate across seeds (or any other replicate axis). With one
+    # row per cell, mean == that value and std is NaN.
+    grouped = df.groupby(["dataset", "method"])["Total"].agg(["mean", "std"]).reset_index()
+    pivot_mean = (
+        grouped.pivot(index="dataset", columns="method", values="mean")
         .reindex(columns=methods)
     )
-    datasets = list(pivot.index)
+    pivot_std = (
+        grouped.pivot(index="dataset", columns="method", values="std")
+        .reindex(columns=methods)
+    )
+    datasets = list(pivot_mean.index)
     palette = method_palette(methods)
+    n_seeds = (
+        df.groupby(["dataset", "method"]).size().max()
+        if len(df) > 0 else 1
+    )
 
     fig, ax = plt.subplots(figsize=(1.0 * max(len(datasets), 3) + 2.4, 4.0))
     x = np.arange(len(datasets))
     width = 0.8 / max(len(methods), 1)
     for i, method in enumerate(methods):
-        vals = pivot[method].values
+        vals = pivot_mean[method].values
+        stds = pivot_std[method].values
+        # matplotlib's yerr is happy with NaN — single-rep cells just
+        # don't draw error bars. Convert NaN std to 0 to avoid a
+        # FutureWarning from matplotlib's error-bar handling.
+        yerr = np.nan_to_num(stds, nan=0.0)
         bars = ax.bar(
             x + i * width - 0.4 + width / 2,
             vals,
             width,
+            yerr=yerr,
             label=method,
             color=palette[method],
             edgecolor="black",
             linewidth=0.5,
+            error_kw={"elinewidth": 0.8, "capsize": 2.5, "ecolor": "black"},
         )
-        for b, v in zip(bars, vals, strict=True):
+        for b, v, s in zip(bars, vals, stds, strict=True):
             if np.isnan(v):
                 continue
+            # Position the label above any error-bar cap.
+            cap = s if not np.isnan(s) else 0.0
             ax.text(
                 b.get_x() + b.get_width() / 2,
-                v + 0.005,
+                v + cap + 0.005,
                 f"{v:.2f}",
                 ha="center",
                 va="bottom",
@@ -134,10 +160,19 @@ def plot_composite_summary(
     ax.set_xticklabels(datasets, fontsize=10)
     ax.set_ylabel("scIB composite (Total)")
     ax.axhline(0, color="gray", linewidth=0.5, linestyle="--")
-    finite = pivot.values[~np.isnan(pivot.values)]
+    finite = pivot_mean.values[~np.isnan(pivot_mean.values)]
     if finite.size:
-        ax.set_ylim(min(0.0, float(finite.min()) - 0.05), max(float(finite.max()) + 0.08, 1.0))
-    ax.set_title(title or "scIB composite score per dataset × method")
+        # Pad top to make room for error bars + value labels.
+        top_pad = float(np.nanmax(np.nan_to_num(pivot_std.values, nan=0.0))) + 0.10
+        ax.set_ylim(
+            min(0.0, float(finite.min()) - 0.05),
+            max(float(finite.max()) + top_pad, 1.0),
+        )
+    if n_seeds > 1:
+        title = (title or "scIB composite score per dataset × method") + f"  (mean ± std, n={n_seeds} seeds)"
+    else:
+        title = title or "scIB composite score per dataset × method"
+    ax.set_title(title)
     # Legend OUTSIDE the axes on the right, vertical (one column).
     handles, labels = ax.get_legend_handles_labels()
     ax.legend(
