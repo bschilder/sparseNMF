@@ -163,30 +163,41 @@ def lognorm_X(adata) -> np.ndarray:
     return X.astype(np.float32)
 
 
-def scaled_X(adata, batch_key: str) -> np.ndarray:  # noqa: ARG001 - batch_key intentionally unused
-    """Zero-center + unit-variance scaling of the log1p .X.
+def scaled_X(adata, batch_key: str) -> np.ndarray:
+    """Per-batch zero-center + unit-variance scaling of the log1p .X.
     Used for PCA / Harmony. May contain negatives — not for NMF.
 
-    NOTE: This is **global** scaling, not per-batch scaling. The
-    canonical scIB recipe (Luecken 2022) scales per batch. We use
-    global scaling to match what the original ``scib_benchmark.py``
-    did so determinism comparisons against the canonical CSV hold.
-    See follow-up issue: implementing per-batch scaling correctly
-    requires the iterate-over-batches dance scanpy doesn't natively
-    expose; will be a separate PR with its own determinism baseline.
+    This matches the scIB-canonical recipe (Luecken 2022): each batch
+    is z-scored independently, then clipped to ±10 (matching scanpy's
+    default ``max_value``). Cells from different batches end up on
+    the same scale per gene, removing simple batch-level mean/variance
+    offsets before PCA / Harmony see the data.
 
-    ``batch_key`` is kept in the signature so callers don't break
-    when this is upgraded to per-batch.
+    For single-batch datasets, falls through to global scaling (the
+    per-batch and global paths produce identical output when there's
+    only one group).
     """
-    import scanpy as sc
     from scipy.sparse import issparse
 
-    a = adata.copy()
-    sc.pp.scale(a, max_value=10)
-    X = a.X
+    X = adata.X
     if issparse(X):
         X = X.toarray()
-    return X.astype(np.float32)
+    X = X.astype(np.float32, copy=True)
+
+    batch = adata.obs[batch_key].values
+    unique_batches = np.unique(batch)
+    if unique_batches.size == 1:
+        # Global scaling — degenerate single-batch case.
+        mean = X.mean(axis=0)
+        std = X.std(axis=0) + 1e-6
+        X = (X - mean) / std
+    else:
+        for b in unique_batches:
+            mask = batch == b
+            mean = X[mask].mean(axis=0)
+            std = X[mask].std(axis=0) + 1e-6
+            X[mask] = (X[mask] - mean) / std
+    return np.clip(X, -10.0, 10.0)
 
 
 # ── Timing + memory instrumentation ────────────────────────────────

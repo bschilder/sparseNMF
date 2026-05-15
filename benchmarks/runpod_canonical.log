@@ -1,341 +1,0 @@
-
-=== pancreas ===
-Downloading https://ndownloader.figshare.com/files/24539828 → /root/.cache/sparse-nmf/human_pancreas_norm_complexBatch.h5ad
-  ... 0% (0 / 316 MB)
-  ... 10% (32 / 316 MB)
-  ... 20% (63 / 316 MB)
-  ... 30% (95 / 316 MB)
-  ... 40% (126 / 316 MB)
-  ... 50% (158 / 316 MB)
-  ... 60% (190 / 316 MB)
-  ... 70% (221 / 316 MB)
-  ... 80% (253 / 316 MB)
-  ... 90% (284 / 316 MB)
-  ... 100% (316 / 316 MB)
-  (8711, 2000)  batches=9  labels=14
-                 PCA: fitting...
-/usr/local/lib/python3.11/dist-packages/scanpy/preprocessing/_pca/__init__.py:226: FutureWarning: Argument `use_highly_variable` is deprecated, consider using the mask argument. Use_highly_variable=True can be called through mask_var="highly_variable". Use_highly_variable=False can be called through mask_var=None
-  mask_var_param, mask_var = _handle_mask_var(
-Computing neighbors:   0%|          | 0/1 [00:00<?, ?it/s]Computing neighbors: 100%|██████████| 1/1 [00:15<00:00, 15.59s/it]Computing neighbors: 100%|██████████| 1/1 [00:15<00:00, 15.59s/it]
-Embeddings:   0%|[32m          [0m| 0/1 [00:00<?, ?it/s]
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s][A
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s, Bio conservation: isolated_labels][AWARNING:jax._src.xla_bridge:An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
-
-Metrics:  10%|[34m█         [0m| 1/10 [00:01<00:11,  1.33s/it, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:01<00:11,  1.33s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:05<00:24,  3.08s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:06<00:24,  3.08s/it, Bio conservation: silhouette_label]             [A
-Metrics:  30%|[34m███       [0m| 3/10 [00:06<00:13,  1.95s/it, Bio conservation: silhouette_label][A
-Metrics:  30%|[34m███       [0m| 3/10 [00:06<00:13,  1.95s/it, Bio conservation: clisi_knn]       [A
-Metrics:  40%|[34m████      [0m| 4/10 [00:07<00:09,  1.55s/it, Bio conservation: clisi_knn][A
-Metrics:  40%|[34m████      [0m| 4/10 [00:07<00:09,  1.55s/it, Batch correction: bras]     [A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:19<00:27,  5.49s/it, Batch correction: bras][A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:19<00:27,  5.49s/it, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:20<00:15,  3.77s/it, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:20<00:15,  3.77s/it, Batch correction: graph_connectivity][A/usr/local/lib/python3.11/dist-packages/scib_metrics/metrics/_graph_connectivity.py:32: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
-  tab = pd.value_counts(comps)
-
-Metrics:  70%|[34m███████   [0m| 7/10 [00:20<00:08,  2.70s/it, Batch correction: graph_connectivity][AEmbeddings: 100%|[32m██████████[0m| 1/1 [00:20<00:00, 20.81s/it]Embeddings: 100%|[32m██████████[0m| 1/1 [00:20<00:00, 20.81s/it]
-
-                                                                                             [A                   PCA: fit=   1.9s  infer=  0.0s  metrics= 44.0s  rss=    0MB  gpu=     —  bio=+0.753  batch=+0.470  composite=+0.640
-                 NMF: fitting...
-/usr/local/lib/python3.11/dist-packages/sklearn/decomposition/_nmf.py:1720: ConvergenceWarning: Maximum number of iterations 500 reached. Increase it to improve convergence.
-  warnings.warn(
-/usr/local/lib/python3.11/dist-packages/scanpy/preprocessing/_pca/__init__.py:226: FutureWarning: Argument `use_highly_variable` is deprecated, consider using the mask argument. Use_highly_variable=True can be called through mask_var="highly_variable". Use_highly_variable=False can be called through mask_var=None
-  mask_var_param, mask_var = _handle_mask_var(
-Computing neighbors:   0%|          | 0/1 [00:00<?, ?it/s]Computing neighbors: 100%|██████████| 1/1 [00:03<00:00,  3.62s/it]Computing neighbors: 100%|██████████| 1/1 [00:03<00:00,  3.62s/it]
-Embeddings:   0%|[32m          [0m| 0/1 [00:00<?, ?it/s]
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s][A
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:00<00:04,  1.94it/s, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:00<00:04,  1.94it/s, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:02<00:10,  1.30s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:02<00:10,  1.30s/it, Bio conservation: silhouette_label]             [A
-Metrics:  30%|[34m███       [0m| 3/10 [00:03<00:07,  1.05s/it, Bio conservation: silhouette_label][A
-Metrics:  30%|[34m███       [0m| 3/10 [00:03<00:07,  1.05s/it, Bio conservation: clisi_knn]       [A
-Metrics:  40%|[34m████      [0m| 4/10 [00:03<00:04,  1.32it/s, Bio conservation: clisi_knn][A
-Metrics:  40%|[34m████      [0m| 4/10 [00:03<00:04,  1.32it/s, Batch correction: bras]     [A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:03<00:02,  1.67it/s, Batch correction: bras][A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:03<00:02,  1.67it/s, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:04<00:01,  2.02it/s, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:04<00:01,  2.02it/s, Batch correction: graph_connectivity][A/usr/local/lib/python3.11/dist-packages/scib_metrics/metrics/_graph_connectivity.py:32: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
-  tab = pd.value_counts(comps)
-
-Metrics:  70%|[34m███████   [0m| 7/10 [00:04<00:01,  2.03it/s, Batch correction: graph_connectivity][AEmbeddings: 100%|[32m██████████[0m| 1/1 [00:04<00:00,  4.76s/it]Embeddings: 100%|[32m██████████[0m| 1/1 [00:04<00:00,  4.76s/it]
-
-                                                                                             [A                   NMF: fit=  16.5s  infer=  0.4s  metrics=  9.8s  rss=    0MB  gpu=     —  bio=+0.708  batch=+0.446  composite=+0.604
-           sparseNMF: fitting...
-    FAILED: RuntimeError: CUDA error: CUDA-capable device(s) is/are busy or unavailable
-CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
-For debugging consider passing CUDA_LAUNCH_BLOCKING=1
-Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
-
-             Harmony: fitting...
-2026-05-15 12:12:53,845 - harmonypy - INFO - Running Harmony
-INFO:harmonypy:Running Harmony
-2026-05-15 12:12:53,845 - harmonypy - INFO -   Parameters:
-INFO:harmonypy:  Parameters:
-2026-05-15 12:12:53,845 - harmonypy - INFO -     max_iter_harmony: 20
-INFO:harmonypy:    max_iter_harmony: 20
-2026-05-15 12:12:53,845 - harmonypy - INFO -     max_iter_kmeans: 4
-INFO:harmonypy:    max_iter_kmeans: 4
-2026-05-15 12:12:53,845 - harmonypy - INFO -     epsilon_cluster: 0.001
-INFO:harmonypy:    epsilon_cluster: 0.001
-2026-05-15 12:12:53,845 - harmonypy - INFO -     epsilon_harmony: 0.01
-INFO:harmonypy:    epsilon_harmony: 0.01
-2026-05-15 12:12:53,845 - harmonypy - INFO -     nclust: 100
-INFO:harmonypy:    nclust: 100
-2026-05-15 12:12:53,845 - harmonypy - INFO -     block_size: 0.05
-INFO:harmonypy:    block_size: 0.05
-2026-05-15 12:12:53,845 - harmonypy - INFO -     lamb: dynamic (alpha=0.2)
-INFO:harmonypy:    lamb: dynamic (alpha=0.2)
-2026-05-15 12:12:53,846 - harmonypy - INFO -     theta: [2. 2. 2. 2. 2. 2. 2. 2. 2.]
-INFO:harmonypy:    theta: [2. 2. 2. 2. 2. 2. 2. 2. 2.]
-2026-05-15 12:12:53,846 - harmonypy - INFO -     sigma: [0.1 0.1 0.1 0.1 0.1]...
-INFO:harmonypy:    sigma: [0.1 0.1 0.1 0.1 0.1]...
-2026-05-15 12:12:53,846 - harmonypy - INFO -     verbose: True
-INFO:harmonypy:    verbose: True
-2026-05-15 12:12:53,846 - harmonypy - INFO -     random_state: 0
-INFO:harmonypy:    random_state: 0
-2026-05-15 12:12:53,846 - harmonypy - INFO -   Data: 30 PCs × 8711 cells
-INFO:harmonypy:  Data: 30 PCs × 8711 cells
-2026-05-15 12:12:53,846 - harmonypy - INFO -   Batch variables: ['tech']
-INFO:harmonypy:  Batch variables: ['tech']
-2026-05-15 12:12:53,848 - harmonypy - INFO - Computing initial centroids...
-INFO:harmonypy:Computing initial centroids...
-2026-05-15 12:12:53,980 - harmonypy - INFO - Initialization complete.
-INFO:harmonypy:Initialization complete.
-2026-05-15 12:12:53,981 - harmonypy - INFO - Iteration 1 of 20
-INFO:harmonypy:Iteration 1 of 20
-2026-05-15 12:12:54,084 - harmonypy - INFO - Iteration 2 of 20
-INFO:harmonypy:Iteration 2 of 20
-2026-05-15 12:12:54,195 - harmonypy - INFO - Iteration 3 of 20
-INFO:harmonypy:Iteration 3 of 20
-2026-05-15 12:12:54,310 - harmonypy - INFO - Iteration 4 of 20
-INFO:harmonypy:Iteration 4 of 20
-2026-05-15 12:12:54,422 - harmonypy - INFO - Iteration 5 of 20
-INFO:harmonypy:Iteration 5 of 20
-2026-05-15 12:12:54,537 - harmonypy - INFO - Iteration 6 of 20
-INFO:harmonypy:Iteration 6 of 20
-2026-05-15 12:12:54,647 - harmonypy - INFO - Iteration 7 of 20
-INFO:harmonypy:Iteration 7 of 20
-2026-05-15 12:12:54,757 - harmonypy - INFO - Iteration 8 of 20
-INFO:harmonypy:Iteration 8 of 20
-2026-05-15 12:12:54,874 - harmonypy - INFO - Iteration 9 of 20
-INFO:harmonypy:Iteration 9 of 20
-2026-05-15 12:12:54,985 - harmonypy - INFO - Converged after 9 iterations
-INFO:harmonypy:Converged after 9 iterations
-/usr/local/lib/python3.11/dist-packages/scanpy/preprocessing/_pca/__init__.py:226: FutureWarning: Argument `use_highly_variable` is deprecated, consider using the mask argument. Use_highly_variable=True can be called through mask_var="highly_variable". Use_highly_variable=False can be called through mask_var=None
-  mask_var_param, mask_var = _handle_mask_var(
-Computing neighbors:   0%|          | 0/1 [00:00<?, ?it/s]Computing neighbors: 100%|██████████| 1/1 [00:03<00:00,  3.50s/it]Computing neighbors: 100%|██████████| 1/1 [00:03<00:00,  3.50s/it]
-Embeddings:   0%|[32m          [0m| 0/1 [00:00<?, ?it/s]
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s][A
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:00<00:04,  1.90it/s, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:00<00:04,  1.90it/s, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:02<00:11,  1.40s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:03<00:11,  1.40s/it, Bio conservation: silhouette_label]             [A
-Metrics:  30%|[34m███       [0m| 3/10 [00:03<00:07,  1.09s/it, Bio conservation: silhouette_label][A
-Metrics:  30%|[34m███       [0m| 3/10 [00:03<00:07,  1.09s/it, Bio conservation: clisi_knn]       [A
-Metrics:  40%|[34m████      [0m| 4/10 [00:03<00:04,  1.27it/s, Bio conservation: clisi_knn][A
-Metrics:  40%|[34m████      [0m| 4/10 [00:03<00:04,  1.27it/s, Batch correction: bras]     [A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:03<00:03,  1.61it/s, Batch correction: bras][A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:04<00:03,  1.61it/s, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:04<00:02,  1.94it/s, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:04<00:02,  1.94it/s, Batch correction: graph_connectivity][A/usr/local/lib/python3.11/dist-packages/scib_metrics/metrics/_graph_connectivity.py:32: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
-  tab = pd.value_counts(comps)
-
-Metrics:  70%|[34m███████   [0m| 7/10 [00:04<00:01,  1.97it/s, Batch correction: graph_connectivity][AEmbeddings: 100%|[32m██████████[0m| 1/1 [00:04<00:00,  4.95s/it]Embeddings: 100%|[32m██████████[0m| 1/1 [00:04<00:00,  4.95s/it]
-
-                                                                                             [A               Harmony: fit=   2.0s  infer=  N/A  metrics= 10.0s  rss=    0MB  gpu=     —  bio=+0.860  batch=+0.689  composite=+0.792
-                scVI: fitting...
-/usr/local/lib/python3.11/dist-packages/scvi/data/fields/_base_field.py:63: UserWarning: adata.X does not contain unnormalized count data. Are you sure this is what you want?
-  self.validate_field(adata)
-INFO: GPU available: True (cuda), used: True
-INFO:lightning.pytorch.utilities.rank_zero:GPU available: True (cuda), used: True
-INFO: TPU available: False, using: 0 TPU cores
-INFO:lightning.pytorch.utilities.rank_zero:TPU available: False, using: 0 TPU cores
-INFO: 💡 Tip: For seamless cloud logging and experiment tracking, try installing [litlogger](https://pypi.org/project/litlogger/) to enable LitLogger, which logs metrics and artifacts automatically to the Lightning Experiments platform.
-INFO:lightning.pytorch.utilities.rank_zero:💡 Tip: For seamless cloud logging and experiment tracking, try installing [litlogger](https://pypi.org/project/litlogger/) to enable LitLogger, which logs metrics and artifacts automatically to the Lightning Experiments platform.
-INFO: You are using a CUDA device ('NVIDIA L40') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
-INFO:lightning.pytorch.utilities.rank_zero:You are using a CUDA device ('NVIDIA L40') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
-INFO: LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
-INFO:lightning.pytorch.accelerators.cuda:LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
-Exception raised during training. <class 'NameError'> CUDA error: CUDA-capable device(s) is/are busy or unavailable
-CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
-For debugging consider passing CUDA_LAUNCH_BLOCKING=1
-Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
-
-    FAILED: RuntimeError: CUDA error: CUDA-capable device(s) is/are busy or unavailable
-CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
-For debugging consider passing CUDA_LAUNCH_BLOCKING=1
-Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
-
-
-=== immune ===
-Downloading https://ndownloader.figshare.com/files/25717328 → /root/.cache/sparse-nmf/Immune_ALL_human.h5ad
-  ... 0% (0 / 2065 MB)
-  ... 10% (206 / 2065 MB)
-  ... 20% (413 / 2065 MB)
-  ... 30% (619 / 2065 MB)
-  ... 40% (826 / 2065 MB)
-  ... 50% (1032 / 2065 MB)
-  ... 60% (1239 / 2065 MB)
-  ... 70% (1445 / 2065 MB)
-  ... 80% (1652 / 2065 MB)
-  ... 90% (1858 / 2065 MB)
-  ... 100% (2065 / 2065 MB)
-  (13080, 2000)  batches=10  labels=16
-                 PCA: fitting...
-/usr/lib/python3.11/functools.py:909: UserWarning: zero-centering a sparse array/matrix densifies it.
-  return dispatch(args[0].__class__)(*args, **kw)
-/usr/local/lib/python3.11/dist-packages/scanpy/preprocessing/_pca/__init__.py:226: FutureWarning: Argument `use_highly_variable` is deprecated, consider using the mask argument. Use_highly_variable=True can be called through mask_var="highly_variable". Use_highly_variable=False can be called through mask_var=None
-  mask_var_param, mask_var = _handle_mask_var(
-Computing neighbors:   0%|          | 0/1 [00:00<?, ?it/s]Computing neighbors: 100%|██████████| 1/1 [00:05<00:00,  5.40s/it]Computing neighbors: 100%|██████████| 1/1 [00:05<00:00,  5.40s/it]
-Embeddings:   0%|[32m          [0m| 0/1 [00:00<?, ?it/s]
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s][A
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:01<00:17,  1.93s/it, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:02<00:17,  1.93s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:04<00:18,  2.33s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:05<00:18,  2.33s/it, Bio conservation: silhouette_label]             [A
-Metrics:  30%|[34m███       [0m| 3/10 [00:06<00:14,  2.08s/it, Bio conservation: silhouette_label][A
-Metrics:  30%|[34m███       [0m| 3/10 [00:06<00:14,  2.08s/it, Bio conservation: clisi_knn]       [A
-Metrics:  40%|[34m████      [0m| 4/10 [00:08<00:12,  2.03s/it, Bio conservation: clisi_knn][A
-Metrics:  40%|[34m████      [0m| 4/10 [00:08<00:12,  2.03s/it, Batch correction: bras]     [A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:31<00:48,  9.65s/it, Batch correction: bras][A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:32<00:48,  9.65s/it, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:32<00:26,  6.65s/it, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:33<00:26,  6.65s/it, Batch correction: graph_connectivity][A/usr/local/lib/python3.11/dist-packages/scib_metrics/metrics/_graph_connectivity.py:32: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
-  tab = pd.value_counts(comps)
-
-Metrics:  70%|[34m███████   [0m| 7/10 [00:33<00:14,  4.87s/it, Batch correction: graph_connectivity][AEmbeddings: 100%|[32m██████████[0m| 1/1 [00:34<00:00, 34.05s/it]Embeddings: 100%|[32m██████████[0m| 1/1 [00:34<00:00, 34.05s/it]
-
-                                                                                             [A                   PCA: fit=   1.0s  infer=  0.0s  metrics= 40.9s  rss=    0MB  gpu=     —  bio=+0.668  batch=+0.436  composite=+0.575
-                 NMF: fitting...
-/usr/local/lib/python3.11/dist-packages/sklearn/decomposition/_nmf.py:1720: ConvergenceWarning: Maximum number of iterations 500 reached. Increase it to improve convergence.
-  warnings.warn(
-/usr/local/lib/python3.11/dist-packages/scanpy/preprocessing/_pca/__init__.py:226: FutureWarning: Argument `use_highly_variable` is deprecated, consider using the mask argument. Use_highly_variable=True can be called through mask_var="highly_variable". Use_highly_variable=False can be called through mask_var=None
-  mask_var_param, mask_var = _handle_mask_var(
-Computing neighbors:   0%|          | 0/1 [00:00<?, ?it/s]Computing neighbors: 100%|██████████| 1/1 [00:05<00:00,  5.61s/it]Computing neighbors: 100%|██████████| 1/1 [00:05<00:00,  5.61s/it]
-Embeddings:   0%|[32m          [0m| 0/1 [00:00<?, ?it/s]
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s][A
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:01<00:11,  1.30s/it, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:01<00:11,  1.30s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:04<00:17,  2.19s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:05<00:17,  2.19s/it, Bio conservation: silhouette_label]             [A
-Metrics:  30%|[34m███       [0m| 3/10 [00:05<00:14,  2.02s/it, Bio conservation: silhouette_label][A
-Metrics:  30%|[34m███       [0m| 3/10 [00:06<00:14,  2.02s/it, Bio conservation: clisi_knn]       [A
-Metrics:  40%|[34m████      [0m| 4/10 [00:06<00:09,  1.50s/it, Bio conservation: clisi_knn][A
-Metrics:  40%|[34m████      [0m| 4/10 [00:07<00:09,  1.50s/it, Batch correction: bras]     [A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:07<00:06,  1.23s/it, Batch correction: bras][A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:07<00:06,  1.23s/it, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:08<00:04,  1.05s/it, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:09<00:04,  1.05s/it, Batch correction: graph_connectivity][A/usr/local/lib/python3.11/dist-packages/scib_metrics/metrics/_graph_connectivity.py:32: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
-  tab = pd.value_counts(comps)
-
-Metrics:  70%|[34m███████   [0m| 7/10 [00:09<00:03,  1.10s/it, Batch correction: graph_connectivity][AEmbeddings: 100%|[32m██████████[0m| 1/1 [00:09<00:00,  9.85s/it]Embeddings: 100%|[32m██████████[0m| 1/1 [00:09<00:00,  9.85s/it]
-
-                                                                                             [A                   NMF: fit=  19.1s  infer=  0.7s  metrics= 17.1s  rss=    0MB  gpu=     —  bio=+0.675  batch=+0.427  composite=+0.576
-           sparseNMF: fitting...
-    FAILED: RuntimeError: CUDA error: CUDA-capable device(s) is/are busy or unavailable
-CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
-For debugging consider passing CUDA_LAUNCH_BLOCKING=1
-Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
-
-             Harmony: fitting...
-/usr/lib/python3.11/functools.py:909: UserWarning: zero-centering a sparse array/matrix densifies it.
-  return dispatch(args[0].__class__)(*args, **kw)
-2026-05-15 12:15:39,949 - harmonypy - INFO - Running Harmony
-INFO:harmonypy:Running Harmony
-2026-05-15 12:15:39,949 - harmonypy - INFO -   Parameters:
-INFO:harmonypy:  Parameters:
-2026-05-15 12:15:39,949 - harmonypy - INFO -     max_iter_harmony: 20
-INFO:harmonypy:    max_iter_harmony: 20
-2026-05-15 12:15:39,949 - harmonypy - INFO -     max_iter_kmeans: 4
-INFO:harmonypy:    max_iter_kmeans: 4
-2026-05-15 12:15:39,949 - harmonypy - INFO -     epsilon_cluster: 0.001
-INFO:harmonypy:    epsilon_cluster: 0.001
-2026-05-15 12:15:39,949 - harmonypy - INFO -     epsilon_harmony: 0.01
-INFO:harmonypy:    epsilon_harmony: 0.01
-2026-05-15 12:15:39,949 - harmonypy - INFO -     nclust: 100
-INFO:harmonypy:    nclust: 100
-2026-05-15 12:15:39,949 - harmonypy - INFO -     block_size: 0.05
-INFO:harmonypy:    block_size: 0.05
-2026-05-15 12:15:39,949 - harmonypy - INFO -     lamb: dynamic (alpha=0.2)
-INFO:harmonypy:    lamb: dynamic (alpha=0.2)
-2026-05-15 12:15:39,950 - harmonypy - INFO -     theta: [2. 2. 2. 2. 2. 2. 2. 2. 2. 2.]
-INFO:harmonypy:    theta: [2. 2. 2. 2. 2. 2. 2. 2. 2. 2.]
-2026-05-15 12:15:39,950 - harmonypy - INFO -     sigma: [0.1 0.1 0.1 0.1 0.1]...
-INFO:harmonypy:    sigma: [0.1 0.1 0.1 0.1 0.1]...
-2026-05-15 12:15:39,950 - harmonypy - INFO -     verbose: True
-INFO:harmonypy:    verbose: True
-2026-05-15 12:15:39,950 - harmonypy - INFO -     random_state: 0
-INFO:harmonypy:    random_state: 0
-2026-05-15 12:15:39,950 - harmonypy - INFO -   Data: 30 PCs × 13080 cells
-INFO:harmonypy:  Data: 30 PCs × 13080 cells
-2026-05-15 12:15:39,950 - harmonypy - INFO -   Batch variables: ['batch']
-INFO:harmonypy:  Batch variables: ['batch']
-2026-05-15 12:15:39,954 - harmonypy - INFO - Computing initial centroids...
-INFO:harmonypy:Computing initial centroids...
-2026-05-15 12:15:40,210 - harmonypy - INFO - Initialization complete.
-INFO:harmonypy:Initialization complete.
-2026-05-15 12:15:40,210 - harmonypy - INFO - Iteration 1 of 20
-INFO:harmonypy:Iteration 1 of 20
-2026-05-15 12:15:40,351 - harmonypy - INFO - Iteration 2 of 20
-INFO:harmonypy:Iteration 2 of 20
-2026-05-15 12:15:40,505 - harmonypy - INFO - Iteration 3 of 20
-INFO:harmonypy:Iteration 3 of 20
-2026-05-15 12:15:40,659 - harmonypy - INFO - Iteration 4 of 20
-INFO:harmonypy:Iteration 4 of 20
-2026-05-15 12:15:40,815 - harmonypy - INFO - Iteration 5 of 20
-INFO:harmonypy:Iteration 5 of 20
-2026-05-15 12:15:40,973 - harmonypy - INFO - Converged after 5 iterations
-INFO:harmonypy:Converged after 5 iterations
-/usr/local/lib/python3.11/dist-packages/scanpy/preprocessing/_pca/__init__.py:226: FutureWarning: Argument `use_highly_variable` is deprecated, consider using the mask argument. Use_highly_variable=True can be called through mask_var="highly_variable". Use_highly_variable=False can be called through mask_var=None
-  mask_var_param, mask_var = _handle_mask_var(
-Computing neighbors:   0%|          | 0/1 [00:00<?, ?it/s]Computing neighbors: 100%|██████████| 1/1 [00:05<00:00,  5.80s/it]Computing neighbors: 100%|██████████| 1/1 [00:05<00:00,  5.81s/it]
-Embeddings:   0%|[32m          [0m| 0/1 [00:00<?, ?it/s]
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s][A
-Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:00<00:08,  1.02it/s, Bio conservation: isolated_labels][A
-Metrics:  10%|[34m█         [0m| 1/10 [00:01<00:08,  1.02it/s, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:04<00:17,  2.18s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
-Metrics:  20%|[34m██        [0m| 2/10 [00:05<00:17,  2.18s/it, Bio conservation: silhouette_label]             [A
-Metrics:  30%|[34m███       [0m| 3/10 [00:05<00:14,  2.05s/it, Bio conservation: silhouette_label][A
-Metrics:  30%|[34m███       [0m| 3/10 [00:06<00:14,  2.05s/it, Bio conservation: clisi_knn]       [A
-Metrics:  40%|[34m████      [0m| 4/10 [00:06<00:09,  1.55s/it, Bio conservation: clisi_knn][A
-Metrics:  40%|[34m████      [0m| 4/10 [00:07<00:09,  1.55s/it, Batch correction: bras]     [A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:07<00:06,  1.26s/it, Batch correction: bras][A
-Metrics:  50%|[34m█████     [0m| 5/10 [00:08<00:06,  1.26s/it, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:08<00:04,  1.09s/it, Batch correction: ilisi_knn][A
-Metrics:  60%|[34m██████    [0m| 6/10 [00:09<00:04,  1.09s/it, Batch correction: graph_connectivity][A/usr/local/lib/python3.11/dist-packages/scib_metrics/metrics/_graph_connectivity.py:32: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
-  tab = pd.value_counts(comps)
-
-Metrics:  70%|[34m███████   [0m| 7/10 [00:09<00:03,  1.14s/it, Batch correction: graph_connectivity][AEmbeddings: 100%|[32m██████████[0m| 1/1 [00:10<00:00, 10.03s/it]Embeddings: 100%|[32m██████████[0m| 1/1 [00:10<00:00, 10.03s/it]
-
-                                                                                             [A               Harmony: fit=   2.0s  infer=  N/A  metrics= 17.4s  rss=    0MB  gpu=     —  bio=+0.749  batch=+0.578  composite=+0.681
-                scVI: fitting...
-INFO: GPU available: True (cuda), used: True
-INFO:lightning.pytorch.utilities.rank_zero:GPU available: True (cuda), used: True
-INFO: TPU available: False, using: 0 TPU cores
-INFO:lightning.pytorch.utilities.rank_zero:TPU available: False, using: 0 TPU cores
-INFO: 💡 Tip: For seamless cloud logging and experiment tracking, try installing [litlogger](https://pypi.org/project/litlogger/) to enable LitLogger, which logs metrics and artifacts automatically to the Lightning Experiments platform.
-INFO:lightning.pytorch.utilities.rank_zero:💡 Tip: For seamless cloud logging and experiment tracking, try installing [litlogger](https://pypi.org/project/litlogger/) to enable LitLogger, which logs metrics and artifacts automatically to the Lightning Experiments platform.
-INFO: LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
-INFO:lightning.pytorch.accelerators.cuda:LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
-Exception raised during training. <class 'NameError'> CUDA error: CUDA-capable device(s) is/are busy or unavailable
-CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
-For debugging consider passing CUDA_LAUNCH_BLOCKING=1
-Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
-
-    FAILED: RuntimeError: CUDA error: CUDA-capable device(s) is/are busy or unavailable
-CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
-For debugging consider passing CUDA_LAUNCH_BLOCKING=1
-Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
-
-
-Wrote /workspace/sparseNMF/benchmarks/results.csv
-Wrote /workspace/sparseNMF/benchmarks/results.md
-Wrote /workspace/sparseNMF/benchmarks/results.json
