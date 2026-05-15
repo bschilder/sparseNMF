@@ -208,6 +208,15 @@ def embed_nmf(adata, batch_key, label_key, counts_layer, k, seed):
 def embed_sparse_nmf(adata, batch_key, label_key, counts_layer, k, seed, **kwargs):
     from sparse_nmf import train_sparse_nmf
 
+    # sparseNMF is GPU-native — pick cuda when available so the
+    # benchmark exercises the package as it's actually intended to be
+    # used in production. Falls back to CPU silently if no CUDA.
+    try:
+        import torch
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+    except ImportError:
+        device = "cpu"
+
     X = _counts(adata, counts_layer)
     with _track_memory() as mem:
         # train_sparse_nmf returns W (the embedding) directly — fit and
@@ -215,7 +224,7 @@ def embed_sparse_nmf(adata, batch_key, label_key, counts_layer, k, seed, **kwarg
         # configuration.
         t0 = time.perf_counter()
         W, _ = train_sparse_nmf(
-            X_sparse=X, n_components=k, device="cpu", random_state=seed,
+            X_sparse=X, n_components=k, device=device, random_state=seed,
             verbose=False, **kwargs,
         )
         fit_s = time.perf_counter() - t0
