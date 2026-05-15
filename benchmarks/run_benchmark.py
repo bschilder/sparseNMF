@@ -54,6 +54,19 @@ def main() -> int:
         "binary is x86_64-only). Enable when running on Linux x86_64 (e.g., RunPod).",
     )
     parser.add_argument(
+        "--no-hvg",
+        action="store_true",
+        help="Skip HVG=2000 batch-aware filter (scIB-canonical preprocessing). "
+        "Off by default. Without HVG, methods operate on full ~20k genes per "
+        "dataset and runtimes blow up ~10x.",
+    )
+    parser.add_argument(
+        "--n-hvg",
+        type=int,
+        default=2000,
+        help="Number of HVGs to select if --no-hvg is NOT set. Default 2000 per scIB paper.",
+    )
+    parser.add_argument(
         "--methods",
         nargs="+",
         default=None,
@@ -78,6 +91,8 @@ def main() -> int:
             cells_per_cohort=cells_per_cohort,
             k=args.k,
             lisi=not args.no_lisi,
+            hvg=not args.no_hvg,
+            n_hvg=args.n_hvg,
         )
 
     df = results_to_dataframe(all_results)
