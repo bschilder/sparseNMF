@@ -187,6 +187,21 @@ def main() -> int:
     json_path.write_text(json.dumps(json_payload, indent=2))
     print(f"Wrote {json_path}")
 
+    # Auto-render figures if matplotlib is available. Cheap; helpful
+    # for skimming results without writing one-off scripts.
+    try:
+        from benchmarks.viz import plot_all
+
+        fig_dir = HERE / "figures"
+        paths = plot_all(df, fig_dir)
+        for label, p in paths.items():
+            print(f"Wrote {p}  ({label})")
+    except ImportError as e:
+        print(f"(matplotlib/pandas missing — skipping figures: {e})")
+    except Exception as e:
+        # Don't fail the whole run if a single plot has bad input
+        print(f"(figure rendering hit an error: {e!r} — results files are still written)")
+
     return 0
 
 
