@@ -32,8 +32,11 @@ DATASETS="pancreas immune lung sim1 sim2"
 echo "=== Phase 1: multi-seed full-data run ==="
 for seed in "${SEEDS[@]}"; do
     out="$RUNS/full-seeds/seed-$seed"
-    if [[ -s "$out/results.csv" ]]; then
-        echo "skip seed=$seed (results.csv exists)"
+    # results.csv alone is not enough — the orchestrator writes it even
+    # when methods crashed (rows just carry error text). Require no
+    # non-empty error.txt under the run dir.
+    if [[ -s "$out/results.csv" ]] && ! find "$out" -name error.txt -size +0 2>/dev/null | grep -q .; then
+        echo "skip seed=$seed (results.csv exists, no errors)"
         continue
     fi
     echo ">>> seed=$seed"
@@ -58,8 +61,8 @@ echo ""
 echo "=== Phase 2: multi-k sweep for sparseNMF ==="
 for k in "${KS[@]}"; do
     out="$RUNS/k-sweep/k-$k"
-    if [[ -s "$out/results.csv" ]]; then
-        echo "skip k=$k (results.csv exists)"
+    if [[ -s "$out/results.csv" ]] && ! find "$out" -name error.txt -size +0 2>/dev/null | grep -q .; then
+        echo "skip k=$k (results.csv exists, no errors)"
         continue
     fi
     echo ">>> k=$k"

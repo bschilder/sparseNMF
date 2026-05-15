@@ -83,18 +83,33 @@ SCIB_DATASETS = {
 
 
 def _resolve_key(adata, candidates, kind: str, dataset: str) -> str:
-    """Return the first candidate that exists in ``adata.obs``, or raise
-    with the actual obs columns when none match. Lets a dataset config
-    list multiple obs-column names — useful when scIB datasets store
-    the batch/label under different names across files."""
+    """Return the first non-degenerate candidate that exists in
+    ``adata.obs``, or raise with the actual obs columns when none
+    match. Lets a dataset config list multiple obs-column names —
+    useful when scIB datasets store the batch/label under different
+    names across files.
+
+    A column is *degenerate* if it has fewer than 2 unique non-null
+    values (i.e. trivially constant). Such columns satisfy "key
+    exists" but produce garbage downstream — single-batch scaling,
+    NaN ARI, etc. We skip past them so candidate fallback is
+    semantically richer than a name lookup."""
     if isinstance(candidates, str):
         candidates = [candidates]
+    skipped_degenerate: list[str] = []
     for c in candidates:
-        if c in adata.obs.columns:
-            return c
+        if c not in adata.obs.columns:
+            continue
+        if adata.obs[c].nunique(dropna=True) < 2:
+            skipped_degenerate.append(c)
+            continue
+        return c
+    detail = (
+        f" (skipped degenerate: {skipped_degenerate})" if skipped_degenerate else ""
+    )
     raise KeyError(
         f"dataset={dataset!r}: no {kind} key in {candidates} matched "
-        f"adata.obs columns {list(adata.obs.columns)}"
+        f"adata.obs columns {list(adata.obs.columns)}{detail}"
     )
 
 
@@ -236,18 +251,24 @@ def scaled_X(adata, batch_key: str) -> np.ndarray:
         X = X.toarray()
     X = X.astype(np.float32, copy=True)
 
+    # scIB / sklearn convention: ddof=0, and constant-std columns are
+    # passed through unchanged (std=1 substitution) rather than scaled
+    # by an epsilon-floored divisor. The previous `std + 1e-6` form was
+    # biasing genuinely-small genuine-std genes; the `where` idiom only
+    # touches columns where the batch is literally constant.
     batch = adata.obs[batch_key].values
     unique_batches = np.unique(batch)
     if unique_batches.size == 1:
-        # Global scaling — degenerate single-batch case.
         mean = X.mean(axis=0)
-        std = X.std(axis=0) + 1e-6
+        std = X.std(axis=0)
+        std = np.where(std < 1e-8, 1.0, std)
         X = (X - mean) / std
     else:
         for b in unique_batches:
             mask = batch == b
             mean = X[mask].mean(axis=0)
-            std = X[mask].std(axis=0) + 1e-6
+            std = X[mask].std(axis=0)
+            std = np.where(std < 1e-8, 1.0, std)
             X[mask] = (X[mask] - mean) / std
     return np.clip(X, -10.0, 10.0)
 
