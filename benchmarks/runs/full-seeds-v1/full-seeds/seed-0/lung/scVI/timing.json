@@ -1,0 +1,12 @@
+{
+  "fit_seconds": 208.54990344122052,
+  "infer_seconds": 0.2966126278042793,
+  "metric_seconds": 0.0,
+  "peak_rss_mb": 0.0,
+  "gpu_peak_mb": 52.27392578125,
+  "dataset": "lung",
+  "method": "scVI",
+  "batch_key": "batch",
+  "label_key": "cell_type",
+  "fingerprint": "a06e8eed710cda0e"
+}

@@ -1,0 +1,12 @@
+{
+  "fit_seconds": 0.9928119108080864,
+  "infer_seconds": 0.0795929804444313,
+  "metric_seconds": 0.0,
+  "peak_rss_mb": 0.0,
+  "gpu_peak_mb": 0.0,
+  "dataset": "sim1",
+  "method": "PCA",
+  "batch_key": "Batch",
+  "label_key": "Group",
+  "fingerprint": "befe0f00d8d661d7"
+}

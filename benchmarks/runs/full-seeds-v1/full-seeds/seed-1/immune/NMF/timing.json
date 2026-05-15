@@ -1,0 +1,12 @@
+{
+  "fit_seconds": 72.82655314728618,
+  "infer_seconds": 2.1980260722339153,
+  "metric_seconds": 0.0,
+  "peak_rss_mb": 0.0,
+  "gpu_peak_mb": 0.0,
+  "dataset": "immune",
+  "method": "NMF",
+  "batch_key": "batch",
+  "label_key": "final_annotation",
+  "fingerprint": "ab9caa3624bfbea1"
+}

@@ -272,24 +272,31 @@ def plot_per_task_bars(
         squeeze=False,
         sharex=True,
     )
+    # Multi-seed aware: aggregate (method, metric) means + stds per
+    # dataset. Single-seed → std is NaN → no error bars; multi-seed →
+    # std plotted as yerr alongside the mean.
     for i, dset in enumerate(datasets):
         ax = axes[i, 0]
-        sub = df[df["dataset"] == dset].set_index("method").reindex(methods)
+        ds_df = df[df["dataset"] == dset]
+        # Aggregate each metric column. Mean over rows (= seeds when
+        # multi-seed); single row passes through as mean.
+        means = ds_df.groupby("method")[metric_cols].mean().reindex(methods)
+        stds = ds_df.groupby("method")[metric_cols].std().reindex(methods)
         x = np.arange(len(metric_cols))
         width = 0.8 / max(len(methods), 1)
         for j, method in enumerate(methods):
-            row = sub.loc[method]
-            if isinstance(row, pd.DataFrame):
-                row = row.iloc[0]
-            vals = np.array([row.get(c, np.nan) for c in metric_cols], dtype=float)
+            vals = means.loc[method].values.astype(float)
+            errs = np.nan_to_num(stds.loc[method].values.astype(float), nan=0.0)
             ax.bar(
                 x + j * width - 0.4 + width / 2,
                 vals,
                 width,
+                yerr=errs,
                 color=palette[method],
                 edgecolor="black",
                 linewidth=0.3,
                 label=method if i == 0 else None,
+                error_kw={"elinewidth": 0.6, "capsize": 0, "ecolor": "black"},
             )
         ax.set_xticks(x)
         ax.set_xticklabels(metric_cols, rotation=35, ha="right", fontsize=8)

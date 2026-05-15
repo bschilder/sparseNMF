@@ -1,0 +1,12 @@
+{
+  "fit_seconds": 99.74018369987607,
+  "infer_seconds": null,
+  "metric_seconds": 0.0,
+  "peak_rss_mb": 0.0,
+  "gpu_peak_mb": 468.84619140625,
+  "dataset": "pancreas",
+  "method": "sparseNMF",
+  "batch_key": "tech",
+  "label_key": "celltype",
+  "fingerprint": "45d9ac68daf8ae1b"
+}
