@@ -104,7 +104,7 @@ def plot_composite_summary(
     datasets = list(pivot.index)
     palette = method_palette(methods)
 
-    fig, ax = plt.subplots(figsize=(1.0 * max(len(datasets), 3) + 1.4, 4.0))
+    fig, ax = plt.subplots(figsize=(1.0 * max(len(datasets), 3) + 2.4, 4.0))
     x = np.arange(len(datasets))
     width = 0.8 / max(len(methods), 1)
     for i, method in enumerate(methods):
@@ -137,19 +137,17 @@ def plot_composite_summary(
     if finite.size:
         ax.set_ylim(min(0.0, float(finite.min()) - 0.05), max(float(finite.max()) + 0.08, 1.0))
     ax.set_title(title or "scIB composite score per dataset × method")
-    # Legend at the bottom, horizontal single row; method order matches
-    # the left-to-right colour order within each dataset's bar cluster.
+    # Legend OUTSIDE the axes on the right, vertical (one column).
     handles, labels = ax.get_legend_handles_labels()
-    fig.legend(
+    ax.legend(
         handles, labels,
         title="method",
-        loc="lower center",
-        ncol=max(len(methods), 1),
+        loc="upper left",
+        bbox_to_anchor=(1.02, 1.0),
         frameon=False,
         fontsize=9,
-        bbox_to_anchor=(0.5, -0.02),
+        borderaxespad=0.0,
     )
-    fig.tight_layout(rect=(0, 0.08, 1, 1.0))
     fig.savefig(out_path, dpi=160, bbox_inches="tight")
     plt.close(fig)
     return out_path
@@ -183,7 +181,7 @@ def plot_per_task_bars(
     fig, axes = plt.subplots(
         len(datasets),
         1,
-        figsize=(0.55 * len(metric_cols) + 1.8, 2.8 * len(datasets) + 0.4),
+        figsize=(0.55 * len(metric_cols) + 3.0, 2.8 * len(datasets) + 0.4),
         squeeze=False,
         sharex=True,
     )
@@ -219,21 +217,21 @@ def plot_per_task_bars(
 
     handles, labels = axes[0, 0].get_legend_handles_labels()
     if handles:
-        # Horizontal single-row legend at the bottom; method order
-        # matches the left-to-right colour order within each metric
-        # group on the bars.
-        fig.legend(
+        # Vertical legend OUTSIDE the axes on the right of the top
+        # subplot. Anchored to the top-right axes so it doesn't get
+        # cropped by tight_layout.
+        axes[0, 0].legend(
             handles,
             labels,
             title="method",
-            loc="lower center",
-            ncol=max(len(methods), 1),
+            loc="upper left",
+            bbox_to_anchor=(1.02, 1.0),
             frameon=False,
             fontsize=9,
-            bbox_to_anchor=(0.5, -0.01),
+            borderaxespad=0.0,
         )
     fig.suptitle(title or "scIB per-metric scores by dataset", fontsize=12)
-    fig.tight_layout(rect=(0, 0.06, 1, 0.96))
+    fig.tight_layout(rect=(0, 0.0, 1, 0.96))
     fig.savefig(out_path, dpi=160, bbox_inches="tight")
     plt.close(fig)
     return out_path
@@ -259,7 +257,7 @@ def plot_score_vs_time(
     palette = method_palette(methods)
     ds_marker = {d: m for d, m in zip(datasets, "ovsP^D*X", strict=False)}
 
-    fig, ax = plt.subplots(figsize=(7.0, 5.0))
+    fig, ax = plt.subplots(figsize=(7.5, 6.0))
     for method in methods:
         sub = df[df["method"] == method].dropna(subset=["Total", "fit_seconds"])
         if sub.empty:
@@ -279,8 +277,11 @@ def plot_score_vs_time(
     ax.set_ylabel("scIB composite (Total)")
     ax.set_title(title or "Speed vs accuracy")
     ax.grid(True, which="both", linewidth=0.3, alpha=0.5)
+    # Force square plotting area regardless of data range / log scale.
+    ax.set_box_aspect(1)
 
-    # Legend: method colour + dataset marker, side-by-side.
+    # Both legends OUTSIDE the axes to the right, vertically stacked:
+    # method colours on top, dataset markers below.
     method_handles = [
         plt.Line2D([], [], marker="o", color="w", markerfacecolor=palette[m],
                    markeredgecolor="black", markersize=8, label=m)
@@ -293,13 +294,16 @@ def plot_score_vs_time(
         for d in datasets
     ]
     method_legend = ax.legend(
-        handles=method_handles, title="method", loc="lower right",
-        frameon=False, fontsize=8,
+        handles=method_handles, title="method",
+        loc="upper left", bbox_to_anchor=(1.02, 1.0),
+        frameon=False, fontsize=8, borderaxespad=0.0,
     )
     ax.add_artist(method_legend)
-    ax.legend(handles=ds_handles, title="dataset", loc="upper left",
-              frameon=False, fontsize=8)
-    fig.tight_layout()
+    ax.legend(
+        handles=ds_handles, title="dataset",
+        loc="upper left", bbox_to_anchor=(1.02, 0.55),
+        frameon=False, fontsize=8, borderaxespad=0.0,
+    )
     fig.savefig(out_path, dpi=160, bbox_inches="tight")
     plt.close(fig)
     return out_path
@@ -325,7 +329,7 @@ def plot_bio_vs_batch_tradeoff(
     palette = method_palette(methods)
     ds_marker = {d: m for d, m in zip(datasets, "ovsP^D*X", strict=False)}
 
-    fig, ax = plt.subplots(figsize=(6.5, 6.5))
+    fig, ax = plt.subplots(figsize=(7.5, 6.0))
     for method in methods:
         sub = df[df["method"] == method].dropna(subset=["Bio conservation", "Batch correction"])
         if sub.empty:
@@ -386,14 +390,19 @@ def plot_bio_vs_batch_tradeoff(
                    markeredgewidth=0.8, label=d)
         for d in datasets
     ]
+    # Both legends OUTSIDE the axes on the right, vertically stacked:
+    # method colours on top, dataset markers below.
     method_legend = ax.legend(
-        handles=method_handles, title="method", loc="lower left",
-        frameon=False, fontsize=8,
+        handles=method_handles, title="method",
+        loc="upper left", bbox_to_anchor=(1.02, 1.0),
+        frameon=False, fontsize=8, borderaxespad=0.0,
     )
     ax.add_artist(method_legend)
-    ax.legend(handles=ds_handles, title="dataset", loc="upper right",
-              frameon=False, fontsize=8)
-    fig.tight_layout()
+    ax.legend(
+        handles=ds_handles, title="dataset",
+        loc="upper left", bbox_to_anchor=(1.02, 0.55),
+        frameon=False, fontsize=8, borderaxespad=0.0,
+    )
     fig.savefig(out_path, dpi=160, bbox_inches="tight")
     plt.close(fig)
     return out_path
