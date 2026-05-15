@@ -681,104 +681,119 @@ class SparseNMF:
         # Similarly for R² weight
         effective_r2_weight = self.r2_weight if self.r2_weight > 0 else self.nonzero_r2_weight
         
+        # Pre-compute how many batches each iteration will touch — needed
+        # to scale per-batch loss before backward so the *effective*
+        # gradient is the mean across batches (equivalent to the old
+        # `total_loss / n_batches` then one big backward, but freeing
+        # the autograd graph per batch instead of accumulating it).
+        n_total_batches = (n_samples + self.batch_size - 1) // self.batch_size
+
         for iteration in iterator:
             optimizer.zero_grad()
-            
-            total_loss = torch.tensor(0.0, device=self.device, requires_grad=False)
-            total_mse = torch.tensor(0.0, device=self.device)
-            total_r2_loss = torch.tensor(0.0, device=self.device)
+
+            total_loss_value = 0.0  # scalar accumulator (no autograd)
+            total_mse_value = 0.0
+            total_r2_value = 0.0
             n_batches = 0
-            
-            # Process in batches for memory efficiency
+
+            # Process in batches. Critically: call `.backward()` on each
+            # batch's loss immediately rather than summing into a single
+            # `total_loss` tensor and backwarding once at the end. The
+            # old pattern retained the entire forward graph for every
+            # batch in this iteration, which (a) blew up GPU memory on
+            # k=30 datasets — observed OOM at ~13 GB on a 16 GB A4000 —
+            # and (b) made CPU runs grind for hours via autograd
+            # bookkeeping. PyTorch's standard gradient-accumulation
+            # pattern fixes both: graph is freed after each batch's
+            # backward, peak memory is O(one batch) not O(all batches),
+            # and the optimizer.step() at the end uses the accumulated
+            # gradients which are mathematically identical to the
+            # old `total_loss.backward()`.
             for i in range(0, n_samples, self.batch_size):
                 end = min(i + self.batch_size, n_samples)
                 X_batch_sparse = X_csr[i:end]
-                
+
                 if X_batch_sparse.nnz == 0:
                     continue
-                
-                # Convert batch to torch sparse
+
                 X_batch_torch = self._sparse_to_torch(X_batch_sparse)
                 coo = X_batch_torch.coalesce()
                 X_values = coo.values()
                 row_idx = coo.indices()[0]
                 col_idx = coo.indices()[1]
-                
+
                 W_batch = W[i:end]
-                
-                # Pre-compute X_recon_values on non-zero positions if needed (for MSE or R²)
+
+                # Build this batch's loss.
+                batch_loss = None
+                batch_mse_val = 0.0
+                batch_r2_val = 0.0
+
+                # Pre-compute reconstructed values on non-zero positions
+                # if either nonzero_* loss is enabled; reused for both.
                 X_recon_values_nonzero = None
                 if self.nonzero_mse_weight > 0 or self.nonzero_r2_weight > 0:
-                    # Compute reconstructed values on non-zero positions (chunked to avoid OOM)
                     W_rows = W_batch[row_idx]
-                    # Use much smaller chunk size when nonzero_mse_weight is enabled to be more conservative
-                    # Especially important for large n_components
                     chunk_size = 5000 if self.nonzero_mse_weight > 0 else 20000
-                    X_recon_values_nonzero = _compute_recon_values_chunked(W_rows, H, col_idx, chunk_size, self.device)
-                
-                # MSE loss - controlled by nonzero_mse_weight
+                    X_recon_values_nonzero = _compute_recon_values_chunked(
+                        W_rows, H, col_idx, chunk_size, self.device
+                    )
+
                 if effective_mse_weight > 0:
                     if self.nonzero_mse_weight > 0:
-                        # Compute MSE on non-zero values only
-                        if X_recon_values_nonzero is None:
+                        X_recon_values = X_recon_values_nonzero
+                        if X_recon_values is None:
                             W_rows = W_batch[row_idx]
-                            chunk_size = 5000  # Very conservative chunk size for nonzero_mse_weight
-                            X_recon_values = _compute_recon_values_chunked(W_rows, H, col_idx, chunk_size, self.device)
-                        else:
-                            X_recon_values = X_recon_values_nonzero
+                            X_recon_values = _compute_recon_values_chunked(
+                                W_rows, H, col_idx, 5000, self.device
+                            )
                         mse_loss = F.mse_loss(X_recon_values, X_values)
                     else:
-                        # Compute MSE on all values (including zeros) - need full dense matrix
                         X_batch_dense = X_batch_torch.to_dense()
                         X_recon_batch = torch.mm(W_batch, H)
                         mse_loss = F.mse_loss(X_recon_batch, X_batch_dense)
-                    total_loss = total_loss + effective_mse_weight * mse_loss
-                    total_mse = total_mse + mse_loss.detach()
-                
-                # R² loss - controlled by nonzero_r2_weight
+                    term = effective_mse_weight * mse_loss
+                    batch_loss = term if batch_loss is None else batch_loss + term
+                    batch_mse_val = float(mse_loss.detach().item())
+
                 if effective_r2_weight > 0:
                     if self.nonzero_r2_weight > 0:
-                        # Compute R² on non-zero values only
-                        if X_recon_values_nonzero is None:
+                        X_recon_values = X_recon_values_nonzero
+                        if X_recon_values is None:
                             W_rows = W_batch[row_idx]
-                            chunk_size = 5000  # Very conservative chunk size
-                            X_recon_values = _compute_recon_values_chunked(W_rows, H, col_idx, chunk_size, self.device)
-                        else:
-                            X_recon_values = X_recon_values_nonzero
+                            X_recon_values = _compute_recon_values_chunked(
+                                W_rows, H, col_idx, 5000, self.device
+                            )
                         r2_loss = self._compute_r2_loss(X_values, X_recon_values, X_mean)
                     else:
-                        # Compute R² on all values (including zeros) - need full dense matrix
                         X_batch_dense = X_batch_torch.to_dense()
                         X_recon_batch = torch.mm(W_batch, H)
                         X_batch_flat = X_batch_dense.flatten()
                         X_recon_flat = X_recon_batch.flatten()
-                        # Use mean of all values in this batch (including zeros) for R² calculation
                         X_mean_batch = X_batch_flat.mean()
                         r2_loss = self._compute_r2_loss(X_batch_flat, X_recon_flat, X_mean_batch)
-                    total_loss = total_loss + effective_r2_weight * r2_loss
-                    total_r2_loss = total_r2_loss + r2_loss.detach()
-                
-                # Clear intermediate tensors and cache after each batch when using nonzero_mse_weight
-                # (memory-intensive mode) - helps prevent OOM
-                if self.nonzero_mse_weight > 0 or self.nonzero_r2_weight > 0:
-                    # Clear cache periodically to prevent memory fragmentation
-                    if self.device.type == 'cuda' and n_batches % 5 == 0:
-                        torch.cuda.empty_cache()
-                
+                    term = effective_r2_weight * r2_loss
+                    batch_loss = term if batch_loss is None else batch_loss + term
+                    batch_r2_val = float(r2_loss.detach().item())
+
+                if batch_loss is None:
+                    continue
+
+                # Scale and immediately backward — this frees the batch's
+                # autograd graph before the next batch's forward starts.
+                (batch_loss / n_total_batches).backward()
+
+                total_loss_value += float(batch_loss.detach().item())
+                total_mse_value += batch_mse_val
+                total_r2_value += batch_r2_val
                 n_batches += 1
-            
+
             if n_batches == 0:
                 continue
-            
-            # Average loss across batches
-            total_loss = total_loss / n_batches
-            
-            # Backward pass
-            total_loss.backward()
-            
-            # Gradient clipping
+
+            # Gradient clipping (on accumulated grads)
             torch.nn.utils.clip_grad_norm_([W, H], max_norm=1.0)
-            
+
             # Optimizer step
             optimizer.step()
             
@@ -787,48 +802,45 @@ class SparseNMF:
                 W.clamp_(min=1e-10)
                 H.clamp_(min=1e-10)
             
-            # Monitor progress
+            # Monitor progress (use scalar accumulators — no autograd state).
+            avg_loss = total_loss_value / n_batches
+            avg_mse = total_mse_value / n_batches
+            avg_r2_loss = total_r2_value / n_batches
+
             if self.verbose and ((iteration + 1) % loss_report_interval == 0 or iteration == 0):
-                avg_mse = (total_mse / n_batches).item()
-                # Compute R² for display if either r2_weight > 0 or nonzero_r2_weight > 0
                 should_show_r2 = self.r2_weight > 0 or self.nonzero_r2_weight > 0
-                avg_r2_loss = (total_r2_loss / n_batches).item() if should_show_r2 else 0
                 current_r2 = 1 - avg_r2_loss  # Convert loss back to R²
-                
-                postfix = {'loss': f'{total_loss.item():.6f}', 'MSE': f'{avg_mse:.6f}'}
+
+                postfix = {'loss': f'{avg_loss:.6f}', 'MSE': f'{avg_mse:.6f}'}
                 if should_show_r2:
-                    # Label R² based on whether it's computed on non-zero values only
                     r2_label = 'R²(nonzero)' if self.nonzero_r2_weight > 0 else 'R²'
                     postfix[r2_label] = f'{current_r2:.4f}'
-                
+
                 if prev_loss is not None:
-                    loss_change = abs(prev_loss - total_loss.item()) / (prev_loss + 1e-10)
+                    loss_change = abs(prev_loss - avg_loss) / (prev_loss + 1e-10)
                     postfix['change'] = f'{loss_change:.2%}'
-                    
+
                     if loss_change < self.tol:
                         if self.verbose:
                             print(f"\nConverged at iteration {iteration + 1}")
                         break
-                
-                # Check patience-based early stopping
+
                 if self.patience is not None:
-                    current_loss = total_loss.item()
-                    if best_loss is None or current_loss < best_loss:
-                        best_loss = current_loss
+                    if best_loss is None or avg_loss < best_loss:
+                        best_loss = avg_loss
                         patience_counter = 0
                     else:
                         patience_counter += loss_report_interval
-                    
-                    # Add patience counter to progress bar
+
                     postfix['patience'] = f'{patience_counter}/{self.patience}'
-                    
+
                     if patience_counter >= self.patience:
                         if self.verbose:
                             print(f"\nEarly stopping: no improvement for {self.patience} iterations (best loss: {best_loss:.6f})")
                         break
-                
+
                 iterator.set_postfix(postfix)
-                prev_loss = total_loss.item()
+                prev_loss = avg_loss
         
         # Detach from computation graph
         W = W.detach()
