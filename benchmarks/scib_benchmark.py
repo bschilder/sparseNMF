@@ -134,12 +134,27 @@ def _download_with_progress(url: str, dest: Path) -> None:
     urllib.request.urlretrieve(url, dest, _hook)
 
 
-def load_scib_dataset(name: str, *, cells_per_cohort: int | None = None, seed: int = 0):
-    """Return (adata, batch_key, label_key) for a named scIB dataset.
+def load_scib_dataset(
+    name: str,
+    *,
+    cells_per_cohort: int | None = None,
+    seed: int = 0,
+    hvg: bool = True,
+    n_hvg: int = 2000,
+):
+    """Return (adata, batch_key, label_key, counts_layer) for a named
+    scIB dataset.
 
     If ``cells_per_cohort`` is set, stratified-subsample by
     (batch × label) so the benchmark is CPU-runnable. Pass ``None``
     to use the full dataset (recommended on GPU).
+
+    If ``hvg=True`` (default), runs ``scib.preprocessing.hvg_batch`` to
+    select the top ``n_hvg`` highly variable genes per batch (Cell
+    Ranger flavor, n_bins=20). This is the scIB-paper-canonical
+    preprocessing — every method then operates on the same 2000-gene
+    matrix instead of the full ~20k genes. Massively faster *and*
+    matches what the published scIB benchmark actually used.
     """
     import anndata as ad
 
@@ -161,6 +176,23 @@ def load_scib_dataset(name: str, *, cells_per_cohort: int | None = None, seed: i
                     continue
                 keep.append(rng.choice(idx, size=min(cells_per_cohort, idx.size), replace=False))
         adata = adata[np.sort(np.concatenate(keep))].copy()
+
+    if hvg:
+        # Per scIB methods: hvg_batch picks top-n_hvg per batch by
+        # cell_ranger flavor, then ranks first by # batches each gene is
+        # HV in, then by mean dispersion across batches. Run on log1p
+        # (.X is scran-log1p in scIB-published files).
+        import scib.preprocessing as scib_pp
+
+        adata = scib_pp.hvg_batch(
+            adata,
+            batch_key=spec["batch_key"],
+            target_genes=n_hvg,
+            flavor="cell_ranger",
+            n_bins=20,
+            adataOut=True,
+        )
+
     return adata, spec["batch_key"], spec["label_key"], spec["counts_layer"]
 
 
@@ -232,10 +264,23 @@ def embed_sparse_nmf(adata, batch_key, label_key, counts_layer, k, seed, **kwarg
 
 
 def embed_sparse_nmf_nonzero(adata, batch_key, label_key, counts_layer, k, seed):
-    return embed_sparse_nmf(
-        adata, batch_key, label_key, counts_layer, k, seed,
-        mse_weight=0.0, nonzero_mse_weight=1.0,
-    )
+    # The gradient-descent path (triggered by nonzero_mse_weight > 0)
+    # has a CUDA memory issue at this k on a 16 GB A4000 *and* doesn't
+    # keep the workload on the GPU as cleanly as the MU path. Forcing
+    # device='cpu' here makes it finish reliably; it's slower per
+    # iteration but doesn't OOM and produces complete results.
+    from sparse_nmf import train_sparse_nmf
+
+    X = _counts(adata, counts_layer)
+    with _track_memory() as mem:
+        t0 = time.perf_counter()
+        W, _ = train_sparse_nmf(
+            X_sparse=X, n_components=k, device="cpu", random_state=seed,
+            verbose=False,
+            mse_weight=0.0, nonzero_mse_weight=1.0,
+        )
+        fit_s = time.perf_counter() - t0
+    return W, MethodTiming(fit_s, None, peak_rss_mb=mem["peak_rss_mb"], gpu_peak_mb=mem["gpu_peak_mb"])
 
 
 def embed_harmony(adata, batch_key, label_key, counts_layer, k, seed):
@@ -253,9 +298,14 @@ def embed_harmony(adata, batch_key, label_key, counts_layer, k, seed):
         t1 = time.perf_counter()
         ho = hm.run_harmony(pca, adata.obs, batch_key, max_iter_harmony=20)
         harm_s = time.perf_counter() - t1
-    emb = np.asarray(ho.Z_corr).T
-    # We bill PCA+Harmony as the "fit" since both are required to
-    # produce the embedding; "infer" stays None (no separable step).
+    # harmonypy 2.0 returns Z_corr shaped (n_cells, k) directly; the
+    # transpose in earlier versions is no longer needed. (Pre-2.0 the
+    # shape was (k, n_cells) and we did .T to fix it; the API changed
+    # between versions.) Pinning to >=2.0 in the install side.
+    emb = np.asarray(ho.Z_corr)
+    if emb.shape[0] != adata.n_obs:
+        # Defensive: if some future harmonypy reverts the shape, fix it.
+        emb = emb.T
     return emb, MethodTiming(pca_s + harm_s, None, peak_rss_mb=mem["peak_rss_mb"], gpu_peak_mb=mem["gpu_peak_mb"])
 
 
@@ -375,12 +425,15 @@ def run_dataset(
     k: int = 30,
     seed: int = 0,
     lisi: bool = True,
+    hvg: bool = True,
+    n_hvg: int = 2000,
 ) -> list[MethodResult]:
     """Run all methods on a dataset, returning per-method results."""
     methods = methods or list(METHODS)
     print(f"\n=== {name} ===")
     adata, batch_key, label_key, counts_layer = load_scib_dataset(
         name, cells_per_cohort=cells_per_cohort, seed=seed,
+        hvg=hvg, n_hvg=n_hvg,
     )
     print(
         f"  {adata.shape}  batches={adata.obs[batch_key].nunique()}  "
