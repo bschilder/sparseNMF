@@ -45,6 +45,7 @@ _NON_METRIC_COLS = [
     "peak_rss_mb",
     "gpu_peak_mb",
     "error",
+    "_impl",  # provenance — string column, not a metric
     *_AGGREGATE_COLS,
 ]
 
