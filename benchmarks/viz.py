@@ -356,9 +356,12 @@ def plot_score_vs_time(
         xerr = np.nan_to_num(sub["x_std"].values, nan=0.0)
         yerr = np.nan_to_num(sub["y_std"].values, nan=0.0)
 
-        # Translucent convex hull behind the markers (paint first so
-        # the dots and error bars stay legible on top).
-        _draw_method_hull(ax, xs, ys, palette[method])
+        # Hull uses ALL raw (method-filtered) points across every seed
+        # and dataset — so multi-seed variation expands the polygon. The
+        # markers and error bars still live at the (dataset, method)
+        # means; the hull captures the full data envelope.
+        raw = df[df["method"] == method].dropna(subset=["fit_seconds", "Total"])
+        _draw_method_hull(ax, raw["fit_seconds"].values, raw["Total"].values, palette[method])
 
         # Error bars: no caps, just thin lines on both axes.
         ax.errorbar(
@@ -446,9 +449,11 @@ def plot_bio_vs_batch_tradeoff(
         xerr = np.nan_to_num(sub["x_std"].values, nan=0.0)
         yerr = np.nan_to_num(sub["y_std"].values, nan=0.0)
 
-        # Translucent convex hull = method's "area of operation"
-        # across datasets. Drawn first so markers/error bars overlay it.
-        _draw_method_hull(ax, xs, ys, palette[method])
+        # Hull spans ALL raw points (every seed × dataset) so multi-seed
+        # variation enlarges the polygon. Markers + error bars remain at
+        # the per-(dataset, method) means.
+        raw = df[df["method"] == method].dropna(subset=["Batch correction", "Bio conservation"])
+        _draw_method_hull(ax, raw["Batch correction"].values, raw["Bio conservation"].values, palette[method])
 
         # Error bars: no caps, just thin lines on both axes.
         ax.errorbar(

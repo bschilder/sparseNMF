@@ -53,11 +53,12 @@ METHOD_MODULES: dict[str, str] = {
     "NMF": "benchmarks.methods.nmf",
     "sparseNMF": "benchmarks.methods.sparse_nmf",
     "sparseNMF+nonzero": "benchmarks.methods.sparse_nmf_nonzero",
+    "sparseNMF+batch": "benchmarks.methods.sparse_nmf_batch",
     "Harmony": "benchmarks.methods.harmony",
     "scVI": "benchmarks.methods.scvi",
 }
 
-DEFAULT_METHODS = ["PCA", "NMF", "sparseNMF", "Harmony", "scVI"]
+DEFAULT_METHODS = ["PCA", "NMF", "sparseNMF", "sparseNMF+batch", "Harmony", "scVI"]
 
 METRICS_MODULES = {
     "scib_yosef": "benchmarks.metrics.scib_yosef",
