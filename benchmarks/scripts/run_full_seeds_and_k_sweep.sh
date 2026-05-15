@@ -37,7 +37,9 @@ for seed in "${SEEDS[@]}"; do
         continue
     fi
     echo ">>> seed=$seed"
-    python -m benchmarks.run_benchmark \
+    mkdir -p "$out"
+    # Direct redirect — avoids tee/pipefail killing the script.
+    if ! python -m benchmarks.run_benchmark \
         --out-dir "$out" \
         --full \
         --seed "$seed" \
@@ -45,7 +47,11 @@ for seed in "${SEEDS[@]}"; do
         --datasets $DATASETS \
         --methods $METHODS \
         --metrics-impl scib_yosef \
-        2>&1 | tee "$out.log" | tail -3
+        > "$out/run.log" 2>&1
+    then
+        echo "    seed=$seed: orchestrator exit nonzero — check $out/run.log"
+    fi
+    tail -1 "$out/run.log" 2>/dev/null || true
 done
 
 echo ""
@@ -57,7 +63,8 @@ for k in "${KS[@]}"; do
         continue
     fi
     echo ">>> k=$k"
-    python -m benchmarks.run_benchmark \
+    mkdir -p "$out"
+    if ! python -m benchmarks.run_benchmark \
         --out-dir "$out" \
         --full \
         --seed 0 \
@@ -65,12 +72,15 @@ for k in "${KS[@]}"; do
         --datasets $DATASETS \
         --methods sparseNMF \
         --metrics-impl scib_yosef \
-        2>&1 | tee "$out.log" | tail -3
+        > "$out/run.log" 2>&1
+    then
+        echo "    k=$k: orchestrator exit nonzero — check $out/run.log"
+    fi
+    tail -1 "$out/run.log" 2>/dev/null || true
 done
 
 echo ""
 echo "=== Phase 3: scib_original head-to-head on seed=0 embeddings ==="
-# Reuse the seed-0 embeddings; rerun metrics with the canonical impl.
 bash "$REPO/benchmarks/scripts/rebuild_scib_lisi.sh" || true
 out0="$RUNS/full-seeds/seed-0"
 if [[ -d "$out0" ]]; then
@@ -81,7 +91,7 @@ if [[ -d "$out0" ]]; then
             --out-dir "$out0" \
             --methods $METHODS \
             --seed 0 \
-            2>&1 | tee -a "$out0.log" | tail -2
+            >> "$out0/run.log" 2>&1 || echo "    $ds: scib_original errored — check $out0/run.log"
     done
 fi
 
