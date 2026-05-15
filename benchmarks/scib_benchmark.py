@@ -297,12 +297,27 @@ def embed_nmf(adata, batch_key, label_key, counts_layer, k, seed):
 def embed_sparse_nmf(adata, batch_key, label_key, counts_layer, k, seed, **kwargs):
     from sparse_nmf import train_sparse_nmf
 
-    # sparseNMF is GPU-native — pick cuda when available so the
-    # benchmark exercises the package as it's actually intended to be
-    # used in production. Falls back to CPU silently if no CUDA.
+    # sparseNMF is GPU-native, but when running alongside scib-metrics'
+    # JAX in the same process we've observed CUDA context corruption
+    # ("device(s) is/are busy or unavailable") on the second call.
+    # Reset the allocator and clear cached state before grabbing the
+    # device, then try cuda; fall back to cpu on init failure.
     try:
         import torch
-        device = "cuda" if torch.cuda.is_available() else "cpu"
+        device = "cpu"
+        if torch.cuda.is_available():
+            try:
+                torch.cuda.empty_cache()
+                torch.cuda.synchronize()
+                # Probe with a small allocation; if this fails we know
+                # the device is in a bad state and we shouldn't try
+                # to fit on it.
+                _ = torch.zeros(1, device="cuda")
+                del _
+                device = "cuda"
+            except RuntimeError as e:
+                print(f"    (cuda probe failed: {e!s[:80]} — falling back to cpu)")
+                device = "cpu"
     except ImportError:
         device = "cpu"
 
