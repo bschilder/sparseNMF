@@ -498,15 +498,17 @@ def plot_bio_vs_batch_tradeoff(
             )
 
     # Dynamic zoom: integration benchmarks usually live in the
-    # [0.5, 1.0] corner, and an [0, 1] view wastes ~75% of the plot
-    # area on space the data never visits. Tighten BOTH lower limits
-    # to 0.5 when no data point on either axis falls below — keeping
-    # both bounds in sync preserves the square aspect. Falls back to
-    # 0 for both when any outlier method goes below 0.5 on either axis.
+    # [0.5, 1.0] corner, and an [0, 1] view wastes plot area on
+    # space the data never visits. Tighten each axis's lower limit
+    # to 0.5 INDEPENDENTLY when that axis has no points below — so
+    # one axis can zoom in while the other stays wide if its data
+    # has outliers. Square *box* aspect is preserved via
+    # set_box_aspect(1) below (data units may differ but the
+    # plotting box stays square).
     min_x = float(np.nanmin(df["Batch correction"].dropna())) if df["Batch correction"].notna().any() else 0.0
     min_y = float(np.nanmin(df["Bio conservation"].dropna())) if df["Bio conservation"].notna().any() else 0.0
-    zoom_in = min_x >= 0.5 and min_y >= 0.5
-    x_lo = y_lo = 0.5 if zoom_in else 0.0
+    x_lo = 0.5 if min_x >= 0.5 else 0.0
+    y_lo = 0.5 if min_y >= 0.5 else 0.0
 
     # Faint diagonal iso-composite lines: total = 0.4*batch + 0.6*bio.
     # Generate over [x_lo, 1] so annotations land inside the visible area.
@@ -533,7 +535,11 @@ def plot_bio_vs_batch_tradeoff(
     ax.grid(True, linewidth=0.3, alpha=0.5)
     ax.set_xlim(x_lo, 1)
     ax.set_ylim(y_lo, 1)
-    ax.set_aspect("equal", adjustable="box")  # SQUARE plot area
+    # Square BOX (not equal data units) so independent zoom levels on
+    # x and y don't break the square aspect. Iso-composite diagonals
+    # will appear at a non-45° slope when the ranges differ — that's
+    # the cost of letting each axis pick its own zoom.
+    ax.set_box_aspect(1)
 
     # Legends: methods (color) + datasets (marker).
     method_handles = [
