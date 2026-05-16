@@ -34,8 +34,13 @@ def test_sweep_standard_mode_basic():
         {"n_components": 5, "max_iter": 10, "patience": 3},
     ]
     res = sweep_hyperparameters(
-        X, configs, labels=labels, mode="standard",
-        dataset_name="t1", device="cpu", verbose=False,
+        X,
+        configs,
+        labels=labels,
+        mode="standard",
+        dataset_name="t1",
+        device="cpu",
+        verbose=False,
     )
     assert isinstance(res, SweepResult)
     assert len(res.df) == 2
@@ -49,13 +54,23 @@ def test_sweep_batch_aware_mode():
     labels = np.repeat([0, 1, 2], 30)
     batch = np.tile([0, 1, 2], 30)
     configs = [
-        {"n_components": 3, "alignment_weight": 1.0,
-         "max_iter": 10, "patience": 3, "sparsity_weight": 0.01},
+        {
+            "n_components": 3,
+            "alignment_weight": 1.0,
+            "max_iter": 10,
+            "patience": 3,
+            "sparsity_weight": 0.01,
+        },
     ]
     res = sweep_hyperparameters(
-        X, configs, labels=labels, batch=batch,
-        mode="batch_aware", dataset_name="t2",
-        device="cpu", verbose=False,
+        X,
+        configs,
+        labels=labels,
+        batch=batch,
+        mode="batch_aware",
+        dataset_name="t2",
+        device="cpu",
+        verbose=False,
     )
     assert len(res.df) == 1
     assert res.df["mode"].iloc[0] == "batch_aware"
@@ -67,8 +82,13 @@ def test_sweep_batch_aware_requires_batch():
     configs = [{"n_components": 3, "max_iter": 5}]
     with pytest.raises(ValueError, match="batch=..."):
         sweep_hyperparameters(
-            X, configs, labels=None, batch=None,
-            mode="batch_aware", device="cpu", verbose=False,
+            X,
+            configs,
+            labels=None,
+            batch=None,
+            mode="batch_aware",
+            device="cpu",
+            verbose=False,
         )
 
 
@@ -77,7 +97,11 @@ def test_sweep_bad_mode_errors():
     configs = [{"n_components": 3, "max_iter": 5}]
     with pytest.raises(ValueError, match="unknown mode"):
         sweep_hyperparameters(
-            X, configs, mode="bogus", device="cpu", verbose=False,
+            X,
+            configs,
+            mode="bogus",
+            device="cpu",
+            verbose=False,
         )
 
 
@@ -85,16 +109,21 @@ def test_sweep_missing_n_components_errors():
     X = _tiny_sparse()
     with pytest.raises(ValueError, match="missing 'n_components'"):
         sweep_hyperparameters(
-            X, [{"max_iter": 5}], mode="standard",
-            device="cpu", verbose=False,
+            X,
+            [{"max_iter": 5}],
+            mode="standard",
+            device="cpu",
+            verbose=False,
         )
 
 
 def test_sweep_records_train_seconds_and_iter():
     X = _tiny_sparse()
     res = sweep_hyperparameters(
-        X, [{"n_components": 3, "max_iter": 10, "patience": 3}],
-        device="cpu", verbose=False,
+        X,
+        [{"n_components": 3, "max_iter": 10, "patience": 3}],
+        device="cpu",
+        verbose=False,
     )
     row = res.df.iloc[0]
     assert row["train_seconds"] > 0
@@ -107,8 +136,12 @@ def test_sweep_records_train_seconds_and_iter():
 def test_sweep_no_labels_yields_nan_silhouette():
     X = _tiny_sparse()
     res = sweep_hyperparameters(
-        X, [{"n_components": 3, "max_iter": 5, "patience": 2}],
-        labels=None, batch=None, device="cpu", verbose=False,
+        X,
+        [{"n_components": 3, "max_iter": 5, "patience": 2}],
+        labels=None,
+        batch=None,
+        device="cpu",
+        verbose=False,
     )
     assert np.isnan(res.df["silhouette_label"].iloc[0])
     assert np.isnan(res.df["silhouette_batch"].iloc[0])
@@ -117,9 +150,11 @@ def test_sweep_no_labels_yields_nan_silhouette():
 def test_sweep_verbose_does_not_crash(capsys):
     X = _tiny_sparse(n_cells=40, n_genes=60)
     res = sweep_hyperparameters(
-        X, [{"n_components": 3, "max_iter": 5, "patience": 2}],
+        X,
+        [{"n_components": 3, "max_iter": 5, "patience": 2}],
         labels=np.repeat([0, 1], 20),
-        device="cpu", verbose=True,
+        device="cpu",
+        verbose=True,
     )
     out = capsys.readouterr().out
     # Verbose mode emits a config-line + summary-line per config.
@@ -135,8 +170,10 @@ def test_sweep_cuda_request_falls_back_on_cpu_host(monkeypatch):
     monkeypatch.setattr(torch.cuda, "is_available", lambda: False)
     X = _tiny_sparse(n_cells=40, n_genes=60)
     res = sweep_hyperparameters(
-        X, [{"n_components": 3, "max_iter": 5, "patience": 2}],
-        device="cuda", verbose=True,
+        X,
+        [{"n_components": 3, "max_iter": 5, "patience": 2}],
+        device="cuda",
+        verbose=True,
     )
     assert len(res.df) == 1
 
@@ -186,20 +223,40 @@ def test_sparsity_helper():
 def test_sweep_result_plot_writes_files(tmp_path):
     """SweepResult.plot() should emit the 3 expected PNGs into the dir."""
     import matplotlib
+
     matplotlib.use("Agg")
 
     X = _tiny_sparse(n_cells=60, n_genes=100)
     labels = np.repeat([0, 1, 2], 20)
     res = sweep_hyperparameters(
-        X, [
-            {"n_components": 3, "normalize_inputs": True, "nonzero_mse_weight": 0.0,
-             "max_iter": 5, "patience": 2},
-            {"n_components": 5, "normalize_inputs": False, "nonzero_mse_weight": 0.0,
-             "max_iter": 5, "patience": 2},
-            {"n_components": 30, "normalize_inputs": True, "nonzero_mse_weight": 0.0,
-             "max_iter": 5, "patience": 2},
+        X,
+        [
+            {
+                "n_components": 3,
+                "normalize_inputs": True,
+                "nonzero_mse_weight": 0.0,
+                "max_iter": 5,
+                "patience": 2,
+            },
+            {
+                "n_components": 5,
+                "normalize_inputs": False,
+                "nonzero_mse_weight": 0.0,
+                "max_iter": 5,
+                "patience": 2,
+            },
+            {
+                "n_components": 30,
+                "normalize_inputs": True,
+                "nonzero_mse_weight": 0.0,
+                "max_iter": 5,
+                "patience": 2,
+            },
         ],
-        labels=labels, dataset_name="d1", device="cpu", verbose=False,
+        labels=labels,
+        dataset_name="d1",
+        device="cpu",
+        verbose=False,
     )
     paths = res.plot(tmp_path)
     assert (tmp_path / "sweep_k.png").exists()
