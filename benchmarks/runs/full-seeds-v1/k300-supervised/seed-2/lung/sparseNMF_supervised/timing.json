@@ -1,0 +1,12 @@
+{
+  "fit_seconds": 13.282832510769367,
+  "infer_seconds": null,
+  "metric_seconds": 0.0,
+  "peak_rss_mb": 0.0,
+  "gpu_peak_mb": 445.1943359375,
+  "dataset": "lung",
+  "method": "sparseNMF_supervised",
+  "batch_key": "batch",
+  "label_key": "cell_type",
+  "fingerprint": "a06e8eed710cda0e"
+}

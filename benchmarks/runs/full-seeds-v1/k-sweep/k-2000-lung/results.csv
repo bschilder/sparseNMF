@@ -1,0 +1,2 @@
+dataset,method,k,fit_seconds,infer_seconds,metric_seconds,peak_rss_mb,gpu_peak_mb,error,_bio,_batch,_composite
+lung,sparseNMF,2000,215.86756002902985,,0.0,0.0,10022.37548828125,,,,

@@ -53,11 +53,12 @@ METHOD_MODULES: dict[str, str] = {
     "NMF": "benchmarks.methods.nmf",
     "sparseNMF": "benchmarks.methods.sparse_nmf",
     "sparseNMF+nonzero": "benchmarks.methods.sparse_nmf_nonzero",
+    "sparseNMF_supervised": "benchmarks.methods.sparse_nmf_batch",
     "Harmony": "benchmarks.methods.harmony",
     "scVI": "benchmarks.methods.scvi",
 }
 
-DEFAULT_METHODS = ["PCA", "NMF", "sparseNMF", "Harmony", "scVI"]
+DEFAULT_METHODS = ["PCA", "NMF", "sparseNMF", "sparseNMF_supervised", "Harmony", "scVI"]
 
 METRICS_MODULES = {
     "scib_yosef": "benchmarks.metrics.scib_yosef",
@@ -107,7 +108,7 @@ def run_metrics(impl: str, dataset: str, methods: list[str], out_dir: Path, args
 # ── Aggregation: read per-method artifacts → DataFrame ──────────────
 
 
-def _load_method_row(out_dir: Path, dataset: str, method: str, impl: str) -> dict | None:
+def _load_method_row(out_dir: Path, dataset: str, method: str, impl: str, k: int | None = None) -> dict | None:
     """Return one row dict (matching the legacy CSV schema) or None
     if the method has nothing to report (no timing, no metrics, no
     error file)."""
@@ -126,6 +127,7 @@ def _load_method_row(out_dir: Path, dataset: str, method: str, impl: str) -> dic
     # metrics file (partial runs, --skip-metrics, scoring failures).
     base = {
         "dataset": dataset, "method": method,
+        "k": k,
         "fit_seconds": 0.0, "infer_seconds": None, "metric_seconds": 0.0,
         "peak_rss_mb": 0.0, "gpu_peak_mb": None,
         "error": None,
@@ -152,13 +154,13 @@ def _load_method_row(out_dir: Path, dataset: str, method: str, impl: str) -> dic
     return base
 
 
-def aggregate_results(out_dir: Path, datasets: list[str], methods: list[str], impl: str):
+def aggregate_results(out_dir: Path, datasets: list[str], methods: list[str], impl: str, k: int | None = None):
     import pandas as pd
 
     rows = []
     for ds in datasets:
         for m in methods:
-            row = _load_method_row(out_dir, ds, m, impl)
+            row = _load_method_row(out_dir, ds, m, impl, k=k)
             if row is not None:
                 rows.append(row)
     df = pd.DataFrame(rows)
@@ -326,7 +328,7 @@ def main() -> int:
             del rc
 
     # Phase 3: aggregate + figures.
-    df = aggregate_results(out_dir, args.datasets, methods, args.metrics_impl)
+    df = aggregate_results(out_dir, args.datasets, methods, args.metrics_impl, k=args.k)
     write_summary(df, out_dir)
     render_figures(df, out_dir)
 

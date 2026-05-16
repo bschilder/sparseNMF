@@ -1,0 +1,23 @@
+
+=== lung :: embed phase ===
+
+>>> sparseNMF / lung: /usr/bin/python -m benchmarks.methods.sparse_nmf --dataset lung --out-dir /workspace/runs/k-fill/k-2000-lung --method-name sparseNMF --k 2000 --seed 0 --n-hvg 2000
+  sparseNMF: loading lung...
+  sparseNMF: (32472, 2000)  fp=a06e8eed710cda0e  batches=16  labels=17
+  sparseNMF: fitting...
+    sparseNMF: fit=215.9s  infer=—  wall=217.3s  rss=0MB  gpu=10022MB
+
+=== lung :: metrics phase (scib_yosef) ===
+
+>>> metrics(scib_yosef) / lung: /usr/bin/python -m benchmarks.metrics.scib_yosef --dataset lung --out-dir /workspace/runs/k-fill/k-2000-lung --methods sparseNMF --seed 0 --n-hvg 2000
+  metrics(yosef): loading lung...
+  metrics(yosef): (32472, 2000)  fp=a06e8eed710cda0e
+    sparseNMF: scoring (n=32472, k=2000)...
+/usr/local/lib/python3.11/dist-packages/scanpy/preprocessing/_pca/__init__.py:226: FutureWarning: Argument `use_highly_variable` is deprecated, consider using the mask argument. Use_highly_variable=True can be called through mask_var="highly_variable". Use_highly_variable=False can be called through mask_var=None
+  mask_var_param, mask_var = _handle_mask_var(
+Computing neighbors:   0%|          | 0/1 [00:00<?, ?it/s]Computing neighbors: 100%|██████████| 1/1 [00:47<00:00, 47.62s/it]Computing neighbors: 100%|██████████| 1/1 [00:47<00:00, 47.62s/it]
+Embeddings:   0%|[32m          [0m| 0/1 [00:00<?, ?it/s]
+Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s][A
+Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s, Bio conservation: isolated_labels][A(figure rendering hit an error: KeyError('Column not found: Total') — results files are still written)
+
+Total: 5.3m  (0 method failures)

@@ -1,0 +1,30 @@
+{
+  "lung": [
+    {
+      "dataset": "lung",
+      "method": "sparseNMF",
+      "k": 1000,
+      "fit_seconds": 202.0949421003461,
+      "infer_seconds": null,
+      "metric_seconds": 1797.9875753745437,
+      "peak_rss_mb": 0.0,
+      "gpu_peak_mb": 5236.55224609375,
+      "error": null,
+      "_bio": 0.6432801211294221,
+      "_batch": 0.4418697505260769,
+      "_composite": 0.5627159728880841,
+      "isolated_labels": 0.5072240829467773,
+      "nmi_ari_cluster_labels_leiden_nmi": 0.7074611024383614,
+      "nmi_ari_cluster_labels_leiden_ari": 0.47055703260099174,
+      "silhouette_label": 0.5323198437690735,
+      "clisi_knn": 0.9988385438919067,
+      "bras": 0.7820647954940796,
+      "ilisi_knn": 0.037501558661460876,
+      "graph_connectivity": 0.506042882521529,
+      "Batch correction": 0.4418697505260769,
+      "Bio conservation": 0.6432801211294221,
+      "Total": 0.5627159728880841,
+      "_impl": "scib_metrics_yosef"
+    }
+  ]
+}

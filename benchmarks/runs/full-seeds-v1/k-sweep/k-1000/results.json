@@ -1,0 +1,58 @@
+{
+  "pancreas": [
+    {
+      "dataset": "pancreas",
+      "method": "sparseNMF",
+      "k": 1000,
+      "fit_seconds": 160.82632786035538,
+      "infer_seconds": null,
+      "metric_seconds": 439.7092453241348,
+      "peak_rss_mb": 0.0,
+      "gpu_peak_mb": 6737.294921875,
+      "error": null,
+      "_bio": 0.7447725201277062,
+      "_batch": 0.5594640891244387,
+      "_composite": 0.6706491477263992,
+      "isolated_labels": 0.3627960681915283,
+      "nmi_ari_cluster_labels_leiden_nmi": 0.859711972956378,
+      "nmi_ari_cluster_labels_leiden_ari": 0.89239226205105,
+      "silhouette_label": 0.6089622974395752,
+      "clisi_knn": 1.0,
+      "bras": 0.7812623977661133,
+      "ilisi_knn": 0.1370600461959839,
+      "graph_connectivity": 0.7600698234112188,
+      "Batch correction": 0.5594640891244387,
+      "Bio conservation": 0.7447725201277062,
+      "Total": 0.6706491477263992,
+      "_impl": "scib_metrics_yosef"
+    }
+  ],
+  "sim1": [
+    {
+      "dataset": "sim1",
+      "method": "sparseNMF",
+      "k": 1000,
+      "fit_seconds": 0.0,
+      "infer_seconds": null,
+      "metric_seconds": 0.0,
+      "peak_rss_mb": 0.0,
+      "gpu_peak_mb": null,
+      "error": "OutOfMemoryError: CUDA out of memory. Tried to allocate 20.87 GiB. GPU 0 has a total capacity of 15.72 GiB of which 14.69 GiB is free. Process 3467172 has 1.03 GiB memory in use. Of the allocated memory 629.83 MiB is allocated by PyTorch, and 232.17 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)",
+      "_bio": null,
+      "_batch": null,
+      "_composite": null,
+      "isolated_labels": null,
+      "nmi_ari_cluster_labels_leiden_nmi": null,
+      "nmi_ari_cluster_labels_leiden_ari": null,
+      "silhouette_label": null,
+      "clisi_knn": null,
+      "bras": null,
+      "ilisi_knn": null,
+      "graph_connectivity": null,
+      "Batch correction": null,
+      "Bio conservation": null,
+      "Total": null,
+      "_impl": null
+    }
+  ]
+}

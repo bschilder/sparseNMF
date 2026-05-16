@@ -1,0 +1,241 @@
+
+=== pancreas :: embed phase ===
+
+>>> sparseNMF_supervised / pancreas: /usr/bin/python -m benchmarks.methods.sparse_nmf_batch --dataset pancreas --out-dir /workspace/runs/k300-rerun/seed-1 --method-name sparseNMF_supervised --k 300 --seed 1 --n-hvg 2000
+  sparseNMF_supervised: loading pancreas...
+  sparseNMF_supervised: (16382, 2000)  fp=45d9ac68daf8ae1b  batches=9  labels=14
+  sparseNMF_supervised: fitting...
+    sparseNMF_supervised: fit=7.0s  infer=—  wall=8.8s  rss=0MB  gpu=282MB
+
+=== immune :: embed phase ===
+
+>>> sparseNMF_supervised / immune: /usr/bin/python -m benchmarks.methods.sparse_nmf_batch --dataset immune --out-dir /workspace/runs/k300-rerun/seed-1 --method-name sparseNMF_supervised --k 300 --seed 1 --n-hvg 2000
+  sparseNMF_supervised: loading immune...
+  sparseNMF_supervised: (33506, 2000)  fp=ab9caa3624bfbea1  batches=10  labels=16
+  sparseNMF_supervised: fitting...
+    sparseNMF_supervised: fit=12.2s  infer=—  wall=14.7s  rss=0MB  gpu=593MB
+
+=== lung :: embed phase ===
+
+>>> sparseNMF_supervised / lung: /usr/bin/python -m benchmarks.methods.sparse_nmf_batch --dataset lung --out-dir /workspace/runs/k300-rerun/seed-1 --method-name sparseNMF_supervised --k 300 --seed 1 --n-hvg 2000
+  sparseNMF_supervised: loading lung...
+  sparseNMF_supervised: (32472, 2000)  fp=a06e8eed710cda0e  batches=16  labels=17
+  sparseNMF_supervised: fitting...
+    sparseNMF_supervised: fit=13.4s  infer=—  wall=14.9s  rss=0MB  gpu=445MB
+
+=== sim1 :: embed phase ===
+
+>>> sparseNMF_supervised / sim1: /usr/bin/python -m benchmarks.methods.sparse_nmf_batch --dataset sim1 --out-dir /workspace/runs/k300-rerun/seed-1 --method-name sparseNMF_supervised --k 300 --seed 1 --n-hvg 2000
+  sparseNMF_supervised: loading sim1...
+  sparseNMF_supervised: (12097, 2000)  fp=befe0f00d8d661d7  batches=6  labels=7
+  sparseNMF_supervised: fitting...
+    sparseNMF_supervised: fit=5.6s  infer=—  wall=7.2s  rss=0MB  gpu=214MB
+
+=== sim2 :: embed phase ===
+
+>>> sparseNMF_supervised / sim2: /usr/bin/python -m benchmarks.methods.sparse_nmf_batch --dataset sim2 --out-dir /workspace/runs/k300-rerun/seed-1 --method-name sparseNMF_supervised --k 300 --seed 1 --n-hvg 2000
+  sparseNMF_supervised: loading sim2...
+  sparseNMF_supervised: (19318, 2000)  fp=47da76441053c36d  batches=4  labels=4
+  sparseNMF_supervised: fitting...
+    sparseNMF_supervised: fit=7.1s  infer=—  wall=8.7s  rss=0MB  gpu=335MB
+
+=== pancreas :: metrics phase (scib_yosef) ===
+
+>>> metrics(scib_yosef) / pancreas: /usr/bin/python -m benchmarks.metrics.scib_yosef --dataset pancreas --out-dir /workspace/runs/k300-rerun/seed-1 --methods sparseNMF_supervised --seed 1 --n-hvg 2000
+  metrics(yosef): loading pancreas...
+  metrics(yosef): (16382, 2000)  fp=45d9ac68daf8ae1b
+    sparseNMF_supervised: scoring (n=16382, k=300)...
+/usr/local/lib/python3.11/dist-packages/scanpy/preprocessing/_pca/__init__.py:226: FutureWarning: Argument `use_highly_variable` is deprecated, consider using the mask argument. Use_highly_variable=True can be called through mask_var="highly_variable". Use_highly_variable=False can be called through mask_var=None
+  mask_var_param, mask_var = _handle_mask_var(
+Computing neighbors:   0%|          | 0/1 [00:00<?, ?it/s]Computing neighbors: 100%|██████████| 1/1 [00:44<00:00, 44.57s/it]Computing neighbors: 100%|██████████| 1/1 [00:44<00:00, 44.57s/it]
+Embeddings:   0%|[32m          [0m| 0/1 [00:00<?, ?it/s]
+Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s][A
+Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s, Bio conservation: isolated_labels][AE0516 13:48:40.691950   17375 slow_operation_alarm.cc:73] 
+********************************
+[Compiling module input_reduce_fusion for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+E0516 13:49:03.842332   17166 slow_operation_alarm.cc:140] The operation took 2m23.150461737s
+
+********************************
+[Compiling module input_reduce_fusion for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+
+Metrics:  10%|[34m█         [0m| 1/10 [05:03<45:28, 303.22s/it, Bio conservation: isolated_labels][A
+Metrics:  10%|[34m█         [0m| 1/10 [05:03<45:28, 303.22s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
+Metrics:  20%|[34m██        [0m| 2/10 [05:10<17:14, 129.32s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
+Metrics:  20%|[34m██        [0m| 2/10 [05:11<17:14, 129.32s/it, Bio conservation: silhouette_label]             [A
+Metrics:  30%|[34m███       [0m| 3/10 [05:11<08:14, 70.67s/it, Bio conservation: silhouette_label] [A
+Metrics:  30%|[34m███       [0m| 3/10 [05:11<08:14, 70.67s/it, Bio conservation: clisi_knn]       [A
+Metrics:  40%|[34m████      [0m| 4/10 [05:13<04:20, 43.49s/it, Bio conservation: clisi_knn][A
+Metrics:  40%|[34m████      [0m| 4/10 [05:13<04:20, 43.49s/it, Batch correction: bras]     [A
+Metrics:  50%|[34m█████     [0m| 5/10 [06:02<03:47, 45.53s/it, Batch correction: bras][A
+Metrics:  50%|[34m█████     [0m| 5/10 [06:02<03:47, 45.53s/it, Batch correction: ilisi_knn][A
+Metrics:  60%|[34m██████    [0m| 6/10 [06:03<02:00, 30.24s/it, Batch correction: ilisi_knn][A
+Metrics:  60%|[34m██████    [0m| 6/10 [06:03<02:00, 30.24s/it, Batch correction: graph_connectivity][A/usr/local/lib/python3.11/dist-packages/scib_metrics/metrics/_graph_connectivity.py:32: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(comps)
+
+Metrics:  70%|[34m███████   [0m| 7/10 [06:03<01:01, 20.49s/it, Batch correction: graph_connectivity][AEmbeddings: 100%|[32m██████████[0m| 1/1 [06:03<00:00, 363.83s/it]Embeddings: 100%|[32m██████████[0m| 1/1 [06:03<00:00, 363.83s/it]
+
+                                                                                             [A      sparseNMF_supervised: bio=+0.718  batch=+0.585  composite=+0.664  (424.0s)
+
+=== immune :: metrics phase (scib_yosef) ===
+
+>>> metrics(scib_yosef) / immune: /usr/bin/python -m benchmarks.metrics.scib_yosef --dataset immune --out-dir /workspace/runs/k300-rerun/seed-1 --methods sparseNMF_supervised --seed 1 --n-hvg 2000
+  metrics(yosef): loading immune...
+  metrics(yosef): (33506, 2000)  fp=ab9caa3624bfbea1
+    sparseNMF_supervised: scoring (n=33506, k=300)...
+/usr/local/lib/python3.11/dist-packages/scanpy/preprocessing/_pca/__init__.py:226: FutureWarning: Argument `use_highly_variable` is deprecated, consider using the mask argument. Use_highly_variable=True can be called through mask_var="highly_variable". Use_highly_variable=False can be called through mask_var=None
+  mask_var_param, mask_var = _handle_mask_var(
+Computing neighbors:   0%|          | 0/1 [00:00<?, ?it/s]Computing neighbors: 100%|██████████| 1/1 [01:13<00:00, 73.59s/it]Computing neighbors: 100%|██████████| 1/1 [01:13<00:00, 73.59s/it]
+Embeddings:   0%|[32m          [0m| 0/1 [00:00<?, ?it/s]
+Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s][A
+Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s, Bio conservation: isolated_labels][AE0516 13:56:24.208971   18937 slow_operation_alarm.cc:73] 
+********************************
+[Compiling module input_reduce_fusion for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+E0516 13:56:55.746986   18728 slow_operation_alarm.cc:140] The operation took 2m31.5380713s
+
+********************************
+[Compiling module input_reduce_fusion for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+
+Metrics:  10%|[34m█         [0m| 1/10 [03:16<29:25, 196.16s/it, Bio conservation: isolated_labels][A
+Metrics:  10%|[34m█         [0m| 1/10 [03:16<29:25, 196.16s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
+Metrics:  20%|[34m██        [0m| 2/10 [03:28<11:44, 88.12s/it, Bio conservation: nmi_ari_cluster_labels_leiden] [A
+Metrics:  20%|[34m██        [0m| 2/10 [03:28<11:44, 88.12s/it, Bio conservation: silhouette_label]             [A
+Metrics:  30%|[34m███       [0m| 3/10 [03:31<05:42, 48.98s/it, Bio conservation: silhouette_label][A
+Metrics:  30%|[34m███       [0m| 3/10 [03:31<05:42, 48.98s/it, Bio conservation: clisi_knn]       [A
+Metrics:  40%|[34m████      [0m| 4/10 [03:33<03:02, 30.44s/it, Bio conservation: clisi_knn][A
+Metrics:  40%|[34m████      [0m| 4/10 [03:33<03:02, 30.44s/it, Batch correction: bras]     [A
+Metrics:  50%|[34m█████     [0m| 5/10 [04:41<03:40, 44.00s/it, Batch correction: bras][A
+Metrics:  50%|[34m█████     [0m| 5/10 [04:41<03:40, 44.00s/it, Batch correction: ilisi_knn][A
+Metrics:  60%|[34m██████    [0m| 6/10 [04:41<01:56, 29.24s/it, Batch correction: ilisi_knn][A
+Metrics:  60%|[34m██████    [0m| 6/10 [04:42<01:56, 29.24s/it, Batch correction: graph_connectivity][A/usr/local/lib/python3.11/dist-packages/scib_metrics/metrics/_graph_connectivity.py:32: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(comps)
+
+Metrics:  70%|[34m███████   [0m| 7/10 [04:42<00:59, 19.89s/it, Batch correction: graph_connectivity][AEmbeddings: 100%|[32m██████████[0m| 1/1 [04:42<00:00, 282.64s/it]Embeddings: 100%|[32m██████████[0m| 1/1 [04:42<00:00, 282.64s/it]
+
+                                                                                             [A      sparseNMF_supervised: bio=+0.659  batch=+0.569  composite=+0.623  (370.1s)
+
+=== lung :: metrics phase (scib_yosef) ===
+
+>>> metrics(scib_yosef) / lung: /usr/bin/python -m benchmarks.metrics.scib_yosef --dataset lung --out-dir /workspace/runs/k300-rerun/seed-1 --methods sparseNMF_supervised --seed 1 --n-hvg 2000
+  metrics(yosef): loading lung...
+  metrics(yosef): (32472, 2000)  fp=a06e8eed710cda0e
+    sparseNMF_supervised: scoring (n=32472, k=300)...
+/usr/local/lib/python3.11/dist-packages/scanpy/preprocessing/_pca/__init__.py:226: FutureWarning: Argument `use_highly_variable` is deprecated, consider using the mask argument. Use_highly_variable=True can be called through mask_var="highly_variable". Use_highly_variable=False can be called through mask_var=None
+  mask_var_param, mask_var = _handle_mask_var(
+Computing neighbors:   0%|          | 0/1 [00:00<?, ?it/s]Computing neighbors: 100%|██████████| 1/1 [01:22<00:00, 82.00s/it]Computing neighbors: 100%|██████████| 1/1 [01:22<00:00, 82.00s/it]
+Embeddings:   0%|[32m          [0m| 0/1 [00:00<?, ?it/s]
+Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s][A
+Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s, Bio conservation: isolated_labels][AE0516 14:02:56.614095   20712 slow_operation_alarm.cc:73] 
+********************************
+[Compiling module input_reduce_fusion for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+E0516 14:03:44.920939   20506 slow_operation_alarm.cc:140] The operation took 2m48.306910391s
+
+********************************
+[Compiling module input_reduce_fusion for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+
+Metrics:  10%|[34m█         [0m| 1/10 [05:26<48:54, 326.02s/it, Bio conservation: isolated_labels][A
+Metrics:  10%|[34m█         [0m| 1/10 [05:26<48:54, 326.02s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
+Metrics:  20%|[34m██        [0m| 2/10 [05:36<18:44, 140.53s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
+Metrics:  20%|[34m██        [0m| 2/10 [05:37<18:44, 140.53s/it, Bio conservation: silhouette_label]             [A
+Metrics:  30%|[34m███       [0m| 3/10 [05:38<09:01, 77.40s/it, Bio conservation: silhouette_label] [A
+Metrics:  30%|[34m███       [0m| 3/10 [05:39<09:01, 77.40s/it, Bio conservation: clisi_knn]       [A
+Metrics:  40%|[34m████      [0m| 4/10 [05:40<04:45, 47.63s/it, Bio conservation: clisi_knn][A
+Metrics:  40%|[34m████      [0m| 4/10 [05:41<04:45, 47.63s/it, Batch correction: bras]     [A
+Metrics:  50%|[34m█████     [0m| 5/10 [06:54<04:45, 57.09s/it, Batch correction: bras][A
+Metrics:  50%|[34m█████     [0m| 5/10 [06:55<04:45, 57.09s/it, Batch correction: ilisi_knn][A
+Metrics:  60%|[34m██████    [0m| 6/10 [06:55<02:31, 37.87s/it, Batch correction: ilisi_knn][A
+Metrics:  60%|[34m██████    [0m| 6/10 [06:55<02:31, 37.87s/it, Batch correction: graph_connectivity][A/usr/local/lib/python3.11/dist-packages/scib_metrics/metrics/_graph_connectivity.py:32: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(comps)
+
+Metrics:  70%|[34m███████   [0m| 7/10 [06:55<01:16, 25.63s/it, Batch correction: graph_connectivity][AEmbeddings: 100%|[32m██████████[0m| 1/1 [06:55<00:00, 416.00s/it]Embeddings: 100%|[32m██████████[0m| 1/1 [06:55<00:00, 416.00s/it]
+
+                                                                                             [A      sparseNMF_supervised: bio=+0.549  batch=+0.513  composite=+0.535  (511.1s)
+
+=== sim1 :: metrics phase (scib_yosef) ===
+
+>>> metrics(scib_yosef) / sim1: /usr/bin/python -m benchmarks.metrics.scib_yosef --dataset sim1 --out-dir /workspace/runs/k300-rerun/seed-1 --methods sparseNMF_supervised --seed 1 --n-hvg 2000
+  metrics(yosef): loading sim1...
+  metrics(yosef): (12097, 2000)  fp=befe0f00d8d661d7
+    sparseNMF_supervised: scoring (n=12097, k=300)...
+/usr/local/lib/python3.11/dist-packages/scanpy/preprocessing/_pca/__init__.py:226: FutureWarning: Argument `use_highly_variable` is deprecated, consider using the mask argument. Use_highly_variable=True can be called through mask_var="highly_variable". Use_highly_variable=False can be called through mask_var=None
+  mask_var_param, mask_var = _handle_mask_var(
+Computing neighbors:   0%|          | 0/1 [00:00<?, ?it/s]Computing neighbors: 100%|██████████| 1/1 [00:23<00:00, 23.50s/it]Computing neighbors: 100%|██████████| 1/1 [00:23<00:00, 23.50s/it]
+Embeddings:   0%|[32m          [0m| 0/1 [00:00<?, ?it/s]
+Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s][A
+Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s, Bio conservation: isolated_labels][AE0516 14:10:51.560597   22580 slow_operation_alarm.cc:73] 
+********************************
+[Compiling module input_reduce_fusion for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+E0516 14:11:27.252023   22371 slow_operation_alarm.cc:140] The operation took 2m35.691527776s
+
+********************************
+[Compiling module input_reduce_fusion for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+
+Metrics:  10%|[34m█         [0m| 1/10 [02:48<25:14, 168.27s/it, Bio conservation: isolated_labels][A
+Metrics:  10%|[34m█         [0m| 1/10 [02:48<25:14, 168.27s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
+Metrics:  20%|[34m██        [0m| 2/10 [02:55<09:48, 73.60s/it, Bio conservation: nmi_ari_cluster_labels_leiden] [A
+Metrics:  20%|[34m██        [0m| 2/10 [02:55<09:48, 73.60s/it, Bio conservation: silhouette_label]             [A
+Metrics:  30%|[34m███       [0m| 3/10 [02:56<04:41, 40.28s/it, Bio conservation: silhouette_label][A
+Metrics:  30%|[34m███       [0m| 3/10 [02:56<04:41, 40.28s/it, Bio conservation: clisi_knn]       [A
+Metrics:  40%|[34m████      [0m| 4/10 [02:58<02:30, 25.11s/it, Bio conservation: clisi_knn][A
+Metrics:  40%|[34m████      [0m| 4/10 [02:58<02:30, 25.11s/it, Batch correction: bras]     [A
+Metrics:  50%|[34m█████     [0m| 5/10 [03:27<02:13, 26.74s/it, Batch correction: bras][A
+Metrics:  50%|[34m█████     [0m| 5/10 [03:27<02:13, 26.74s/it, Batch correction: ilisi_knn][A
+Metrics:  60%|[34m██████    [0m| 6/10 [03:28<01:11, 17.82s/it, Batch correction: ilisi_knn][A
+Metrics:  60%|[34m██████    [0m| 6/10 [03:28<01:11, 17.82s/it, Batch correction: graph_connectivity][A/usr/local/lib/python3.11/dist-packages/scib_metrics/metrics/_graph_connectivity.py:32: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(comps)
+
+Metrics:  70%|[34m███████   [0m| 7/10 [03:28<00:36, 12.11s/it, Batch correction: graph_connectivity][AEmbeddings: 100%|[32m██████████[0m| 1/1 [03:28<00:00, 208.75s/it]Embeddings: 100%|[32m██████████[0m| 1/1 [03:28<00:00, 208.75s/it]
+
+                                                                                             [A      sparseNMF_supervised: bio=+0.739  batch=+0.545  composite=+0.662  (256.0s)
+
+=== sim2 :: metrics phase (scib_yosef) ===
+
+>>> metrics(scib_yosef) / sim2: /usr/bin/python -m benchmarks.metrics.scib_yosef --dataset sim2 --out-dir /workspace/runs/k300-rerun/seed-1 --methods sparseNMF_supervised --seed 1 --n-hvg 2000
+  metrics(yosef): loading sim2...
+  metrics(yosef): (19318, 2000)  fp=47da76441053c36d
+    sparseNMF_supervised: scoring (n=19318, k=300)...
+/usr/local/lib/python3.11/dist-packages/scanpy/preprocessing/_pca/__init__.py:226: FutureWarning: Argument `use_highly_variable` is deprecated, consider using the mask argument. Use_highly_variable=True can be called through mask_var="highly_variable". Use_highly_variable=False can be called through mask_var=None
+  mask_var_param, mask_var = _handle_mask_var(
+Computing neighbors:   0%|          | 0/1 [00:00<?, ?it/s]Computing neighbors: 100%|██████████| 1/1 [00:25<00:00, 25.73s/it]Computing neighbors: 100%|██████████| 1/1 [00:25<00:00, 25.73s/it]
+Embeddings:   0%|[32m          [0m| 0/1 [00:00<?, ?it/s]
+Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s][A
+Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s, Bio conservation: isolated_labels][AE0516 14:16:52.439359   23757 slow_operation_alarm.cc:73] 
+********************************
+[Compiling module input_reduce_fusion for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+E0516 14:17:33.133627   23551 slow_operation_alarm.cc:140] The operation took 2m40.694309348s
+
+********************************
+[Compiling module input_reduce_fusion for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+
+Metrics:  10%|[34m█         [0m| 1/10 [05:20<48:03, 320.36s/it, Bio conservation: isolated_labels][A
+Metrics:  10%|[34m█         [0m| 1/10 [05:20<48:03, 320.36s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
+Metrics:  20%|[34m██        [0m| 2/10 [05:28<18:14, 136.80s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
+Metrics:  20%|[34m██        [0m| 2/10 [05:28<18:14, 136.80s/it, Bio conservation: silhouette_label]             [A
+Metrics:  30%|[34m███       [0m| 3/10 [05:29<08:43, 74.83s/it, Bio conservation: silhouette_label] [A
+Metrics:  30%|[34m███       [0m| 3/10 [05:29<08:43, 74.83s/it, Bio conservation: clisi_knn]       [A
+Metrics:  40%|[34m████      [0m| 4/10 [05:31<04:36, 46.14s/it, Bio conservation: clisi_knn][A
+Metrics:  40%|[34m████      [0m| 4/10 [05:32<04:36, 46.14s/it, Batch correction: bras]     [A
+Metrics:  50%|[34m█████     [0m| 5/10 [05:49<02:59, 35.86s/it, Batch correction: bras][A
+Metrics:  50%|[34m█████     [0m| 5/10 [05:49<02:59, 35.86s/it, Batch correction: ilisi_knn][A
+Metrics:  60%|[34m██████    [0m| 6/10 [05:49<01:34, 23.73s/it, Batch correction: ilisi_knn][A
+Metrics:  60%|[34m██████    [0m| 6/10 [05:50<01:34, 23.73s/it, Batch correction: graph_connectivity][A/usr/local/lib/python3.11/dist-packages/scib_metrics/metrics/_graph_connectivity.py:32: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(comps)
+
+Metrics:  70%|[34m███████   [0m| 7/10 [05:50<00:48, 16.08s/it, Batch correction: graph_connectivity][AEmbeddings: 100%|[32m██████████[0m| 1/1 [05:50<00:00, 350.23s/it]Embeddings: 100%|[32m██████████[0m| 1/1 [05:50<00:00, 350.23s/it]
+
+                                                                                             [A      sparseNMF_supervised: bio=+0.630  batch=+0.420  composite=+0.546  (406.7s)
+Wrote /workspace/runs/k300-rerun/seed-1/figures/composite_summary.png  (composite)
+Wrote /workspace/runs/k300-rerun/seed-1/figures/per_task_bars.png  (per_task)
+Wrote /workspace/runs/k300-rerun/seed-1/figures/bio_vs_batch_tradeoff.png  (tradeoff)
+Wrote /workspace/runs/k300-rerun/seed-1/figures/score_vs_time.png  (speed_score)
+
+Total: 38.8m  (0 method failures)

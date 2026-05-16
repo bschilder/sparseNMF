@@ -1,0 +1,44 @@
+
+=== immune :: embed phase ===
+
+>>> sparseNMF / immune: /usr/bin/python -m benchmarks.methods.sparse_nmf --dataset immune --out-dir /workspace/runs/k-fill/k-1000-immune --method-name sparseNMF --k 1000 --seed 0 --n-hvg 2000
+  sparseNMF: loading immune...
+  sparseNMF: (33506, 2000)  fp=ab9caa3624bfbea1  batches=10  labels=16
+  sparseNMF: fitting...
+    sparseNMF: fit=200.6s  infer=—  wall=209.7s  rss=0MB  gpu=5279MB
+
+=== immune :: metrics phase (scib_yosef) ===
+
+>>> metrics(scib_yosef) / immune: /usr/bin/python -m benchmarks.metrics.scib_yosef --dataset immune --out-dir /workspace/runs/k-fill/k-1000-immune --methods sparseNMF --seed 0 --n-hvg 2000
+  metrics(yosef): loading immune...
+  metrics(yosef): (33506, 2000)  fp=ab9caa3624bfbea1
+    sparseNMF: scoring (n=33506, k=1000)...
+/usr/local/lib/python3.11/dist-packages/scanpy/preprocessing/_pca/__init__.py:226: FutureWarning: Argument `use_highly_variable` is deprecated, consider using the mask argument. Use_highly_variable=True can be called through mask_var="highly_variable". Use_highly_variable=False can be called through mask_var=None
+  mask_var_param, mask_var = _handle_mask_var(
+Computing neighbors:   0%|          | 0/1 [00:00<?, ?it/s]Computing neighbors: 100%|██████████| 1/1 [00:35<00:00, 35.60s/it]Computing neighbors: 100%|██████████| 1/1 [00:35<00:00, 35.60s/it]
+Embeddings:   0%|[32m          [0m| 0/1 [00:00<?, ?it/s]
+Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s][A
+Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s, Bio conservation: isolated_labels][A
+Metrics:  10%|[34m█         [0m| 1/10 [14:50<2:13:35, 890.58s/it, Bio conservation: isolated_labels][A
+Metrics:  10%|[34m█         [0m| 1/10 [14:50<2:13:35, 890.58s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
+Metrics:  20%|[34m██        [0m| 2/10 [15:03<49:52, 374.03s/it, Bio conservation: nmi_ari_cluster_labels_leiden]  [A
+Metrics:  20%|[34m██        [0m| 2/10 [15:03<49:52, 374.03s/it, Bio conservation: silhouette_label]             [A
+Metrics:  30%|[34m███       [0m| 3/10 [32:52<1:20:42, 691.78s/it, Bio conservation: silhouette_label][A
+Metrics:  30%|[34m███       [0m| 3/10 [32:53<1:20:42, 691.78s/it, Bio conservation: clisi_knn]       [A
+Metrics:  40%|[34m████      [0m| 4/10 [32:54<41:54, 419.15s/it, Bio conservation: clisi_knn]  [A
+Metrics:  40%|[34m████      [0m| 4/10 [32:54<41:54, 419.15s/it, Batch correction: bras]     [A
+Metrics:  50%|[34m█████     [0m| 5/10 [33:13<22:54, 274.83s/it, Batch correction: bras][A
+Metrics:  50%|[34m█████     [0m| 5/10 [33:13<22:54, 274.83s/it, Batch correction: ilisi_knn][A
+Metrics:  60%|[34m██████    [0m| 6/10 [33:13<12:06, 181.60s/it, Batch correction: ilisi_knn][A
+Metrics:  60%|[34m██████    [0m| 6/10 [33:14<12:06, 181.60s/it, Batch correction: graph_connectivity][A/usr/local/lib/python3.11/dist-packages/scib_metrics/metrics/_graph_connectivity.py:32: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(comps)
+
+Metrics:  70%|[34m███████   [0m| 7/10 [33:14<06:07, 122.39s/it, Batch correction: graph_connectivity][AEmbeddings: 100%|[32m██████████[0m| 1/1 [33:14<00:00, 1994.44s/it]Embeddings: 100%|[32m██████████[0m| 1/1 [33:14<00:00, 1994.44s/it]
+
+                                                                                              [A      sparseNMF: bio=+0.667  batch=+0.511  composite=+0.604  (2042.2s)
+Wrote /workspace/runs/k-fill/k-1000-immune/figures/composite_summary.png  (composite)
+Wrote /workspace/runs/k-fill/k-1000-immune/figures/per_task_bars.png  (per_task)
+Wrote /workspace/runs/k-fill/k-1000-immune/figures/bio_vs_batch_tradeoff.png  (tradeoff)
+Wrote /workspace/runs/k-fill/k-1000-immune/figures/score_vs_time.png  (speed_score)
+
+Total: 40.8m  (0 method failures)

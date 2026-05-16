@@ -1,0 +1,58 @@
+{
+  "pancreas": [
+    {
+      "dataset": "pancreas",
+      "method": "sparseNMF",
+      "k": 300,
+      "fit_seconds": 160.69213989377022,
+      "infer_seconds": null,
+      "metric_seconds": 214.91438114643097,
+      "peak_rss_mb": 0.0,
+      "gpu_peak_mb": 2246.41259765625,
+      "error": null,
+      "_bio": 0.7936392742150573,
+      "_batch": 0.5751182488507119,
+      "_composite": 0.7062308640693191,
+      "isolated_labels": 0.6139740347862244,
+      "nmi_ari_cluster_labels_leiden_nmi": 0.8426503611658834,
+      "nmi_ari_cluster_labels_leiden_ari": 0.8835832194202061,
+      "silhouette_label": 0.6279887557029724,
+      "clisi_knn": 1.0,
+      "bras": 0.7110433578491211,
+      "ilisi_knn": 0.1663375198841095,
+      "graph_connectivity": 0.8479738986212279,
+      "Batch correction": 0.5751182488507119,
+      "Bio conservation": 0.7936392742150573,
+      "Total": 0.7062308640693191,
+      "_impl": "scib_metrics_yosef"
+    }
+  ],
+  "sim1": [
+    {
+      "dataset": "sim1",
+      "method": "sparseNMF",
+      "k": 300,
+      "fit_seconds": 301.0364590808749,
+      "infer_seconds": null,
+      "metric_seconds": 148.91328285634518,
+      "peak_rss_mb": 0.0,
+      "gpu_peak_mb": 7071.990234375,
+      "error": null,
+      "_bio": 0.6943056094254553,
+      "_batch": 0.5236760240012137,
+      "_composite": 0.6260537752557587,
+      "isolated_labels": 0.5411419868469238,
+      "nmi_ari_cluster_labels_leiden_nmi": 0.8052320992839519,
+      "nmi_ari_cluster_labels_leiden_ari": 0.5786290786798115,
+      "silhouette_label": 0.5465248823165894,
+      "clisi_knn": 1.0,
+      "bras": 0.8342774510383606,
+      "ilisi_knn": 0.008841967210173607,
+      "graph_connectivity": 0.72790862954072,
+      "Batch correction": 0.5236760240012137,
+      "Bio conservation": 0.6943056094254553,
+      "Total": 0.6260537752557587,
+      "_impl": "scib_metrics_yosef"
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+dataset,method,k,fit_seconds,infer_seconds,metric_seconds,peak_rss_mb,gpu_peak_mb,error,_bio,_batch,_composite
+immune,sparseNMF,2000,220.21041526645422,,0.0,0.0,10145.8740234375,,,,

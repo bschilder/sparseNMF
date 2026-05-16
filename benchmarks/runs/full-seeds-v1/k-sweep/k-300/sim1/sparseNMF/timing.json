@@ -1,0 +1,12 @@
+{
+  "fit_seconds": 301.0364590808749,
+  "infer_seconds": null,
+  "metric_seconds": 0.0,
+  "peak_rss_mb": 0.0,
+  "gpu_peak_mb": 7071.990234375,
+  "dataset": "sim1",
+  "method": "sparseNMF",
+  "batch_key": "Batch",
+  "label_key": "Group",
+  "fingerprint": "befe0f00d8d661d7"
+}

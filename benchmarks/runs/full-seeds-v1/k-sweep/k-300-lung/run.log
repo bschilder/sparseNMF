@@ -1,0 +1,56 @@
+
+=== lung :: embed phase ===
+
+>>> sparseNMF / lung: /usr/bin/python -m benchmarks.methods.sparse_nmf --dataset lung --out-dir /workspace/runs/k-fill/k-300-lung --method-name sparseNMF --k 300 --seed 0 --n-hvg 2000
+  sparseNMF: loading lung...
+Downloading https://ndownloader.figshare.com/files/24539942 → /root/.cache/sparse-nmf/Lung_atlas_public.h5ad
+  ... 0% (0 / 1020 MB)
+  ... 10% (102 / 1020 MB)
+  ... 20% (204 / 1020 MB)
+  ... 30% (306 / 1020 MB)
+  ... 40% (408 / 1020 MB)
+  ... 50% (510 / 1020 MB)
+  ... 60% (612 / 1020 MB)
+  ... 70% (714 / 1020 MB)
+  ... 80% (816 / 1020 MB)
+  ... 90% (918 / 1020 MB)
+  ... 100% (1020 / 1020 MB)
+  sparseNMF: (32472, 2000)  fp=a06e8eed710cda0e  batches=16  labels=17
+  sparseNMF: fitting...
+    sparseNMF: fit=193.0s  infer=—  wall=194.6s  rss=0MB  gpu=1813MB
+
+=== lung :: metrics phase (scib_yosef) ===
+
+>>> metrics(scib_yosef) / lung: /usr/bin/python -m benchmarks.metrics.scib_yosef --dataset lung --out-dir /workspace/runs/k-fill/k-300-lung --methods sparseNMF --seed 0 --n-hvg 2000
+  metrics(yosef): loading lung...
+  metrics(yosef): (32472, 2000)  fp=a06e8eed710cda0e
+    sparseNMF: scoring (n=32472, k=300)...
+/usr/local/lib/python3.11/dist-packages/scanpy/preprocessing/_pca/__init__.py:226: FutureWarning: Argument `use_highly_variable` is deprecated, consider using the mask argument. Use_highly_variable=True can be called through mask_var="highly_variable". Use_highly_variable=False can be called through mask_var=None
+  mask_var_param, mask_var = _handle_mask_var(
+Computing neighbors:   0%|          | 0/1 [00:00<?, ?it/s]Computing neighbors: 100%|██████████| 1/1 [00:28<00:00, 28.41s/it]Computing neighbors: 100%|██████████| 1/1 [00:28<00:00, 28.41s/it]
+Embeddings:   0%|[32m          [0m| 0/1 [00:00<?, ?it/s]
+Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s][A
+Metrics:   0%|[34m          [0m| 0/10 [00:00<?, ?it/s, Bio conservation: isolated_labels][A
+Metrics:  10%|[34m█         [0m| 1/10 [04:11<37:41, 251.26s/it, Bio conservation: isolated_labels][A
+Metrics:  10%|[34m█         [0m| 1/10 [04:11<37:41, 251.26s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
+Metrics:  20%|[34m██        [0m| 2/10 [04:21<14:37, 109.72s/it, Bio conservation: nmi_ari_cluster_labels_leiden][A
+Metrics:  20%|[34m██        [0m| 2/10 [04:22<14:37, 109.72s/it, Bio conservation: silhouette_label]             [A
+Metrics:  30%|[34m███       [0m| 3/10 [09:58<24:53, 213.37s/it, Bio conservation: silhouette_label][A
+Metrics:  30%|[34m███       [0m| 3/10 [09:58<24:53, 213.37s/it, Bio conservation: clisi_knn]       [A
+Metrics:  40%|[34m████      [0m| 4/10 [10:00<12:59, 129.95s/it, Bio conservation: clisi_knn][A
+Metrics:  40%|[34m████      [0m| 4/10 [10:00<12:59, 129.95s/it, Batch correction: bras]     [A
+Metrics:  50%|[34m█████     [0m| 5/10 [10:25<07:39, 91.87s/it, Batch correction: bras] [A
+Metrics:  50%|[34m█████     [0m| 5/10 [10:25<07:39, 91.87s/it, Batch correction: ilisi_knn][A
+Metrics:  60%|[34m██████    [0m| 6/10 [10:25<04:03, 60.85s/it, Batch correction: ilisi_knn][A
+Metrics:  60%|[34m██████    [0m| 6/10 [10:26<04:03, 60.85s/it, Batch correction: graph_connectivity][A/usr/local/lib/python3.11/dist-packages/scib_metrics/metrics/_graph_connectivity.py:32: FutureWarning: pandas.value_counts is deprecated and will be removed in a future version. Use pd.Series(obj).value_counts() instead.
+  tab = pd.value_counts(comps)
+
+Metrics:  70%|[34m███████   [0m| 7/10 [10:26<02:03, 41.10s/it, Batch correction: graph_connectivity][AEmbeddings: 100%|[32m██████████[0m| 1/1 [10:26<00:00, 626.30s/it]Embeddings: 100%|[32m██████████[0m| 1/1 [10:26<00:00, 626.30s/it]
+
+                                                                                             [A      sparseNMF: bio=+0.645  batch=+0.473  composite=+0.576  (666.8s)
+Wrote /workspace/runs/k-fill/k-300-lung/figures/composite_summary.png  (composite)
+Wrote /workspace/runs/k-fill/k-300-lung/figures/per_task_bars.png  (per_task)
+Wrote /workspace/runs/k-fill/k-300-lung/figures/bio_vs_batch_tradeoff.png  (tradeoff)
+Wrote /workspace/runs/k-fill/k-300-lung/figures/score_vs_time.png  (speed_score)
+
+Total: 17.5m  (0 method failures)

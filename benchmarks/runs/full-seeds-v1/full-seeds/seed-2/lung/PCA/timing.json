@@ -1,0 +1,12 @@
+{
+  "fit_seconds": 2.1974253356456757,
+  "infer_seconds": 0.020402368158102036,
+  "metric_seconds": 0.0,
+  "peak_rss_mb": 0.0,
+  "gpu_peak_mb": 0.0,
+  "dataset": "lung",
+  "method": "PCA",
+  "batch_key": "batch",
+  "label_key": "cell_type",
+  "fingerprint": "a06e8eed710cda0e"
+}

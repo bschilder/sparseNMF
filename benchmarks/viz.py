@@ -45,7 +45,18 @@ _NON_METRIC_COLS = [
     "peak_rss_mb",
     "gpu_peak_mb",
     "error",
-    "_impl",  # provenance — string column, not a metric
+    # Provenance / hyperparams / replicate indices — NOT metrics.
+    # These leaked into the per-task bar plot before this exclusion
+    # (showed up as spurious "metrics" with values like 30 or 0).
+    "_impl",
+    "seed",
+    "k",
+    # Underscore-prefixed aggregates are duplicates of the canonical
+    # "Bio conservation" / "Batch correction" / "Total" columns;
+    # plotting them as separate metrics double-counts them.
+    "_bio",
+    "_batch",
+    "_composite",
     *_AGGREGATE_COLS,
 ]
 
@@ -75,6 +86,24 @@ def method_palette(methods: list[str]) -> dict[str, str]:
     method has the same colour across plots."""
     methods = sorted(methods)
     return {name: _SET1[i % len(_SET1)] for i, name in enumerate(methods)}
+
+
+# Display-name overrides for method labels in plot legends / titles.
+# Internal/CSV name stays plain ASCII (greppable, file-system safe);
+# plots get LaTeX-styled mathtext when the name has a meaningful
+# subscript role.
+_METHOD_DISPLAY_NAME: dict[str, str] = {
+    "sparseNMF_supervised": r"sparseNMF$_{\mathrm{supervised}}$",
+    # Legacy alias from earlier runs — kept so old CSVs still render.
+    "sparseNMF+batch": r"sparseNMF$_{\mathrm{supervised}}$",
+    "sparseNMF+nonzero": r"sparseNMF$_{\mathrm{nonzero}}$",
+}
+
+
+def _display_name(method: str) -> str:
+    """Map an internal method name to the legend-ready string. Falls
+    through to the raw name when no override exists."""
+    return _METHOD_DISPLAY_NAME.get(method, method)
 
 
 def _agg_scatter_xy(df: pd.DataFrame, x_col: str, y_col: str) -> pd.DataFrame:
@@ -188,7 +217,7 @@ def plot_composite_summary(
             vals,
             width,
             yerr=yerr,
-            label=method,
+            label=_display_name(method),
             color=palette[method],
             edgecolor="black",
             linewidth=0.5,
@@ -272,24 +301,31 @@ def plot_per_task_bars(
         squeeze=False,
         sharex=True,
     )
+    # Multi-seed aware: aggregate (method, metric) means + stds per
+    # dataset. Single-seed → std is NaN → no error bars; multi-seed →
+    # std plotted as yerr alongside the mean.
     for i, dset in enumerate(datasets):
         ax = axes[i, 0]
-        sub = df[df["dataset"] == dset].set_index("method").reindex(methods)
+        ds_df = df[df["dataset"] == dset]
+        # Aggregate each metric column. Mean over rows (= seeds when
+        # multi-seed); single row passes through as mean.
+        means = ds_df.groupby("method")[metric_cols].mean().reindex(methods)
+        stds = ds_df.groupby("method")[metric_cols].std().reindex(methods)
         x = np.arange(len(metric_cols))
         width = 0.8 / max(len(methods), 1)
         for j, method in enumerate(methods):
-            row = sub.loc[method]
-            if isinstance(row, pd.DataFrame):
-                row = row.iloc[0]
-            vals = np.array([row.get(c, np.nan) for c in metric_cols], dtype=float)
+            vals = means.loc[method].values.astype(float)
+            errs = np.nan_to_num(stds.loc[method].values.astype(float), nan=0.0)
             ax.bar(
                 x + j * width - 0.4 + width / 2,
                 vals,
                 width,
+                yerr=errs,
                 color=palette[method],
                 edgecolor="black",
                 linewidth=0.3,
-                label=method if i == 0 else None,
+                label=(_display_name(method) if i == 0 else None),
+                error_kw={"elinewidth": 0.6, "capsize": 0, "ecolor": "black"},
             )
         ax.set_xticks(x)
         ax.set_xticklabels(metric_cols, rotation=35, ha="right", fontsize=8)
@@ -356,9 +392,12 @@ def plot_score_vs_time(
         xerr = np.nan_to_num(sub["x_std"].values, nan=0.0)
         yerr = np.nan_to_num(sub["y_std"].values, nan=0.0)
 
-        # Translucent convex hull behind the markers (paint first so
-        # the dots and error bars stay legible on top).
-        _draw_method_hull(ax, xs, ys, palette[method])
+        # Hull uses ALL raw (method-filtered) points across every seed
+        # and dataset — so multi-seed variation expands the polygon. The
+        # markers and error bars still live at the (dataset, method)
+        # means; the hull captures the full data envelope.
+        raw = df[df["method"] == method].dropna(subset=["fit_seconds", "Total"])
+        _draw_method_hull(ax, raw["fit_seconds"].values, raw["Total"].values, palette[method])
 
         # Error bars: no caps, just thin lines on both axes.
         ax.errorbar(
@@ -389,7 +428,7 @@ def plot_score_vs_time(
     # method colours on top, dataset markers below.
     method_handles = [
         plt.Line2D([], [], marker="o", color="w", markerfacecolor=palette[m],
-                   markeredgecolor="black", markersize=8, label=m)
+                   markeredgecolor="black", markersize=8, label=_display_name(m))
         for m in methods
     ]
     ds_handles = [
@@ -446,9 +485,11 @@ def plot_bio_vs_batch_tradeoff(
         xerr = np.nan_to_num(sub["x_std"].values, nan=0.0)
         yerr = np.nan_to_num(sub["y_std"].values, nan=0.0)
 
-        # Translucent convex hull = method's "area of operation"
-        # across datasets. Drawn first so markers/error bars overlay it.
-        _draw_method_hull(ax, xs, ys, palette[method])
+        # Hull spans ALL raw points (every seed × dataset) so multi-seed
+        # variation enlarges the polygon. Markers + error bars remain at
+        # the per-(dataset, method) means.
+        raw = df[df["method"] == method].dropna(subset=["Batch correction", "Bio conservation"])
+        _draw_method_hull(ax, raw["Batch correction"].values, raw["Bio conservation"].values, palette[method])
 
         # Error bars: no caps, just thin lines on both axes.
         ax.errorbar(
@@ -467,35 +508,54 @@ def plot_bio_vs_batch_tradeoff(
                 linewidth=0.6,
             )
 
+    # Dynamic zoom: integration benchmarks usually live in the
+    # [0.5, 1.0] corner, and an [0, 1] view wastes plot area on
+    # space the data never visits. Tighten each axis's lower limit
+    # to 0.5 INDEPENDENTLY when that axis has no points below — so
+    # one axis can zoom in while the other stays wide if its data
+    # has outliers. Square *box* aspect is preserved via
+    # set_box_aspect(1) below (data units may differ but the
+    # plotting box stays square).
+    min_x = float(np.nanmin(df["Batch correction"].dropna())) if df["Batch correction"].notna().any() else 0.0
+    min_y = float(np.nanmin(df["Bio conservation"].dropna())) if df["Bio conservation"].notna().any() else 0.0
+    x_lo = 0.5 if min_x >= 0.5 else 0.0
+    y_lo = 0.5 if min_y >= 0.5 else 0.0
+
     # Faint diagonal iso-composite lines: total = 0.4*batch + 0.6*bio.
-    x_vals = np.linspace(0, 1, 100)
+    # Generate over [x_lo, 1] so annotations land inside the visible area.
+    x_vals = np.linspace(x_lo, 1, 100)
     for total in (0.4, 0.5, 0.6, 0.7, 0.8, 0.9):
         y_vals = (total - 0.4 * x_vals) / 0.6
-        mask = (y_vals >= 0) & (y_vals <= 1)
+        mask = (y_vals >= y_lo) & (y_vals <= 1)
+        if not mask.any():
+            continue
         ax.plot(
             x_vals[mask], y_vals[mask],
             color="gray", linewidth=0.4, linestyle=":", alpha=0.5,
         )
-        if mask.any():
-            ax.annotate(
-                f"Total={total:.1f}",
-                (x_vals[mask][-1], y_vals[mask][-1]),
-                fontsize=6, color="gray",
-                xytext=(-30, 4), textcoords="offset points",
-            )
+        ax.annotate(
+            f"Total={total:.1f}",
+            (x_vals[mask][-1], y_vals[mask][-1]),
+            fontsize=6, color="gray",
+            xytext=(-30, 4), textcoords="offset points",
+        )
 
     ax.set_xlabel("Batch correction (composite)")
     ax.set_ylabel("Bio conservation (composite)")
     ax.set_title(title or "Trade-off: bio conservation vs batch correction")
     ax.grid(True, linewidth=0.3, alpha=0.5)
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 1)
-    ax.set_aspect("equal", adjustable="box")  # SQUARE plot area
+    ax.set_xlim(x_lo, 1)
+    ax.set_ylim(y_lo, 1)
+    # Square BOX (not equal data units) so independent zoom levels on
+    # x and y don't break the square aspect. Iso-composite diagonals
+    # will appear at a non-45° slope when the ranges differ — that's
+    # the cost of letting each axis pick its own zoom.
+    ax.set_box_aspect(1)
 
     # Legends: methods (color) + datasets (marker).
     method_handles = [
         plt.Line2D([], [], marker="o", color="w", markerfacecolor=palette[m],
-                   markeredgecolor="black", markersize=8, label=m)
+                   markeredgecolor="black", markersize=8, label=_display_name(m))
         for m in methods
     ]
     ds_handles = [
@@ -517,6 +577,65 @@ def plot_bio_vs_batch_tradeoff(
         loc="upper left", bbox_to_anchor=(1.02, 0.55),
         frameon=False, fontsize=8, borderaxespad=0.0,
     )
+    fig.savefig(out_path, dpi=160, bbox_inches="tight")
+    plt.close(fig)
+    return out_path
+
+
+def plot_k_sweep(
+    df: pd.DataFrame,
+    out_path: Path | str,
+    *,
+    method: str = "sparseNMF",
+    title: str | None = None,
+) -> Path:
+    """Composite score vs latent dim k, one line per dataset.
+
+    Expects ``df`` aggregated from per-k runs (each run produced via
+    ``run_benchmark --k K``). The function infers the k value from
+    each row's matrix dimensions if a ``k`` column isn't present —
+    so the aggregator can either inject it or leave it to inference.
+
+    Lines coloured by dataset (a separate palette from method colours);
+    markers at each measured k. Axes: x=k (log scale), y=composite Total.
+    """
+    import matplotlib.pyplot as plt
+
+    out_path = Path(out_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    sub = df[df["method"] == method].copy()
+    if "k" not in sub.columns:
+        raise ValueError(f"plot_k_sweep needs a 'k' column; got {list(df.columns)}")
+
+    datasets = sorted(sub["dataset"].unique())
+    # Reuse Set1 but reserve the first method-palette slot so dataset
+    # colours don't collide with the canonical method colours.
+    ds_colors = {d: _SET1[(i + 5) % len(_SET1)] for i, d in enumerate(datasets)}
+
+    fig, ax = plt.subplots(figsize=(7.0, 5.5))
+    for d in datasets:
+        ssub = sub[sub["dataset"] == d].dropna(subset=["k", "Total"]).sort_values("k")
+        if ssub.empty:
+            continue
+        # Aggregate over any replicates (seed × k → mean ± std).
+        grouped = ssub.groupby("k")["Total"].agg(["mean", "std"]).reset_index()
+        xs = grouped["k"].values
+        ys = grouped["mean"].values
+        yerr = np.nan_to_num(grouped["std"].values, nan=0.0)
+        ax.plot(xs, ys, "-o", color=ds_colors[d], label=d, linewidth=1.5, markersize=6,
+                markeredgecolor="black", markeredgewidth=0.5)
+        ax.errorbar(xs, ys, yerr=yerr, fmt="none", ecolor=ds_colors[d],
+                    elinewidth=0.8, capsize=0, alpha=0.6)
+
+    ax.set_xscale("log")
+    ax.set_xlabel("latent dim k (log scale)")
+    ax.set_ylabel("scIB composite (Total)")
+    ax.set_title(title or f"{method}: composite vs k")
+    ax.grid(True, which="both", linewidth=0.3, alpha=0.5)
+    ax.set_box_aspect(0.7)
+    ax.legend(title="dataset", loc="upper left", bbox_to_anchor=(1.02, 1.0),
+              frameon=False, fontsize=9, borderaxespad=0.0)
     fig.savefig(out_path, dpi=160, bbox_inches="tight")
     plt.close(fig)
     return out_path

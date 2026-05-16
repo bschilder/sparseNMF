@@ -1,0 +1,15 @@
+{
+  "isolated_labels": 0.6358229517936707,
+  "nmi_ari_cluster_labels_leiden_nmi": 0.8095992262839081,
+  "nmi_ari_cluster_labels_leiden_ari": 0.77636167611108,
+  "silhouette_label": 0.5864340662956238,
+  "clisi_knn": 0.9987854361534119,
+  "bras": 0.7656779885292053,
+  "ilisi_knn": 0.24828845262527466,
+  "graph_connectivity": 0.8116038945755356,
+  "Batch correction": 0.6085234452433386,
+  "Bio conservation": 0.7614006713275389,
+  "Total": 0.7002497808938587,
+  "_metric_seconds": 47.05068091675639,
+  "_impl": "scib_metrics_yosef"
+}

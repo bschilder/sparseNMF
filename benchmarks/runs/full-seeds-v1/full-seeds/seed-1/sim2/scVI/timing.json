@@ -1,0 +1,12 @@
+{
+  "fit_seconds": 117.20054673403502,
+  "infer_seconds": 0.25078316405415535,
+  "metric_seconds": 0.0,
+  "peak_rss_mb": 0.0,
+  "gpu_peak_mb": 52.24462890625,
+  "dataset": "sim2",
+  "method": "scVI",
+  "batch_key": "Batch",
+  "label_key": "Group",
+  "fingerprint": "47da76441053c36d"
+}
