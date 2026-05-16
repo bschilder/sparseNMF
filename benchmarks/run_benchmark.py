@@ -58,7 +58,7 @@ METHOD_MODULES: dict[str, str] = {
     "scVI": "benchmarks.methods.scvi",
 }
 
-DEFAULT_METHODS = ["PCA", "NMF", "sparseNMF", "sparseNMF+batch", "Harmony", "scVI"]
+DEFAULT_METHODS = ["PCA", "NMF", "sparseNMF", "sparseNMF_supervised", "Harmony", "scVI"]
 
 METRICS_MODULES = {
     "scib_yosef": "benchmarks.metrics.scib_yosef",
