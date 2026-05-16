@@ -14,7 +14,17 @@ import os
 import time
 from pathlib import Path
 
-os.environ.setdefault("JAX_PLATFORMS", "cpu")
+# JAX claims the GPU at import. Earlier we pinned this to CPU because
+# JAX + PyTorch in the same process caused CUDA-context wedging
+# (scVI/sparseNMF couldn't get the device after scib-metrics ran).
+# With subprocess isolation (each method in its own process) that's
+# no longer a concern — this metrics subprocess has no PyTorch and
+# can safely use GPU JAX, which is 10-50× faster for LISI/silhouette
+# than the CPU path on 30k+ cell datasets.
+#
+# Set JAX_PLATFORMS=cpu in the calling environment to override if
+# you're on a CPU-only host or want to force CPU for reproducibility.
+os.environ.setdefault("JAX_PLATFORMS", "cuda,cpu")
 
 import numpy as np
 
