@@ -29,8 +29,10 @@ import pandas as pd
 
 
 def _value_from_dir(d: Path, axis: str) -> int | None:
-    """Match ``<axis>-<int>`` directory names. Returns the int or None."""
-    m = re.match(rf"^{re.escape(axis)}-(\d+)$", d.name)
+    """Match ``<axis>-<int>`` or ``<axis>-<int>-<suffix>`` directory names.
+    The optional trailing suffix (e.g. dataset name) is informational
+    only — the results.csv itself carries the dataset column."""
+    m = re.match(rf"^{re.escape(axis)}-(\d+)(?:-.+)?$", d.name)
     return int(m.group(1)) if m else None
 
 

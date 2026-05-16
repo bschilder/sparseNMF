@@ -1,0 +1,30 @@
+{
+  "immune": [
+    {
+      "dataset": "immune",
+      "method": "sparseNMF",
+      "k": 300,
+      "fit_seconds": 200.96989551186562,
+      "infer_seconds": null,
+      "metric_seconds": 600.4339418001473,
+      "peak_rss_mb": 0.0,
+      "gpu_peak_mb": 1842.99072265625,
+      "error": null,
+      "_bio": 0.6758402945861888,
+      "_batch": 0.5512972465988275,
+      "_composite": 0.6260230753912442,
+      "isolated_labels": 0.5695245862007141,
+      "nmi_ari_cluster_labels_leiden_nmi": 0.7035207756300302,
+      "nmi_ari_cluster_labels_leiden_ari": 0.5531529191522625,
+      "silhouette_label": 0.555087685585022,
+      "clisi_knn": 0.997915506362915,
+      "bras": 0.7658514976501465,
+      "ilisi_knn": 0.07497971504926682,
+      "graph_connectivity": 0.8130605196464886,
+      "Batch correction": 0.5512972465988275,
+      "Bio conservation": 0.6758402945861888,
+      "Total": 0.6260230753912442,
+      "_impl": "scib_metrics_yosef"
+    }
+  ]
+}
