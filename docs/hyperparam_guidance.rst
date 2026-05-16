@@ -115,13 +115,31 @@ factor count sweet spot sits for your data.
 
 .. note::
 
-   The k-sweep figure above covers k ∈ {10, 20, 30, 50, 100} only.
-   sparseNMF has been validated up to k=1024 on larger datasets;
-   silhouette as the quality metric on this page is partially
-   confounded by latent dimensionality (cluster distances spread
-   in higher-dim space), so don't read it as "k=10 is universally
-   best." For dim-invariant cross-k comparisons see the scIB
-   results on :doc:`benchmark`.
+   The silhouette-based k-sweep above mixes ``normalize_inputs=True``
+   and ``normalize_inputs=False`` configs; the means cover both,
+   which collapses to ambiguity (the two regimes differ by ~1 unit
+   of silhouette). For the cross-k story use the **dim-invariant
+   scIB composite** in :doc:`benchmark`:
+
+   ===== ========= ====== ======= ===== =====
+   k     pancreas  immune lung    sim1  sim2
+   ===== ========= ====== ======= ===== =====
+   10    0.595     0.567  0.574   0.487 0.474
+   30    0.668     0.621  0.594   0.491 0.493
+   100   **0.711** 0.626  0.588   0.603 0.512
+   300   0.706     —      —       0.626 —
+   1000  0.671     —      —       —     —
+   2000  0.658     —      —       —     —
+   ===== ========= ====== ======= ===== =====
+
+   sparseNMF's bell-curve peak on pancreas is **k=100** — well above
+   the scIB-convention k=30 that batch-correcting methods use, and
+   well below the k=1024 default that train_sparse_nmf's heuristic
+   picks for this shape. **Recommendation**: try k ∈ {30, 100, 300}
+   and pick by validation metric on your data; the auto-heuristic
+   is a reasonable starting point but rarely optimal. On simulated
+   data with cleaner structure (sim1) the optimum sits higher
+   (k≥300); the curve is dataset-specific.
 
 For datasets with strong batch effects (cross-protocol, cross-donor,
 multi-platform):

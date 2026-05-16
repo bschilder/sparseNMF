@@ -1,0 +1,21 @@
+{
+  "NMI_cluster/label": 0.603725500032076,
+  "ARI_cluster/label": 0.24768971534514914,
+  "ASW_label": 0.6279317289590836,
+  "ASW_label/batch": 0.7230706214904785,
+  "PCR_batch": NaN,
+  "cell_cycle_conservation": NaN,
+  "isolated_label_F1": NaN,
+  "isolated_label_silhouette": NaN,
+  "graph_conn": 0.3992485775558669,
+  "kBET": NaN,
+  "iLISI": 0.0,
+  "cLISI": 1.0,
+  "hvg_overlap": NaN,
+  "trajectory": NaN,
+  "Bio conservation": 0.6198367360840772,
+  "Batch correction": 0.3741063996821152,
+  "Total": 0.5215446015232924,
+  "_metric_seconds": 126.46192092448473,
+  "_impl": "scib_original"
+}
