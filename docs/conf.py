@@ -41,7 +41,9 @@ source_suffix = {".rst": "restructuredtext", ".md": "markdown"}
 master_doc = "index"
 templates_path = ["_templates"]
 exclude_patterns = [
-    "_build", "Thumbs.db", ".DS_Store",
+    "_build",
+    "Thumbs.db",
+    ".DS_Store",
     # team-updates/ are internal Slack-canvas archives — not part of
     # the published docs. Sphinx 9 + myst_nb register a parser for .ipynb
     # but not for plain .md (myst_nb's parser is keyed to notebook MIME
