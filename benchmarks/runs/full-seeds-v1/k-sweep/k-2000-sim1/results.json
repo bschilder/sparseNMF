@@ -1,0 +1,30 @@
+{
+  "sim1": [
+    {
+      "dataset": "sim1",
+      "method": "sparseNMF",
+      "k": 2000,
+      "fit_seconds": 351.2039746232331,
+      "infer_seconds": null,
+      "metric_seconds": 440.71863770484924,
+      "peak_rss_mb": 0.0,
+      "gpu_peak_mb": 43530.6357421875,
+      "error": null,
+      "_bio": 0.7260735864681402,
+      "_batch": 0.4134474337747441,
+      "_composite": 0.6010231253907817,
+      "isolated_labels": 0.5057989954948425,
+      "nmi_ari_cluster_labels_leiden_nmi": 0.860654689757143,
+      "nmi_ari_cluster_labels_leiden_ari": 0.7365327673485728,
+      "silhouette_label": 0.5273815393447876,
+      "clisi_knn": 0.9999999403953552,
+      "bras": 0.8837652206420898,
+      "ilisi_knn": 0.022712063044309616,
+      "graph_connectivity": 0.33386502881370383,
+      "Batch correction": 0.4134474337747441,
+      "Bio conservation": 0.7260735864681402,
+      "Total": 0.6010231253907817,
+      "_impl": "scib_metrics_yosef"
+    }
+  ]
+}
