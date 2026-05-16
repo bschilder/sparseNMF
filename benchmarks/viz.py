@@ -45,7 +45,18 @@ _NON_METRIC_COLS = [
     "peak_rss_mb",
     "gpu_peak_mb",
     "error",
-    "_impl",  # provenance — string column, not a metric
+    # Provenance / hyperparams / replicate indices — NOT metrics.
+    # These leaked into the per-task bar plot before this exclusion
+    # (showed up as spurious "metrics" with values like 30 or 0).
+    "_impl",
+    "seed",
+    "k",
+    # Underscore-prefixed aggregates are duplicates of the canonical
+    # "Bio conservation" / "Batch correction" / "Total" columns;
+    # plotting them as separate metrics double-counts them.
+    "_bio",
+    "_batch",
+    "_composite",
     *_AGGREGATE_COLS,
 ]
 
