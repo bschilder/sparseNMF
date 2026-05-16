@@ -1,0 +1,2 @@
+dataset,method,k,fit_seconds,infer_seconds,metric_seconds,peak_rss_mb,gpu_peak_mb,error,_bio,_batch,_composite
+sim2,sparseNMF,2000,507.3893326111138,,0.0,0.0,46899.970703125,,,,
