@@ -187,20 +187,15 @@ def plot_composite_summary(
     # Aggregate across seeds (or any other replicate axis). With one
     # row per cell, mean == that value and std is NaN.
     grouped = df.groupby(["dataset", "method"])["Total"].agg(["mean", "std"]).reset_index()
-    pivot_mean = (
-        grouped.pivot(index="dataset", columns="method", values="mean")
-        .reindex(columns=methods)
+    pivot_mean = grouped.pivot(index="dataset", columns="method", values="mean").reindex(
+        columns=methods
     )
-    pivot_std = (
-        grouped.pivot(index="dataset", columns="method", values="std")
-        .reindex(columns=methods)
+    pivot_std = grouped.pivot(index="dataset", columns="method", values="std").reindex(
+        columns=methods
     )
     datasets = list(pivot_mean.index)
     palette = method_palette(methods)
-    n_seeds = (
-        df.groupby(["dataset", "method"]).size().max()
-        if len(df) > 0 else 1
-    )
+    n_seeds = df.groupby(["dataset", "method"]).size().max() if len(df) > 0 else 1
 
     fig, ax = plt.subplots(figsize=(1.0 * max(len(datasets), 3) + 2.4, 4.0))
     x = np.arange(len(datasets))
@@ -249,14 +244,17 @@ def plot_composite_summary(
             max(float(finite.max()) + top_pad, 1.0),
         )
     if n_seeds > 1:
-        title = (title or "scIB composite score per dataset × method") + f"  (mean ± std, n={n_seeds} seeds)"
+        title = (
+            title or "scIB composite score per dataset × method"
+        ) + f"  (mean ± std, n={n_seeds} seeds)"
     else:
         title = title or "scIB composite score per dataset × method"
     ax.set_title(title)
     # Legend OUTSIDE the axes on the right, vertical (one column).
     handles, labels = ax.get_legend_handles_labels()
     ax.legend(
-        handles, labels,
+        handles,
+        labels,
         title="method",
         loc="upper left",
         bbox_to_anchor=(1.02, 1.0),
@@ -401,15 +399,22 @@ def plot_score_vs_time(
 
         # Error bars: no caps, just thin lines on both axes.
         ax.errorbar(
-            xs, ys, xerr=xerr, yerr=yerr,
-            fmt="none", ecolor=palette[method],
-            elinewidth=0.8, capsize=0, alpha=0.6,
+            xs,
+            ys,
+            xerr=xerr,
+            yerr=yerr,
+            fmt="none",
+            ecolor=palette[method],
+            elinewidth=0.8,
+            capsize=0,
+            alpha=0.6,
         )
 
         # Per-dataset markers (so dataset identity stays visible).
         for _, row in sub.iterrows():
             ax.scatter(
-                row["x_mean"], row["y_mean"],
+                row["x_mean"],
+                row["y_mean"],
                 color=palette[method],
                 marker=ds_marker.get(row["dataset"], "o"),
                 s=85,
@@ -427,26 +432,50 @@ def plot_score_vs_time(
     # Both legends OUTSIDE the axes to the right, vertically stacked:
     # method colours on top, dataset markers below.
     method_handles = [
-        plt.Line2D([], [], marker="o", color="w", markerfacecolor=palette[m],
-                   markeredgecolor="black", markersize=8, label=_display_name(m))
+        plt.Line2D(
+            [],
+            [],
+            marker="o",
+            color="w",
+            markerfacecolor=palette[m],
+            markeredgecolor="black",
+            markersize=8,
+            label=_display_name(m),
+        )
         for m in methods
     ]
     ds_handles = [
-        plt.Line2D([], [], marker=ds_marker.get(d, "o"), color="black",
-                   linestyle="", markersize=7, markerfacecolor="white",
-                   markeredgewidth=0.8, label=d)
+        plt.Line2D(
+            [],
+            [],
+            marker=ds_marker.get(d, "o"),
+            color="black",
+            linestyle="",
+            markersize=7,
+            markerfacecolor="white",
+            markeredgewidth=0.8,
+            label=d,
+        )
         for d in datasets
     ]
     method_legend = ax.legend(
-        handles=method_handles, title="method",
-        loc="upper left", bbox_to_anchor=(1.02, 1.0),
-        frameon=False, fontsize=8, borderaxespad=0.0,
+        handles=method_handles,
+        title="method",
+        loc="upper left",
+        bbox_to_anchor=(1.02, 1.0),
+        frameon=False,
+        fontsize=8,
+        borderaxespad=0.0,
     )
     ax.add_artist(method_legend)
     ax.legend(
-        handles=ds_handles, title="dataset",
-        loc="upper left", bbox_to_anchor=(1.02, 0.55),
-        frameon=False, fontsize=8, borderaxespad=0.0,
+        handles=ds_handles,
+        title="dataset",
+        loc="upper left",
+        bbox_to_anchor=(1.02, 0.55),
+        frameon=False,
+        fontsize=8,
+        borderaxespad=0.0,
     )
     fig.savefig(out_path, dpi=160, bbox_inches="tight")
     plt.close(fig)
@@ -489,18 +518,27 @@ def plot_bio_vs_batch_tradeoff(
         # variation enlarges the polygon. Markers + error bars remain at
         # the per-(dataset, method) means.
         raw = df[df["method"] == method].dropna(subset=["Batch correction", "Bio conservation"])
-        _draw_method_hull(ax, raw["Batch correction"].values, raw["Bio conservation"].values, palette[method])
+        _draw_method_hull(
+            ax, raw["Batch correction"].values, raw["Bio conservation"].values, palette[method]
+        )
 
         # Error bars: no caps, just thin lines on both axes.
         ax.errorbar(
-            xs, ys, xerr=xerr, yerr=yerr,
-            fmt="none", ecolor=palette[method],
-            elinewidth=0.8, capsize=0, alpha=0.6,
+            xs,
+            ys,
+            xerr=xerr,
+            yerr=yerr,
+            fmt="none",
+            ecolor=palette[method],
+            elinewidth=0.8,
+            capsize=0,
+            alpha=0.6,
         )
 
         for _, row in sub.iterrows():
             ax.scatter(
-                row["x_mean"], row["y_mean"],
+                row["x_mean"],
+                row["y_mean"],
                 color=palette[method],
                 marker=ds_marker.get(row["dataset"], "o"),
                 s=85,
@@ -516,8 +554,16 @@ def plot_bio_vs_batch_tradeoff(
     # has outliers. Square *box* aspect is preserved via
     # set_box_aspect(1) below (data units may differ but the
     # plotting box stays square).
-    min_x = float(np.nanmin(df["Batch correction"].dropna())) if df["Batch correction"].notna().any() else 0.0
-    min_y = float(np.nanmin(df["Bio conservation"].dropna())) if df["Bio conservation"].notna().any() else 0.0
+    min_x = (
+        float(np.nanmin(df["Batch correction"].dropna()))
+        if df["Batch correction"].notna().any()
+        else 0.0
+    )
+    min_y = (
+        float(np.nanmin(df["Bio conservation"].dropna()))
+        if df["Bio conservation"].notna().any()
+        else 0.0
+    )
     x_lo = 0.5 if min_x >= 0.5 else 0.0
     y_lo = 0.5 if min_y >= 0.5 else 0.0
 
@@ -530,14 +576,20 @@ def plot_bio_vs_batch_tradeoff(
         if not mask.any():
             continue
         ax.plot(
-            x_vals[mask], y_vals[mask],
-            color="gray", linewidth=0.4, linestyle=":", alpha=0.5,
+            x_vals[mask],
+            y_vals[mask],
+            color="gray",
+            linewidth=0.4,
+            linestyle=":",
+            alpha=0.5,
         )
         ax.annotate(
             f"Total={total:.1f}",
             (x_vals[mask][-1], y_vals[mask][-1]),
-            fontsize=6, color="gray",
-            xytext=(-30, 4), textcoords="offset points",
+            fontsize=6,
+            color="gray",
+            xytext=(-30, 4),
+            textcoords="offset points",
         )
 
     ax.set_xlabel("Batch correction (composite)")
@@ -554,28 +606,52 @@ def plot_bio_vs_batch_tradeoff(
 
     # Legends: methods (color) + datasets (marker).
     method_handles = [
-        plt.Line2D([], [], marker="o", color="w", markerfacecolor=palette[m],
-                   markeredgecolor="black", markersize=8, label=_display_name(m))
+        plt.Line2D(
+            [],
+            [],
+            marker="o",
+            color="w",
+            markerfacecolor=palette[m],
+            markeredgecolor="black",
+            markersize=8,
+            label=_display_name(m),
+        )
         for m in methods
     ]
     ds_handles = [
-        plt.Line2D([], [], marker=ds_marker.get(d, "o"), color="black",
-                   linestyle="", markersize=7, markerfacecolor="white",
-                   markeredgewidth=0.8, label=d)
+        plt.Line2D(
+            [],
+            [],
+            marker=ds_marker.get(d, "o"),
+            color="black",
+            linestyle="",
+            markersize=7,
+            markerfacecolor="white",
+            markeredgewidth=0.8,
+            label=d,
+        )
         for d in datasets
     ]
     # Both legends OUTSIDE the axes on the right, vertically stacked:
     # method colours on top, dataset markers below.
     method_legend = ax.legend(
-        handles=method_handles, title="method",
-        loc="upper left", bbox_to_anchor=(1.02, 1.0),
-        frameon=False, fontsize=8, borderaxespad=0.0,
+        handles=method_handles,
+        title="method",
+        loc="upper left",
+        bbox_to_anchor=(1.02, 1.0),
+        frameon=False,
+        fontsize=8,
+        borderaxespad=0.0,
     )
     ax.add_artist(method_legend)
     ax.legend(
-        handles=ds_handles, title="dataset",
-        loc="upper left", bbox_to_anchor=(1.02, 0.55),
-        frameon=False, fontsize=8, borderaxespad=0.0,
+        handles=ds_handles,
+        title="dataset",
+        loc="upper left",
+        bbox_to_anchor=(1.02, 0.55),
+        frameon=False,
+        fontsize=8,
+        borderaxespad=0.0,
     )
     fig.savefig(out_path, dpi=160, bbox_inches="tight")
     plt.close(fig)
@@ -623,10 +699,20 @@ def plot_k_sweep(
         xs = grouped["k"].values
         ys = grouped["mean"].values
         yerr = np.nan_to_num(grouped["std"].values, nan=0.0)
-        ax.plot(xs, ys, "-o", color=ds_colors[d], label=d, linewidth=1.5, markersize=6,
-                markeredgecolor="black", markeredgewidth=0.5)
-        ax.errorbar(xs, ys, yerr=yerr, fmt="none", ecolor=ds_colors[d],
-                    elinewidth=0.8, capsize=0, alpha=0.6)
+        ax.plot(
+            xs,
+            ys,
+            "-o",
+            color=ds_colors[d],
+            label=d,
+            linewidth=1.5,
+            markersize=6,
+            markeredgecolor="black",
+            markeredgewidth=0.5,
+        )
+        ax.errorbar(
+            xs, ys, yerr=yerr, fmt="none", ecolor=ds_colors[d], elinewidth=0.8, capsize=0, alpha=0.6
+        )
 
     ax.set_xscale("log")
     ax.set_xlabel("latent dim k (log scale)")
@@ -634,8 +720,14 @@ def plot_k_sweep(
     ax.set_title(title or f"{method}: composite vs k")
     ax.grid(True, which="both", linewidth=0.3, alpha=0.5)
     ax.set_box_aspect(0.7)
-    ax.legend(title="dataset", loc="upper left", bbox_to_anchor=(1.02, 1.0),
-              frameon=False, fontsize=9, borderaxespad=0.0)
+    ax.legend(
+        title="dataset",
+        loc="upper left",
+        bbox_to_anchor=(1.02, 1.0),
+        frameon=False,
+        fontsize=9,
+        borderaxespad=0.0,
+    )
     fig.savefig(out_path, dpi=160, bbox_inches="tight")
     plt.close(fig)
     return out_path

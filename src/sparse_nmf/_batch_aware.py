@@ -54,7 +54,6 @@ negative entries.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional
 
 import numpy as np
 import torch
@@ -114,8 +113,8 @@ def train_sparse_nmf_batch_aware(
     sparsity_weight: float = 0.01,
     alignment_weight: float = 1.0,
     device: str = "cuda",
-    random_state: Optional[int] = None,
-    patience: Optional[int] = 10,
+    random_state: int | None = None,
+    patience: int | None = 10,
     tol: float = 1e-5,
     normalize_inputs: bool = True,
     verbose: bool = True,
@@ -168,17 +167,16 @@ def train_sparse_nmf_batch_aware(
         raise TypeError("X_sparse must be scipy.sparse")
     n_cells, n_genes = X_sparse.shape
     if batch.shape != (n_cells,):
-        raise ValueError(
-            f"batch shape {batch.shape} doesn't match n_cells={n_cells}"
-        )
+        raise ValueError(f"batch shape {batch.shape} doesn't match n_cells={n_cells}")
     k = int(n_components)
 
     # Canonicalize batch labels → integer 0..(n_batches-1).
     uniq_batches, batch_idx = np.unique(batch, return_inverse=True)
     n_batches = len(uniq_batches)
-    _maybe_log(verbose,
+    _maybe_log(
+        verbose,
         f"  batch-aware sparseNMF: n_cells={n_cells} n_genes={n_genes} "
-        f"k={k} n_batches={n_batches} α_w={sparsity_weight} α_v={alignment_weight}"
+        f"k={k} n_batches={n_batches} α_w={sparsity_weight} α_v={alignment_weight}",
     )
 
     if not torch.cuda.is_available() and device.startswith("cuda"):
@@ -197,17 +195,17 @@ def train_sparse_nmf_batch_aware(
         X_csr = normalize(X_csr, norm="l2", axis=1).astype(np.float32)
 
     # Group cell indices by batch for fast per-batch slicing during MU.
-    cells_in_batch: list[np.ndarray] = [
-        np.where(batch_idx == b)[0] for b in range(n_batches)
-    ]
+    cells_in_batch: list[np.ndarray] = [np.where(batch_idx == b)[0] for b in range(n_batches)]
 
     # Initialize W, H_shared, V[b] with non-negative random values.
     rng = np.random.default_rng(random_state)
     scale = float(np.sqrt(X_csr.mean() / k + 1e-8))
     W = torch.tensor(rng.random((n_cells, k)).astype(np.float32) * scale, device=device)
     H_shared = torch.tensor(rng.random((k, n_genes)).astype(np.float32) * scale, device=device)
-    V = [torch.tensor(rng.random((k, n_genes)).astype(np.float32) * scale * 0.1, device=device)
-         for _ in range(n_batches)]
+    V = [
+        torch.tensor(rng.random((k, n_genes)).astype(np.float32) * scale * 0.1, device=device)
+        for _ in range(n_batches)
+    ]
 
     # Precompute torch tensors for each batch's X_b (kept on device).
     # For very large datasets, this could blow VRAM — but for our
@@ -279,12 +277,13 @@ def train_sparse_nmf_batch_aware(
                     continue
                 recon = W[idx] @ (H_shared + V[b])
                 loss += float(((X_b_torch[b] - recon) ** 2).sum().item())
-            v_pen = float(sum((alignment_weight * (Vb ** 2).sum()).item() for Vb in V))
+            v_pen = float(sum((alignment_weight * (Vb**2).sum()).item() for Vb in V))
             w_pen = float((sparsity_weight * W.abs().sum()).item())
             total = loss + v_pen + w_pen
             losses.append(total)
-            _maybe_log(verbose,
-                f"  iter {it+1:4d} loss={total:.4f} (recon={loss:.4f} V_l2={v_pen:.4f} W_l1={w_pen:.4f})"
+            _maybe_log(
+                verbose,
+                f"  iter {it + 1:4d} loss={total:.4f} (recon={loss:.4f} V_l2={v_pen:.4f} W_l1={w_pen:.4f})",
             )
 
             if total < best_loss * (1 - tol):
@@ -293,19 +292,20 @@ def train_sparse_nmf_batch_aware(
             else:
                 patience_counter += 1
             if patience is not None and patience_counter >= patience:
-                _maybe_log(verbose,
-                    f"  early stop at iter {it+1}: no rel-improvement > {tol} for {patience} checks"
+                _maybe_log(
+                    verbose,
+                    f"  early stop at iter {it + 1}: no rel-improvement > {tol} for {patience} checks",
                 )
                 break
 
     # Materialize numpy results.
     W_np = W.detach().cpu().numpy()
     H_np = H_shared.detach().cpu().numpy()
-    V_dict = {
-        str(uniq_batches[b]): V[b].detach().cpu().numpy()
-        for b in range(n_batches)
-    }
+    V_dict = {str(uniq_batches[b]): V[b].detach().cpu().numpy() for b in range(n_batches)}
     return BatchAwareResult(
-        W=W_np, H_shared=H_np, V=V_dict,
-        losses=losses, n_iter=it + 1,
+        W=W_np,
+        H_shared=H_np,
+        V=V_dict,
+        losses=losses,
+        n_iter=it + 1,
     )

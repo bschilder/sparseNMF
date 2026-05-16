@@ -82,15 +82,15 @@ Writes ``docs/_static/real_pancreas_demo.png``.
 
 from __future__ import annotations
 
-# Determinism setup must run before numpy / torch import so the
-# single-threaded BLAS / OMP env vars are read at thread-pool init.
-from _determinism import set_global_seed  # noqa: I001,E402,F401
-
 import time
 import urllib.request
 from pathlib import Path
 
 import numpy as np
+
+# Determinism setup must run before numpy / torch import so the
+# single-threaded BLAS / OMP env vars are read at thread-pool init.
+from _determinism import set_global_seed  # noqa: I001,E402,F401
 from scipy.sparse import csr_matrix, issparse
 
 from sparse_nmf import train_sparse_nmf

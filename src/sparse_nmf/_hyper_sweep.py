@@ -44,11 +44,9 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 import numpy as np
 from scipy.sparse import spmatrix
-
 
 # ── Quality metrics (cheap; no scIB stack) ───────────────────────────
 
@@ -88,7 +86,7 @@ class SweepResult:
     is the canonical artifact — plot helpers read from it."""
 
     df: object  # pandas.DataFrame (typed `object` so this module
-                #   doesn't need a hard pandas import at decl time)
+    #   doesn't need a hard pandas import at decl time)
 
     def plot(self, out_dir: Path | str) -> dict[str, Path]:
         """Write multi-panel figures to ``out_dir``. Returns
@@ -167,7 +165,7 @@ def sweep_hyperparameters(
 
         log_summary = ", ".join(f"{k}={v}" for k, v in cfg.items() if k != "verbose")
         if verbose:
-            print(f"  [{i+1}/{len(configs)}] {dataset_name}: {log_summary}", flush=True)
+            print(f"  [{i + 1}/{len(configs)}] {dataset_name}: {log_summary}", flush=True)
 
         t0 = time.perf_counter()
         if mode == "standard":
@@ -177,8 +175,10 @@ def sweep_hyperparameters(
             if batch is None:
                 raise ValueError("mode='batch_aware' requires batch=...")
             res = train_sparse_nmf_batch_aware(
-                X_sparse=X_sparse, batch=np.asarray(batch),
-                device=device, **cfg,
+                X_sparse=X_sparse,
+                batch=np.asarray(batch),
+                device=device,
+                **cfg,
             )
             W = res.W
             n_iter = res.n_iter
@@ -206,9 +206,11 @@ def sweep_hyperparameters(
         if verbose:
             sl = row["silhouette_label"]
             sb = row["silhouette_batch"]
-            print(f"      → sil_label={sl:+.3f}  sil_batch={sb:+.3f}  "
-                  f"t={train_seconds:.1f}s  sparsity={row['W_sparsity']:.2f}",
-                  flush=True)
+            print(
+                f"      → sil_label={sl:+.3f}  sil_batch={sb:+.3f}  "
+                f"t={train_seconds:.1f}s  sparsity={row['W_sparsity']:.2f}",
+                flush=True,
+            )
     return SweepResult(pd.DataFrame(rows))
 
 
@@ -218,15 +220,25 @@ def sweep_hyperparameters(
 def _plot_sweep(df, out_dir: Path) -> dict[str, Path]:
     """Render 4-panel summary figure + per-axis line plots."""
     import matplotlib.pyplot as plt
-    import pandas as pd
 
     out_dir.mkdir(parents=True, exist_ok=True)
     paths: dict[str, Path] = {}
 
     datasets = sorted(df["dataset"].unique())
-    palette = {d: c for d, c in zip(datasets, [
-        "#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00",
-    ], strict=False)}
+    palette = {
+        d: c
+        for d, c in zip(
+            datasets,
+            [
+                "#e41a1c",
+                "#377eb8",
+                "#4daf4a",
+                "#984ea3",
+                "#ff7f00",
+            ],
+            strict=False,
+        )
+    }
 
     # ── Panel A: k vs silhouette_label ──────────────────────────────
     fig, axes = plt.subplots(1, 4, figsize=(16, 4.0))
@@ -235,9 +247,16 @@ def _plot_sweep(df, out_dir: Path) -> dict[str, Path]:
         sub = df[df["dataset"] == d].dropna(subset=["k", "silhouette_label"]).sort_values("k")
         grouped = sub.groupby("k")["silhouette_label"].agg(["mean", "std"]).reset_index()
         axes[0].plot(grouped["k"], grouped["mean"], "-o", color=palette[d], label=d, markersize=5)
-        axes[0].errorbar(grouped["k"], grouped["mean"],
-                         yerr=np.nan_to_num(grouped["std"].values, nan=0.0),
-                         fmt="none", ecolor=palette[d], elinewidth=0.8, alpha=0.6, capsize=0)
+        axes[0].errorbar(
+            grouped["k"],
+            grouped["mean"],
+            yerr=np.nan_to_num(grouped["std"].values, nan=0.0),
+            fmt="none",
+            ecolor=palette[d],
+            elinewidth=0.8,
+            alpha=0.6,
+            capsize=0,
+        )
     axes[0].set_xscale("log")
     axes[0].set_xlabel("k (latent dim, log)")
     axes[0].set_ylabel("silhouette (label) ↑")
@@ -249,9 +268,16 @@ def _plot_sweep(df, out_dir: Path) -> dict[str, Path]:
         sub = df[df["dataset"] == d].dropna(subset=["k", "silhouette_batch"]).sort_values("k")
         grouped = sub.groupby("k")["silhouette_batch"].agg(["mean", "std"]).reset_index()
         axes[1].plot(grouped["k"], grouped["mean"], "-o", color=palette[d], label=d, markersize=5)
-        axes[1].errorbar(grouped["k"], grouped["mean"],
-                         yerr=np.nan_to_num(grouped["std"].values, nan=0.0),
-                         fmt="none", ecolor=palette[d], elinewidth=0.8, alpha=0.6, capsize=0)
+        axes[1].errorbar(
+            grouped["k"],
+            grouped["mean"],
+            yerr=np.nan_to_num(grouped["std"].values, nan=0.0),
+            fmt="none",
+            ecolor=palette[d],
+            elinewidth=0.8,
+            alpha=0.6,
+            capsize=0,
+        )
     axes[1].set_xscale("log")
     axes[1].set_xlabel("k (latent dim, log)")
     axes[1].set_ylabel("silhouette (batch) ↓")
@@ -283,9 +309,14 @@ def _plot_sweep(df, out_dir: Path) -> dict[str, Path]:
     axes[3].grid(True, which="both", linewidth=0.3, alpha=0.5)
 
     # Single legend at the right of the whole row.
-    axes[0].legend(title="dataset", loc="upper left",
-                   bbox_to_anchor=(0.0, -0.15), ncol=len(datasets),
-                   frameon=False, fontsize=9)
+    axes[0].legend(
+        title="dataset",
+        loc="upper left",
+        bbox_to_anchor=(0.0, -0.15),
+        ncol=len(datasets),
+        frameon=False,
+        fontsize=9,
+    )
     fig.suptitle("sparseNMF hyperparameter sweep", fontsize=13, y=1.02)
     fig.tight_layout()
     fig.savefig(out_dir / "sweep_k.png", dpi=160, bbox_inches="tight")
@@ -297,16 +328,22 @@ def _plot_sweep(df, out_dir: Path) -> dict[str, Path]:
     for d in datasets:
         sub = df[df["dataset"] == d].dropna(subset=["silhouette_label", "silhouette_batch"])
         ax.scatter(
-            sub["silhouette_batch"], sub["silhouette_label"],
-            c=[palette[d]] * len(sub), s=60 + sub["k"].values,  # marker size ~ k
-            edgecolor="black", linewidth=0.6, alpha=0.7, label=d,
+            sub["silhouette_batch"],
+            sub["silhouette_label"],
+            c=[palette[d]] * len(sub),
+            s=60 + sub["k"].values,  # marker size ~ k
+            edgecolor="black",
+            linewidth=0.6,
+            alpha=0.7,
+            label=d,
         )
     ax.set_xlabel("silhouette (batch) ←  lower is better")
     ax.set_ylabel("silhouette (label) →  higher is better")
     ax.set_title("Bio-vs-batch trade-off (marker size ∝ k)")
     ax.grid(True, linewidth=0.3, alpha=0.5)
-    ax.legend(title="dataset", loc="upper left", bbox_to_anchor=(1.02, 1.0),
-              frameon=False, fontsize=9)
+    ax.legend(
+        title="dataset", loc="upper left", bbox_to_anchor=(1.02, 1.0), frameon=False, fontsize=9
+    )
     fig.tight_layout()
     fig.savefig(out_dir / "sweep_tradeoff.png", dpi=160, bbox_inches="tight")
     plt.close(fig)
@@ -318,15 +355,16 @@ def _plot_sweep(df, out_dir: Path) -> dict[str, Path]:
     facet["loss_mode"] = facet["nonzero_mse_weight"].apply(
         lambda x: "nonzero-only" if x and x > 0 else "all (incl. zeros)"
     )
-    facet["norm_mode"] = facet["normalize_inputs"].apply(
-        lambda x: "L2-row-norm" if x else "raw"
-    )
+    facet["norm_mode"] = facet["normalize_inputs"].apply(lambda x: "L2-row-norm" if x else "raw")
     if not facet.empty:
         agg = (
             facet.groupby(["dataset", "loss_mode", "norm_mode"])["silhouette_label"]
-            .agg(["mean", "std"]).reset_index()
+            .agg(["mean", "std"])
+            .reset_index()
         )
-        groups = sorted({(lm, nm) for lm in agg.loss_mode.unique() for nm in agg.norm_mode.unique()})
+        groups = sorted(
+            {(lm, nm) for lm in agg.loss_mode.unique() for nm in agg.norm_mode.unique()}
+        )
         n_groups = len(groups)
         x = np.arange(len(datasets))
         width = 0.8 / max(n_groups, 1)
@@ -339,13 +377,17 @@ def _plot_sweep(df, out_dir: Path) -> dict[str, Path]:
                 vals.append(row["mean"].values[0] if not row.empty else np.nan)
                 stds.append(row["std"].values[0] if not row.empty else np.nan)
             ax.bar(
-                x + i * width - 0.4 + width / 2, vals, width,
+                x + i * width - 0.4 + width / 2,
+                vals,
+                width,
                 yerr=np.nan_to_num(stds, nan=0.0),
                 label=f"{lm} / {nm}",
-                edgecolor="black", linewidth=0.5,
+                edgecolor="black",
+                linewidth=0.5,
                 error_kw={"elinewidth": 0.7, "capsize": 0},
             )
-        ax.set_xticks(x); ax.set_xticklabels(datasets, fontsize=10)
+        ax.set_xticks(x)
+        ax.set_xticklabels(datasets, fontsize=10)
         ax.set_ylabel("silhouette (label) ↑")
         ax.set_title("Loss × normalization (at k=30)")
         ax.grid(axis="y", linewidth=0.3, alpha=0.4)

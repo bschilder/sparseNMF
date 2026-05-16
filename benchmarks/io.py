@@ -31,7 +31,6 @@ from pathlib import Path
 
 import numpy as np
 
-
 # ── Datasets ─────────────────────────────────────────────────────────
 
 SCIB_DATASETS = {
@@ -104,9 +103,7 @@ def _resolve_key(adata, candidates, kind: str, dataset: str) -> str:
             skipped_degenerate.append(c)
             continue
         return c
-    detail = (
-        f" (skipped degenerate: {skipped_degenerate})" if skipped_degenerate else ""
-    )
+    detail = f" (skipped degenerate: {skipped_degenerate})" if skipped_degenerate else ""
     raise KeyError(
         f"dataset={dataset!r}: no {kind} key in {candidates} matched "
         f"adata.obs columns {list(adata.obs.columns)}{detail}"
@@ -339,7 +336,9 @@ def method_out_dir(out_root: Path | str, dataset: str, method: str) -> Path:
     return p
 
 
-def save_embedding(out_root: Path | str, dataset: str, method: str, emb: np.ndarray, fingerprint: str) -> Path:
+def save_embedding(
+    out_root: Path | str, dataset: str, method: str, emb: np.ndarray, fingerprint: str
+) -> Path:
     """Write embedding as .npz (allow_pickle=False on load) — never pickle."""
     d = method_out_dir(out_root, dataset, method)
     path = d / "X_emb.npz"
@@ -404,14 +403,22 @@ def load_error(out_root: Path | str, dataset: str, method: str) -> str | None:
 def add_common_method_args(parser):
     """Register the args every per-method subprocess needs."""
     parser.add_argument("--dataset", required=True, choices=list(SCIB_DATASETS))
-    parser.add_argument("--out-dir", required=True,
-                        help="Run root directory; method writes to <out-dir>/<dataset>/<method>/")
-    parser.add_argument("--method-name", required=True,
-                        help="Method name as it appears in the results table")
+    parser.add_argument(
+        "--out-dir",
+        required=True,
+        help="Run root directory; method writes to <out-dir>/<dataset>/<method>/",
+    )
+    parser.add_argument(
+        "--method-name", required=True, help="Method name as it appears in the results table"
+    )
     parser.add_argument("--k", type=int, default=30)
     parser.add_argument("--seed", type=int, default=0)
-    parser.add_argument("--cells-per-cohort", type=int, default=None,
-                        help="Stratified per-(batch,label) subsample size; omit for full dataset.")
+    parser.add_argument(
+        "--cells-per-cohort",
+        type=int,
+        default=None,
+        help="Stratified per-(batch,label) subsample size; omit for full dataset.",
+    )
     parser.add_argument("--no-hvg", action="store_true")
     parser.add_argument("--n-hvg", type=int, default=2000)
 
@@ -432,8 +439,11 @@ def run_method_subprocess(args, embed_fn) -> int:
         n_hvg=args.n_hvg,
     )
     fp = adata_fingerprint(adata)
-    print(f"  {method}: {adata.shape}  fp={fp}  batches={adata.obs[batch_key].nunique()}  "
-          f"labels={adata.obs[label_key].nunique()}", flush=True)
+    print(
+        f"  {method}: {adata.shape}  fp={fp}  batches={adata.obs[batch_key].nunique()}  "
+        f"labels={adata.obs[label_key].nunique()}",
+        flush=True,
+    )
 
     print(f"  {method}: fitting...", flush=True)
     try:
@@ -447,8 +457,15 @@ def run_method_subprocess(args, embed_fn) -> int:
         return 1
 
     save_embedding(args.out_dir, args.dataset, method, emb, fingerprint=fp)
-    save_timing(args.out_dir, args.dataset, method, timing,
-                batch_key=batch_key, label_key=label_key, fingerprint=fp)
+    save_timing(
+        args.out_dir,
+        args.dataset,
+        method,
+        timing,
+        batch_key=batch_key,
+        label_key=label_key,
+        fingerprint=fp,
+    )
     infer = f"{timing.infer_seconds:.2f}s" if timing.infer_seconds is not None else "—"
     gpu = f"{timing.gpu_peak_mb:.0f}MB" if timing.gpu_peak_mb is not None else "—"
     print(

@@ -63,7 +63,8 @@ def embed(adata, batch_key, label_key, counts_layer, k, seed):
         fit_s = time.perf_counter() - t0
 
     return result.W, MethodTiming(
-        fit_s, None,
+        fit_s,
+        None,
         peak_rss_mb=mem["peak_rss_mb"],
         gpu_peak_mb=mem["gpu_peak_mb"],
     )

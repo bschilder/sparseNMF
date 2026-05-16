@@ -44,7 +44,9 @@ def embed(adata, batch_key, label_key, counts_layer, k, seed):
     assert emb_.shape == (adata.n_obs, k), (
         f"Harmony embedding shape {emb_.shape} != ({adata.n_obs}, {k})"
     )
-    return emb_, MethodTiming(pca_s + harm_s, None, peak_rss_mb=mem["peak_rss_mb"], gpu_peak_mb=mem["gpu_peak_mb"])
+    return emb_, MethodTiming(
+        pca_s + harm_s, None, peak_rss_mb=mem["peak_rss_mb"], gpu_peak_mb=mem["gpu_peak_mb"]
+    )
 
 
 def main() -> int:

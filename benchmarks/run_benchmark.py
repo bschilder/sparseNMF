@@ -42,8 +42,6 @@ import sys
 import time
 from pathlib import Path
 
-import numpy as np
-
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parent
 
@@ -69,12 +67,19 @@ METRICS_MODULES = {
 def run_method(method: str, dataset: str, out_dir: Path, args) -> int:
     """Spawn a subprocess that embeds ``method`` on ``dataset``."""
     cmd = [
-        sys.executable, "-m", METHOD_MODULES[method],
-        "--dataset", dataset,
-        "--out-dir", str(out_dir),
-        "--method-name", method,
-        "--k", str(args.k),
-        "--seed", str(args.seed),
+        sys.executable,
+        "-m",
+        METHOD_MODULES[method],
+        "--dataset",
+        dataset,
+        "--out-dir",
+        str(out_dir),
+        "--method-name",
+        method,
+        "--k",
+        str(args.k),
+        "--seed",
+        str(args.seed),
     ]
     if args.cells_per_cohort is not None:
         cmd += ["--cells-per-cohort", str(args.cells_per_cohort)]
@@ -88,11 +93,17 @@ def run_method(method: str, dataset: str, out_dir: Path, args) -> int:
 def run_metrics(impl: str, dataset: str, methods: list[str], out_dir: Path, args) -> int:
     """Spawn a subprocess that scores all methods for ``dataset``."""
     cmd = [
-        sys.executable, "-m", METRICS_MODULES[impl],
-        "--dataset", dataset,
-        "--out-dir", str(out_dir),
-        "--methods", *methods,
-        "--seed", str(args.seed),
+        sys.executable,
+        "-m",
+        METRICS_MODULES[impl],
+        "--dataset",
+        dataset,
+        "--out-dir",
+        str(out_dir),
+        "--methods",
+        *methods,
+        "--seed",
+        str(args.seed),
     ]
     if args.cells_per_cohort is not None:
         cmd += ["--cells-per-cohort", str(args.cells_per_cohort)]
@@ -108,7 +119,9 @@ def run_metrics(impl: str, dataset: str, methods: list[str], out_dir: Path, args
 # ── Aggregation: read per-method artifacts → DataFrame ──────────────
 
 
-def _load_method_row(out_dir: Path, dataset: str, method: str, impl: str, k: int | None = None) -> dict | None:
+def _load_method_row(
+    out_dir: Path, dataset: str, method: str, impl: str, k: int | None = None
+) -> dict | None:
     """Return one row dict (matching the legacy CSV schema) or None
     if the method has nothing to report (no timing, no metrics, no
     error file)."""
@@ -126,12 +139,18 @@ def _load_method_row(out_dir: Path, dataset: str, method: str, impl: str, k: int
     # DataFrame schema stays stable even when some rows have no
     # metrics file (partial runs, --skip-metrics, scoring failures).
     base = {
-        "dataset": dataset, "method": method,
+        "dataset": dataset,
+        "method": method,
         "k": k,
-        "fit_seconds": 0.0, "infer_seconds": None, "metric_seconds": 0.0,
-        "peak_rss_mb": 0.0, "gpu_peak_mb": None,
+        "fit_seconds": 0.0,
+        "infer_seconds": None,
+        "metric_seconds": 0.0,
+        "peak_rss_mb": 0.0,
+        "gpu_peak_mb": None,
         "error": None,
-        "_bio": float("nan"), "_batch": float("nan"), "_composite": float("nan"),
+        "_bio": float("nan"),
+        "_batch": float("nan"),
+        "_composite": float("nan"),
     }
     if timing_path.exists():
         t = json.loads(timing_path.read_text())
@@ -154,7 +173,9 @@ def _load_method_row(out_dir: Path, dataset: str, method: str, impl: str, k: int
     return base
 
 
-def aggregate_results(out_dir: Path, datasets: list[str], methods: list[str], impl: str, k: int | None = None):
+def aggregate_results(
+    out_dir: Path, datasets: list[str], methods: list[str], impl: str, k: int | None = None
+):
     import pandas as pd
 
     rows = []
@@ -191,7 +212,9 @@ def write_summary(df, out_dir: Path) -> None:
     for ds in sorted(df["dataset"].unique()):
         sub = df[df["dataset"] == ds]
         md.append(f"### {ds}\n")
-        md.append("| method | fit | infer | metrics | RSS Δ | GPU peak | bio ↑ | batch ↑ | composite ↑ |")
+        md.append(
+            "| method | fit | infer | metrics | RSS Δ | GPU peak | bio ↑ | batch ↑ | composite ↑ |"
+        )
         md.append("|---|---:|---:|---:|---:|---:|---:|---:|---:|")
         for _, r in sub.iterrows():
             fit = _fmt_time(r.get("fit_seconds"))
@@ -200,8 +223,10 @@ def write_summary(df, out_dir: Path) -> None:
             rss = _fmt_mem(r.get("peak_rss_mb"))
             gpu = _fmt_mem(r.get("gpu_peak_mb"))
             if r.get("error"):
-                md.append(f"| {r['method']} | {fit} | {inf} | {mt} | {rss} | {gpu} | "
-                          f"`{str(r['error'])[:40]}` | — | — |")
+                md.append(
+                    f"| {r['method']} | {fit} | {inf} | {mt} | {rss} | {gpu} | "
+                    f"`{str(r['error'])[:40]}` | — | — |"
+                )
                 continue
             md.append(
                 f"| {r['method']} | {fit} | {inf} | {mt} | {rss} | {gpu} | "
@@ -219,7 +244,10 @@ def write_summary(df, out_dir: Path) -> None:
             .agg(
                 comp=("_composite", "mean"),
                 fit=("fit_seconds", "mean"),
-                gpu=("gpu_peak_mb", lambda x: x.dropna().mean() if x.dropna().size else float("nan")),
+                gpu=(
+                    "gpu_peak_mb",
+                    lambda x: x.dropna().mean() if x.dropna().size else float("nan"),
+                ),
             )
             .sort_values("comp", ascending=False)
         )
@@ -227,8 +255,10 @@ def write_summary(df, out_dir: Path) -> None:
         md.append("| method | mean composite ↑ | mean fit | mean GPU peak |")
         md.append("|---|---:|---:|---:|")
         for name, row in means.iterrows():
-            md.append(f"| {name} | **{row['comp']:+.3f}** | {_fmt_time(row['fit'])} | "
-                      f"{_fmt_mem(row['gpu'])} |")
+            md.append(
+                f"| {name} | **{row['comp']:+.3f}** | {_fmt_time(row['fit'])} | "
+                f"{_fmt_mem(row['gpu'])} |"
+            )
 
     (out_dir / "results.md").write_text("\n".join(md) + "\n")
 
@@ -238,10 +268,18 @@ def write_summary(df, out_dir: Path) -> None:
         sub = df[df["dataset"] == ds]
         rows = []
         for _, r in sub.iterrows():
-            rows.append({
-                k: (None if (isinstance(v, float) and v != v) else v.item() if hasattr(v, "item") else v)
-                for k, v in r.to_dict().items()
-            })
+            rows.append(
+                {
+                    k: (
+                        None
+                        if (isinstance(v, float) and v != v)
+                        else v.item()
+                        if hasattr(v, "item")
+                        else v
+                    )
+                    for k, v in r.to_dict().items()
+                }
+            )
         payload[ds] = rows
     (out_dir / "results.json").write_text(json.dumps(payload, indent=2))
 
@@ -267,26 +305,45 @@ def render_figures(df, out_dir: Path) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--out-dir", default=str(HERE), type=Path,
-                        help="Run root. Defaults to benchmarks/ (overwriting the canonical CSV).")
-    parser.add_argument("--full", action="store_true",
-                        help="Run on full datasets (recommended on GPU).")
-    parser.add_argument("--cells-per-cohort", type=int, default=50,
-                        help="Stratified per-(batch,label) subsample size. Ignored with --full.")
+    parser.add_argument(
+        "--out-dir",
+        default=str(HERE),
+        type=Path,
+        help="Run root. Defaults to benchmarks/ (overwriting the canonical CSV).",
+    )
+    parser.add_argument(
+        "--full", action="store_true", help="Run on full datasets (recommended on GPU)."
+    )
+    parser.add_argument(
+        "--cells-per-cohort",
+        type=int,
+        default=50,
+        help="Stratified per-(batch,label) subsample size. Ignored with --full.",
+    )
     parser.add_argument("--k", type=int, default=30)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--no-hvg", action="store_true")
     parser.add_argument("--n-hvg", type=int, default=2000)
     parser.add_argument("--no-lisi", action="store_true")
-    parser.add_argument("--methods", nargs="+", default=None,
-                        help=f"Subset of methods. Choices: {list(METHOD_MODULES)}")
+    parser.add_argument(
+        "--methods",
+        nargs="+",
+        default=None,
+        help=f"Subset of methods. Choices: {list(METHOD_MODULES)}",
+    )
     parser.add_argument("--datasets", nargs="+", default=["pancreas", "immune"])
-    parser.add_argument("--metrics-impl", choices=list(METRICS_MODULES),
-                        default="scib_yosef",
-                        help="Which metrics implementation to use. scib_original is the canonical "
-                        "Theis-lab one (requires glibc 2.38+). scib_yosef is the JAX rewrite.")
-    parser.add_argument("--skip-metrics", action="store_true",
-                        help="Run only the embed step; leave metrics for a later invocation.")
+    parser.add_argument(
+        "--metrics-impl",
+        choices=list(METRICS_MODULES),
+        default="scib_yosef",
+        help="Which metrics implementation to use. scib_original is the canonical "
+        "Theis-lab one (requires glibc 2.38+). scib_yosef is the JAX rewrite.",
+    )
+    parser.add_argument(
+        "--skip-metrics",
+        action="store_true",
+        help="Run only the embed step; leave metrics for a later invocation.",
+    )
     args = parser.parse_args()
 
     if args.full:
@@ -333,7 +390,7 @@ def main() -> int:
     render_figures(df, out_dir)
 
     elapsed = time.perf_counter() - t0
-    print(f"\nTotal: {elapsed/60:.1f}m  ({fail_count} method failures)", flush=True)
+    print(f"\nTotal: {elapsed / 60:.1f}m  ({fail_count} method failures)", flush=True)
     return 1 if fail_count else 0
 
 
