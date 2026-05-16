@@ -49,12 +49,16 @@ def embed(adata, batch_key, label_key, counts_layer, k, seed):
             device=device,
             random_state=seed,
             verbose=False,
-            # Defaults match the recommendation in the docstring:
-            # moderate alignment_weight = a few × the per-batch loss.
-            # We use 2.0 as a starting point; the multi-k sweep can
-            # later be extended to multi-α_v if we want to tune this.
+            # alignment_weight=0.5 from hyperparam sweep
+            # (docs/_static/hyperparam_sweep/results.csv at k=30):
+            # avg silhouette_label across pancreas+sim1
+            #   α_v=0.5: 0.270 (best)
+            #   α_v=2.0: 0.263
+            #   α_v=8.0: 0.257
+            # Lighter batch correction preserves more bio signal
+            # without measurably worsening batch mixing.
             sparsity_weight=0.01,
-            alignment_weight=2.0,
+            alignment_weight=0.5,
         )
         fit_s = time.perf_counter() - t0
 
