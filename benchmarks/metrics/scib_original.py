@@ -44,7 +44,6 @@ from __future__ import annotations
 import argparse
 import json
 import time
-from pathlib import Path
 
 import numpy as np
 
@@ -57,7 +56,6 @@ from benchmarks.io import (
     method_out_dir,
 )
 
-
 # Composite weights matching Luecken 2022: 0.6*bio + 0.4*batch.
 _BIO_W, _BATCH_W = 0.6, 0.4
 
@@ -69,7 +67,9 @@ def _safe_float(x) -> float:
         return float("nan")
 
 
-def evaluate(adata, embedding: np.ndarray, batch_key: str, label_key: str, *, lisi: bool = True) -> dict:
+def evaluate(
+    adata, embedding: np.ndarray, batch_key: str, label_key: str, *, lisi: bool = True
+) -> dict:
     """Call ``scib.metrics.metrics`` with the standard scIB-paper config.
 
     scib's API uses ``adata`` (uncorrected) + ``adata_int`` (post-
@@ -125,8 +125,12 @@ def evaluate(adata, embedding: np.ndarray, batch_key: str, label_key: str, *, li
     # Compute aggregates the same way scib-metrics does so the
     # downstream CSV schema matches.
     bio_keys = [
-        "NMI_cluster/label", "ARI_cluster/label", "ASW_label",
-        "isolated_label_F1", "isolated_label_silhouette", "cLISI",
+        "NMI_cluster/label",
+        "ARI_cluster/label",
+        "ASW_label",
+        "isolated_label_F1",
+        "isolated_label_silhouette",
+        "cLISI",
     ]
     batch_keys = ["ASW_label/batch", "graph_conn", "iLISI"]
 
@@ -136,7 +140,11 @@ def evaluate(adata, embedding: np.ndarray, batch_key: str, label_key: str, *, li
 
     bio = _mean(bio_keys)
     batch = _mean(batch_keys)
-    total = _BIO_W * bio + _BATCH_W * batch if (np.isfinite(bio) and np.isfinite(batch)) else float("nan")
+    total = (
+        _BIO_W * bio + _BATCH_W * batch
+        if (np.isfinite(bio) and np.isfinite(batch))
+        else float("nan")
+    )
     out["Bio conservation"] = bio
     out["Batch correction"] = batch
     out["Total"] = total
@@ -146,9 +154,12 @@ def evaluate(adata, embedding: np.ndarray, batch_key: str, label_key: str, *, li
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset", required=True, choices=list(SCIB_DATASETS))
-    parser.add_argument("--out-dir", required=True,
-                        help="Run root; reads <out-dir>/<dataset>/<method>/X_emb.npz, "
-                        "writes <out-dir>/<dataset>/<method>/metrics_original.json")
+    parser.add_argument(
+        "--out-dir",
+        required=True,
+        help="Run root; reads <out-dir>/<dataset>/<method>/X_emb.npz, "
+        "writes <out-dir>/<dataset>/<method>/metrics_original.json",
+    )
     parser.add_argument("--methods", nargs="+", required=True)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--cells-per-cohort", type=int, default=None)
@@ -192,7 +203,9 @@ def main() -> int:
         except Exception as e:
             msg = f"{type(e).__name__}: {e}"
             print(f"      FAILED: {msg[:200]}", flush=True)
-            (method_out_dir(args.out_dir, args.dataset, method) / "metrics_original.error.txt").write_text(msg)
+            (
+                method_out_dir(args.out_dir, args.dataset, method) / "metrics_original.error.txt"
+            ).write_text(msg)
             failures += 1
             continue
         elapsed = time.perf_counter() - t0
@@ -201,9 +214,12 @@ def main() -> int:
         (method_out_dir(args.out_dir, args.dataset, method) / "metrics_original.json").write_text(
             json.dumps(m, indent=2)
         )
-        print(f"      {method}: bio={m.get('Bio conservation', float('nan')):+.3f}  "
-              f"batch={m.get('Batch correction', float('nan')):+.3f}  "
-              f"composite={m.get('Total', float('nan')):+.3f}  ({elapsed:.1f}s)", flush=True)
+        print(
+            f"      {method}: bio={m.get('Bio conservation', float('nan')):+.3f}  "
+            f"batch={m.get('Batch correction', float('nan')):+.3f}  "
+            f"composite={m.get('Total', float('nan')):+.3f}  ({elapsed:.1f}s)",
+            flush=True,
+        )
 
     return 1 if failures else 0
 

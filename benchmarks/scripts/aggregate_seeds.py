@@ -62,21 +62,29 @@ def aggregate(runs_root: Path, axis: str) -> pd.DataFrame:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--runs-root", required=True, type=Path,
-                        help="Directory containing <axis>-N subdirectories.")
-    parser.add_argument("--axis", default="seed",
-                        help="Parameter axis encoded in subdir names (default: seed)")
-    parser.add_argument("--out-csv", required=True, type=Path,
-                        help="Path to write the aggregated CSV.")
+    parser.add_argument(
+        "--runs-root",
+        required=True,
+        type=Path,
+        help="Directory containing <axis>-N subdirectories.",
+    )
+    parser.add_argument(
+        "--axis", default="seed", help="Parameter axis encoded in subdir names (default: seed)"
+    )
+    parser.add_argument(
+        "--out-csv", required=True, type=Path, help="Path to write the aggregated CSV."
+    )
     args = parser.parse_args()
 
     df = aggregate(args.runs_root, args.axis)
     args.out_csv.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(args.out_csv, index=False)
-    print(f"\nWrote {args.out_csv}  ({len(df)} rows, "
-          f"{df[args.axis].nunique()} {args.axis} values, "
-          f"{df['dataset'].nunique()} datasets, "
-          f"{df['method'].nunique()} methods)")
+    print(
+        f"\nWrote {args.out_csv}  ({len(df)} rows, "
+        f"{df[args.axis].nunique()} {args.axis} values, "
+        f"{df['dataset'].nunique()} datasets, "
+        f"{df['method'].nunique()} methods)"
+    )
     return 0
 
 

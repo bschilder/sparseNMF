@@ -40,7 +40,15 @@ nb_execution_mode = "off"
 source_suffix = {".rst": "restructuredtext", ".md": "markdown"}
 master_doc = "index"
 templates_path = ["_templates"]
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = [
+    "_build", "Thumbs.db", ".DS_Store",
+    # team-updates/ are internal Slack-canvas archives — not part of
+    # the published docs. Sphinx 9 + myst_nb register a parser for .ipynb
+    # but not for plain .md (myst_nb's parser is keyed to notebook MIME
+    # types), so leaving these in would raise:
+    #   SphinxError: Source parser for markdown not registered
+    "team-updates",
+]
 
 autosummary_generate = True
 autodoc_typehints = "description"

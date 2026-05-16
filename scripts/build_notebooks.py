@@ -35,10 +35,12 @@ for _v in (
 os.environ.setdefault("PYTHONHASHSEED", "0")
 os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
 
-from pathlib import Path
+# Imports below sit after the determinism env-var setup — E402 is the
+# intended structure here, not a mistake.
+from pathlib import Path  # noqa: E402
 
-import nbformat
-from nbclient import NotebookClient
+import nbformat  # noqa: E402
+from nbclient import NotebookClient  # noqa: E402
 
 OUT = Path(__file__).resolve().parents[1] / "docs" / "notebooks"
 OUT.mkdir(parents=True, exist_ok=True)
@@ -395,8 +397,7 @@ write_nb(
             "`python examples/real_pancreas_demo.py` from a shell."
         ),
         code(
-            PATH_SETUP.format(module="real_pancreas_demo")
-            + "from real_pancreas_demo import (\n"
+            PATH_SETUP.format(module="real_pancreas_demo") + "from real_pancreas_demo import (\n"
             "    load_pancreas, fit_pca, fit_nmf, fit_sparse_nmf,\n"
             "    umap_project, depth_r2, make_figure,\n"
             ")\n"

@@ -12,7 +12,6 @@ import argparse
 import json
 import os
 import time
-from pathlib import Path
 
 # JAX claims the GPU at import. Earlier we pinned this to CPU because
 # JAX + PyTorch in the same process caused CUDA-context wedging
@@ -32,6 +31,7 @@ os.environ.setdefault("JAX_PLATFORMS", "cuda,cpu")
 # so the next developer sees this constraint instead of debugging a
 # silent GPU hang.
 import sys
+
 assert "torch" not in sys.modules, (
     "scib_yosef.py allows JAX on GPU because no torch is loaded in this "
     "subprocess. A torch import has snuck in — JAX+torch in one process "
@@ -39,20 +39,23 @@ assert "torch" not in sys.modules, (
     "subprocess (see benchmarks/methods/* for the pattern)."
 )
 
-import numpy as np
+# Imports below sit after the JAX_PLATFORMS env-var dance + torch-import
+# guard above — E402 is the intended structure here, not a mistake.
+import numpy as np  # noqa: E402
 
-from benchmarks.io import (
+from benchmarks.io import (  # noqa: E402
     SCIB_DATASETS,
     adata_fingerprint,
     load_embedding,
     load_error,
     load_scib_dataset,
-    load_timing,
     method_out_dir,
 )
 
 
-def evaluate(adata, embedding: np.ndarray, batch_key: str, label_key: str, *, lisi: bool = True) -> dict:
+def evaluate(
+    adata, embedding: np.ndarray, batch_key: str, label_key: str, *, lisi: bool = True
+) -> dict:
     from scib_metrics.benchmark import BatchCorrection, Benchmarker, BioConservation
 
     a = adata.copy()
@@ -95,11 +98,18 @@ def evaluate(adata, embedding: np.ndarray, batch_key: str, label_key: str, *, li
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset", required=True, choices=list(SCIB_DATASETS))
-    parser.add_argument("--out-dir", required=True,
-                        help="Run root; reads <out-dir>/<dataset>/<method>/X_emb.npz, "
-                        "writes <out-dir>/<dataset>/<method>/metrics_yosef.json")
-    parser.add_argument("--methods", nargs="+", required=True,
-                        help="Method names to score (must match the dir name under <out-dir>/<dataset>/).")
+    parser.add_argument(
+        "--out-dir",
+        required=True,
+        help="Run root; reads <out-dir>/<dataset>/<method>/X_emb.npz, "
+        "writes <out-dir>/<dataset>/<method>/metrics_yosef.json",
+    )
+    parser.add_argument(
+        "--methods",
+        nargs="+",
+        required=True,
+        help="Method names to score (must match the dir name under <out-dir>/<dataset>/).",
+    )
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--cells-per-cohort", type=int, default=None)
     parser.add_argument("--no-hvg", action="store_true")
@@ -142,7 +152,9 @@ def main() -> int:
         except Exception as e:
             msg = f"{type(e).__name__}: {e}"
             print(f"      FAILED: {msg[:200]}", flush=True)
-            (method_out_dir(args.out_dir, args.dataset, method) / "metrics_yosef.error.txt").write_text(msg)
+            (
+                method_out_dir(args.out_dir, args.dataset, method) / "metrics_yosef.error.txt"
+            ).write_text(msg)
             failures += 1
             continue
         elapsed = time.perf_counter() - t0
@@ -154,8 +166,11 @@ def main() -> int:
         bio = float(m.get("Bio conservation", float("nan")))
         bat = float(m.get("Batch correction", float("nan")))
         tot = float(m.get("Total", float("nan")))
-        print(f"      {method}: bio={bio:+.3f}  batch={bat:+.3f}  composite={tot:+.3f}  "
-              f"({elapsed:.1f}s)", flush=True)
+        print(
+            f"      {method}: bio={bio:+.3f}  batch={bat:+.3f}  composite={tot:+.3f}  "
+            f"({elapsed:.1f}s)",
+            flush=True,
+        )
 
     return 1 if failures else 0
 

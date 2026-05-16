@@ -36,11 +36,17 @@ def embed(adata, batch_key, label_key, counts_layer, k, seed, **kwargs):
     with track_memory() as mem:
         t0 = time.perf_counter()
         W, _ = train_sparse_nmf(
-            X_sparse=X, n_components=k, device=device, random_state=seed,
-            verbose=False, **kwargs,
+            X_sparse=X,
+            n_components=k,
+            device=device,
+            random_state=seed,
+            verbose=False,
+            **kwargs,
         )
         fit_s = time.perf_counter() - t0
-    return W, MethodTiming(fit_s, None, peak_rss_mb=mem["peak_rss_mb"], gpu_peak_mb=mem["gpu_peak_mb"])
+    return W, MethodTiming(
+        fit_s, None, peak_rss_mb=mem["peak_rss_mb"], gpu_peak_mb=mem["gpu_peak_mb"]
+    )
 
 
 def main() -> int:

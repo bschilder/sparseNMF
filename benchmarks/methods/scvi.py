@@ -45,7 +45,9 @@ def embed(adata, batch_key, label_key, counts_layer, k, seed):
         t1 = time.perf_counter()
         emb_ = model.get_latent_representation()
         inf_s = time.perf_counter() - t1
-    return emb_, MethodTiming(fit_s, inf_s, peak_rss_mb=mem["peak_rss_mb"], gpu_peak_mb=mem["gpu_peak_mb"])
+    return emb_, MethodTiming(
+        fit_s, inf_s, peak_rss_mb=mem["peak_rss_mb"], gpu_peak_mb=mem["gpu_peak_mb"]
+    )
 
 
 def main() -> int:

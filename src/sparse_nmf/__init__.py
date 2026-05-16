@@ -39,10 +39,6 @@ from sparse_nmf._batch_aware import (
     BatchAwareResult,
     train_sparse_nmf_batch_aware,
 )
-from sparse_nmf._hyper_sweep import (
-    SweepResult,
-    sweep_hyperparameters,
-)
 from sparse_nmf._core import (
     SparseNMF,
     SparseNMF_Autoencoder,
@@ -55,6 +51,10 @@ from sparse_nmf._core import (
     trace_attention_to_genes,
     train_joint_model,
     train_sparse_nmf,
+)
+from sparse_nmf._hyper_sweep import (
+    SweepResult,
+    sweep_hyperparameters,
 )
 from sparse_nmf.utils import l2_normalize
 
